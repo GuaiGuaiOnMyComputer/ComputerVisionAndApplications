@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.repositoryScanMaxDepth": 1,
+		"git.autoRepositoryDetection": "openEditors",
+		"git.detectSubmodules": false
+	}
+}
