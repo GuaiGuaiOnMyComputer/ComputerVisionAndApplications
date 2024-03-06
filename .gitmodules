@@ -1,0 +1,3 @@
+[submodule "Homework1/Dep/CImg"]
+	path = Homework1/dep/CImg
+	url = git@github.com:GreycLab/CImg.git
