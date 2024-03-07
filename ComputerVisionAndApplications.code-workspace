@@ -7,6 +7,9 @@
 	"settings": {
 		"git.repositoryScanMaxDepth": 1,
 		"git.autoRepositoryDetection": "openEditors",
-		"git.detectSubmodules": false
+		"git.detectSubmodules": false,
+		"files.associations": {
+			"atomic": "cpp"
+		}
 	}
 }
