@@ -1,10 +1,13 @@
+#define cimg_use_jpeg
+#define JPEG_LIB_VERSION 80
+#include "jconfig.h"
 #include "CImg.h"
 using namespace cimg_library;
  
 // to compile: g++ -O3 -o try main.cpp -lm -lpthread -lX11
 
 int main() {
-  CImg<unsigned char> image("../asset/SceneFromCamera1.jpg"), visu(1080, 1920, 1,3,0);
+  CImg<unsigned char> image("./asset/SceneFromCamera1.jpg"), visu(1080, 1920, 1,3,0);
   const unsigned char red[] = { 255,0,0 }, green[] = { 0,255,0 }, blue[] = { 0,0,255 };
   image.blur(2.5);
   CImgDisplay main_disp(image,"Click a point"), draw_disp(visu,"Intensity profile");
