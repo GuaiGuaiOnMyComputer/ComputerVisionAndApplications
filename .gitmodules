@@ -1,0 +1,3 @@
+[submodule "Homework1/dep/opencv"]
+	path = Homework1/dep/opencv
+	url = git@github.com:opencv/opencv.git

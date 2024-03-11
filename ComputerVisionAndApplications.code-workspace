@@ -10,6 +10,105 @@
 		"git.detectSubmodules": false,
 		"files.associations": {
 			"atomic": "cpp"
-		}
+		},
+	},
+	"launch": {
+		"configurations": [
+			
+			{
+				"name": "(gdb) Windows Launch",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\Homework1\\build\\Homework1.exe",
+				"args": [],
+				"stopAtEntry": true,
+				"cwd": "${workspaceFolder}\\Homework1",
+				"environment": [],
+				"preLaunchTask": "g++ windows compile current homework",
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\Program Files\\MinGw\\mingw64\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "(gdb) Windows Launch any file",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
+				"args": [],
+				"stopAtEntry": true,
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				"preLaunchTask": "g++ windows compile any file",
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\Program Files\\MinGw\\mingw64\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			}
+		]
+	},
+
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "g++ windows compile current homework",
+				"type": "shell",
+				"command": "C:\\Program Files\\MinGw\\mingw64\\bin\\g++.exe",
+				"args": [
+					"${workspaceFolder}\\Homework1\\src\\main.cpp",
+					"-g",
+					"-D _DEBUG",
+					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\include",
+					"-I", "${workspaceFolder}\\Homework1\\build",
+					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\core\\include",
+					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\highgui\\include",
+					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\imgcodecs\\include",
+					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\videoio\\include",
+					"-L", "${workspaceFolder}\\Homework1\\build\\lib",
+					"-llibopencv_core490",
+					"-llibopencv_highgui490",
+					"-llibopencv_video490",
+					"-llibopencv_imgcodecs490",
+					"-o", "${workspaceFolder}\\Homework1\\build\\Homework1.exe",
+				],
+				"group": "build",
+			
+			},
+			{
+				"label": "g++ windows compile any file",
+				"type": "shell",
+				"command": "C:\\Program Files\\MinGw\\mingw64\\bin\\g++.exe",
+				"args": [
+					"${workspaceFolder}\\${fileBasenameNoExtension}.cpp",
+					"-o", "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
+				],
+				"group": "build",
+			
+			}
+		]
 	}
+
 }

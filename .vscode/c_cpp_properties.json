@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Windows MinGW",
+            "includePath": [
+                "${workspaceFolder}\\Homework1\\dep\\opencv\\include",
+                "${workspaceFolder}\\Homework1\\build",
+                "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\core\\include",
+                "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\highgui\\include",
+                "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\imgcodecs\\include",
+                "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\videoio\\include",
+                "${workspaceFolder}\\Homework1\\build\\lib"
+            ],
+            "defines": [
+                "__debug__"
+            ],
+            "compilerPath": "C:\\Program Files\\MinGw\\mingw64\\bin\\g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
