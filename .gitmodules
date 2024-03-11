@@ -1,9 +1,0 @@
-[submodule "Homework1/Dep/CImg"]
-	path = Homework1/dep/CImg
-	url = git@github.com:GreycLab/CImg.git
-[submodule "Homework1/dep/libjpeg-turbo"]
-	path = Homework1/dep/libjpeg-turbo
-	url = git@github.com:libjpeg-turbo/libjpeg-turbo.git
-[submodule "Homework1/dep/opencv"]
-	path = Homework1/dep/opencv
-	url = git@github.com:opencv/opencv.git
