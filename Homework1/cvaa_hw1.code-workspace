@@ -11,6 +11,16 @@
 		"files.associations": {
 			"atomic": "cpp"
 		},
+		"dotnet.defaultSolution": "disable",
+		"C_Cpp.default.includePath": [
+			"${workspaceFolder}\\dep\\opencv\\include",
+			"${workspaceFolder}\\build",
+			"${workspaceFolder}\\dep\\opencv\\modules\\core\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\highgui\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\imgcodecs\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\videoio\\include",
+			"${workspaceFolder}\\build\\lib"
+		],
 	},
 	"launch": {
 		"configurations": [
@@ -19,10 +29,10 @@
 				"name": "(gdb) Windows Launch",
 				"type": "cppdbg",
 				"request": "launch",
-				"program": "${workspaceFolder}\\Homework1\\build\\Homework1.exe",
+				"program": "${workspaceFolder}\\dist\\${workspaceFolderBasename}.exe",
 				"args": [],
-				"stopAtEntry": true,
-				"cwd": "${workspaceFolder}\\Homework1",
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\dist",
 				"environment": [],
 				"preLaunchTask": "g++ windows compile current homework",
 				"externalConsole": false,
@@ -50,7 +60,7 @@
 				"stopAtEntry": true,
 				"cwd": "${workspaceFolder}",
 				"environment": [],
-				"preLaunchTask": "g++ windows compile any file",
+				"preLaunchTask": "g++ windows compile current file without dependencies.",
 				"externalConsole": false,
 				"MIMode": "gdb",
 				"miDebuggerPath": "C:\\Program Files\\MinGw\\mingw64\\bin\\gdb.exe",
@@ -78,27 +88,44 @@
 				"type": "shell",
 				"command": "C:\\Program Files\\MinGw\\mingw64\\bin\\g++.exe",
 				"args": [
-					"${workspaceFolder}\\Homework1\\src\\main.cpp",
+					"${workspaceFolder}\\src\\main.cpp",
 					"-g",
-					"-D _DEBUG",
-					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\include",
-					"-I", "${workspaceFolder}\\Homework1\\build",
-					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\core\\include",
-					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\highgui\\include",
-					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\imgcodecs\\include",
-					"-I", "${workspaceFolder}\\Homework1\\dep\\opencv\\modules\\videoio\\include",
-					"-L", "${workspaceFolder}\\Homework1\\build\\lib",
+					"-D _DEBUG WIN32",
+					"-I", "${workspaceFolder}\\dep\\opencv\\include",
+					"-I", "${workspaceFolder}\\build",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\core\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\highgui\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\imgcodecs\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\videoio\\include",
+					"-L", "${workspaceFolder}\\build\\bin",
 					"-llibopencv_core490",
 					"-llibopencv_highgui490",
 					"-llibopencv_video490",
 					"-llibopencv_imgcodecs490",
-					"-o", "${workspaceFolder}\\Homework1\\build\\Homework1.exe",
+					"-o", "${workspaceFolder}\\dist\\${workspaceFolderBasename}.exe",
 				],
 				"group": "build",
-			
 			},
 			{
-				"label": "g++ windows compile any file",
+				"label": "copy library dependencies to dist folder",
+				"type": "shell",
+				"command": "cp",
+				"args": [
+					"${workspaceFolder}\\build\\bin\\*",
+					"${workspaceFolder}\\dist"
+				]
+			},
+			{
+				"label": "copy asset dependencies to dist folder",
+				"type": "shell",
+				"command": "cp",
+				"args": [
+					"${workspaceFolder}\\asset\\*",
+					"${workspaceFolder}\\dist\\asset\\"
+				]
+			},
+			{
+				"label": "g++ windows compile current file without dependencies",
 				"type": "shell",
 				"command": "C:\\Program Files\\MinGw\\mingw64\\bin\\g++.exe",
 				"args": [
@@ -106,7 +133,15 @@
 					"-o", "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
 				],
 				"group": "build",
-			
+			},
+			{
+				"label": "g++ compile and copy dependencies to dist folder",
+				"dependsOn": [
+					"g++ windows compile current homework",
+					"copy library dependencies to dist folder",
+					"copy asset dependencies to dist folder"
+				],
+				"dependsOrder": "sequence"
 			}
 		]
 	}
