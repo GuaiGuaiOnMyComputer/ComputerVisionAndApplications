@@ -1,10 +1,14 @@
+#include <fstream>
+#include <vector>
+#include <filesystem>
+
 class XyzParser
 {
 public:
     XyzParser(std::filesystem::path xyzFilePath);
-    void ParseAll(const int64_t headerLen = -1, std::vector<float> &out_trackPoints);
+    void ParseAll(std::vector<float> &out_trackPoints, int64_t headerLen = -1);
 
-    virtual ~XyzParser(){};
+    virtual ~XyzParser();
 
 private:
     uint64_t _getHeaderLen();

@@ -1,11 +1,12 @@
-#include "XyzParser.hpp"
 #include <filesystem>
-#include <format>
 #include <string>
 #include <array>
 #include <vector>
+#include <iostream>
 #include <stdint.h>
 #include <fstream>
+// #include "XyzParser.hpp"
+// TODO: include header file instead
 
 class XyzParser
 {
@@ -17,34 +18,51 @@ public:
         _fileHandle = std::ifstream();
     }
 
-    void ParseAll(const int64_t headerLen = -1, std::vector<float>& out_trackPoints)
+    void ParseAll(std::vector<float>& out_trackPoints, int64_t headerLen = -1)
     {
         if (!_fileExist)
-            throw std::runtime_error(std::format("File not found at {}", _xyzFilePath));
+            throw std::runtime_error("File not found at location specified by member _xyzFilePath");
 
+        out_trackPoints = ParseAll(headerLen);
+    }
+
+    std::vector<float> ParseAll(int64_t headerLen = -1)
+    {
+        if (!_fileExist)
+            throw std::runtime_error("File not found at location specified by member _xyzFilePath");
+
+        std::vector<float> out_trackPoints;
         const uint64_t _dataStart = headerLen > -1 ? headerLen : _getHeaderLen();
         _fileHandle.open(_xyzFilePath, std::ios_base::in);
         _fileHandle.seekg(_dataStart); // skip the header if there is any
 
-        // count the number of lines in the file.
-        // +1 line for the last line that might not end with \n
-        // each line contains 3 floats, representing x, y and z coordinate
-        uint64_t lineCount = 1 + std::count(std::istreambuf_iterator<char>(_fileHandle), std::istreambuf_iterator<char>(), '\n');
-        out_trackPoints.reserve(3 * lineCount);
-        _fileHandle.seekg(_dataStart);
-
-        for (size_t i = 0; i < lineCount; i++)
+        try
         {
-            std::string lineContent;
-            std::getline(_fileHandle, lineContent);
-            std::array<float, 3> lineAsFloats = _parseLine(lineContent);
+            // count the number of lines in the file.
+            // +1 line for the last line that might not end with \n
+            // each line contains 3 floats, representing x, y and z coordinate
+            uint64_t lineCount = 1 + std::count(std::istreambuf_iterator<char>(_fileHandle), std::istreambuf_iterator<char>(), '\n');
+            out_trackPoints.reserve(3 * lineCount);
+            _fileHandle.seekg(_dataStart);
 
-            // copy parsed floats into out_trackPoints
-            for (size_t parsedFloatIndex = 0; parsedFloatIndex < 3; parsedFloatIndex++)
-                out_trackPoints.push_back(lineAsFloats[parsedFloatIndex]);
+            for (size_t i = 0; i < lineCount; i++)
+            {
+                std::string lineContent;
+                std::getline(_fileHandle, lineContent);
+                std::array<float, 3> lineAsFloats = _parseLine(lineContent);
+
+                // copy parsed floats into out_trackPoints
+                for (size_t parsedFloatIndex = 0; parsedFloatIndex < 3; parsedFloatIndex++)
+                    out_trackPoints.push_back(lineAsFloats[parsedFloatIndex]);
+            }
+        }
+        catch(const std::exception& e)
+        {
+            _fileHandle.close();
+            std::cerr << e.what() << '\n';
         }
         _fileHandle.close();
-        return;
+        return out_trackPoints;
     }
 
     virtual ~XyzParser()
@@ -62,15 +80,16 @@ private:
         return 0; // TODO: determine the header length automatically
     }
 
-    std::array<float, 3> _parseLine(const std::string& lineContent)
+    std::array<float, 3> _parseLine(std::string& lineContent)
     {
         std::array<float, 3> xyz;
-        size_t floatStart{0};
-        char** floatEnd{NULL};
+        char* floatStart = &lineContent[0];
+        char* floatEnd{NULL};
         for (size_t parsedFloatCount = 0; parsedFloatCount < 3; parsedFloatCount++)
         {
             // FIXME: symbols other than spaces will result in silent runtime error
-            xyz[parsedFloatCount] = strtof(&lineContent[floatStart], floatEnd);
+            xyz[parsedFloatCount] = strtof(floatStart, &floatEnd);
+            floatStart = floatEnd;
         }
         return xyz;
     }

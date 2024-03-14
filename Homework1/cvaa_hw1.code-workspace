@@ -109,6 +109,8 @@
 			"${workspaceFolder}\\build\\lib",
 			"${workspaceFolder}\\dep\\traceparser\\include",
 			"${workspaceFolder}\\dep\\traceparser\\src",
+			"${workspaceFolder}\\dep\\camera\\include",
+			"${workspaceFolder}\\dep\\camera\\src"
 		],
 		"C_Cpp.default.cppStandard": "c++20"
 	},
@@ -190,6 +192,8 @@
 					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\videoio\\include",
 					"-I", "${workspaceFolder}\\dep\\traceparser\\include",
 					"-I", "${workspaceFolder}\\dep\\traceparser\\src",
+					"-I", "${workspaceFolder}\\dep\\camera\\include",
+					"-I", "${workspaceFolder}\\dep\\camera\\src",
 					"-L", "${workspaceFolder}\\build\\bin",
 					"-llibopencv_core490",
 					"-llibopencv_highgui490",
