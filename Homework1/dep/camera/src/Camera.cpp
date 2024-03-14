@@ -1,5 +1,6 @@
 #include <array>
 #include <string>
+#include <algorithm>
 
 class Camera
 {
@@ -61,6 +62,12 @@ public:
             std::cerr << e.what() << '\n';
             cameraParamFileHandle.close();
         }
+    }
+
+    /// @brief Remaps the points in pointsInWorld to the image coordinate system in place.
+    /// @param pointsInWorld The points in world coordinate. Each point occupies 3 consecutive elements in this std::vector as its x, y, and z coordinate
+    void WorldToImageCoordinate(std::vector<float>& pointsInWorld)
+    {
     }
 
 public:
