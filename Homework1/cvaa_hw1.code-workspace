@@ -112,7 +112,8 @@
 			"${workspaceFolder}\\dep\\camera\\include",
 			"${workspaceFolder}\\dep\\camera\\src"
 		],
-		"C_Cpp.default.cppStandard": "c++20"
+		"C_Cpp.default.cppStandard": "c++20",
+		"C_Cpp.default.intelliSenseMode": "gcc-x64"
 	},
 	"launch": {
 		"configurations": [

@@ -4,11 +4,15 @@
 class Camera
 {
 public:
+    Camera(const char* name): _kMat{0}, _rtMat{0}, _cameraName{name}
+    {
+    }
+
     Camera(): _kMat{0}, _rtMat{0}, _cameraName{"No name"}
     {
     }
 
-    Camera(const std::string& parameterString, const char* kMatName, const char* rtMatName): _kMat{0}, _rtMat{0}, _cameraName{"No name"}
+    Camera(const char* name, const std::string& parameterString, const char* kMatName, const char* rtMatName): _kMat{0}, _rtMat{0}, _cameraName{name}
     {
         GetParameterFromText(parameterString, kMatName, rtMatName);
     }
@@ -22,13 +26,43 @@ public:
 
         // parse the floats as elements in _rtMat and _kMat
         // \t \n characters and empty spaces are skipped by strtof
-        char **floatEndPtr;
+        char *floatEndPtr = nullptr;
+        const char *floatStartPtr = &textBuff[rtMatStart];
         for (size_t i = 0; i < 3 * 4; i++)
-            _rtMat[i] = strtof(&textBuff[rtMatStart], floatEndPtr);
+        {
+            _rtMat[i] = strtof(floatStartPtr, &floatEndPtr);
+            floatStartPtr = floatEndPtr;
+        }
 
+        floatStartPtr = &textBuff[kMatStart];
         for (size_t i = 0; i < 3 * 3; i++)
-            _kMat[i] = strtof(&textBuff[kMatStart], floatEndPtr);
+        {
+            _kMat[i] = strtof(floatStartPtr, &floatEndPtr);
+            floatStartPtr = floatEndPtr;
+        }
     }
+
+    void GetParameterFromFile(const std::filesystem::path filePath, const char* kMatName, const char* rtMatName)
+    {
+        std::ifstream cameraParamFileHandle;
+        try
+        {
+            cameraParamFileHandle.open(filePath, std::ios::in);
+            cameraParamFileHandle.seekg(0, cameraParamFileHandle.end);
+            size_t characterCount = cameraParamFileHandle.tellg();
+            cameraParamFileHandle.seekg(0, cameraParamFileHandle.beg);
+            std::string fileContent(characterCount, '\0');
+            cameraParamFileHandle.read(fileContent.data(), fileContent.capacity());
+            cameraParamFileHandle.close();
+            GetParameterFromText(fileContent, kMatName, rtMatName);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+            cameraParamFileHandle.close();
+        }
+    }
+
 public:
 
 
