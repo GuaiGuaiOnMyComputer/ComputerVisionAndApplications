@@ -18,6 +18,9 @@ public:
         _fileHandle = std::ifstream();
     }
 
+    /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The resultant vector will be in 1D with length=3*rows elements. Every 3 floats in this vector represents a point's xyz coordinate.
+    /// @param out_trackPoints An output variable storing all the parsed floats.
+    /// @param headerLen Number of characters in the file header. Skip the file header without parsing it as floats.
     void ParseAll(std::vector<float>& out_trackPoints, int64_t headerLen = -1)
     {
         if (!_fileExist)
@@ -26,6 +29,9 @@ public:
         out_trackPoints = ParseAll(headerLen);
     }
 
+    /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The returned vector will be in 1D with length=3*rows elements. Every 3 floats in this vector represents a point's xyz coordinate.
+    /// @param headerLen Number of characters in the file header. Skip the file header without parsing it as floats.
+    /// @return A 1D vector of length=nPoints*3
     std::vector<float> ParseAll(int64_t headerLen = -1)
     {
         if (!_fileExist)
