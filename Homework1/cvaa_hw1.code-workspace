@@ -5,7 +5,7 @@
 		}
 	],
 	"settings": {
-		"git.repositoryScanMaxDepth": 1,
+		"git.repositoryScanMaxDepth": 0,
 		"git.autoRepositoryDetection": "openEditors",
 		"git.detectSubmodules": false,
 		"files.associations": {
@@ -117,7 +117,6 @@
 	},
 	"launch": {
 		"configurations": [
-			
 			{
 				"name": "(gdb) Windows Launch",
 				"type": "cppdbg",
@@ -131,6 +130,32 @@
 				"externalConsole": false,
 				"MIMode": "gdb",
 				"miDebuggerPath": "C:\\Program Files\\MinGw\\mingw64\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "(gdb) Linux Launch",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}/dist/${workspaceFolderBasename}",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\dist",
+				"environment": [],
+				"preLaunchTask": "g++ linux compile current homework",
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "",
 				"setupCommands": [
 					{
 						"description": "Enable pretty-printing for gdb",
@@ -205,7 +230,35 @@
 				"group": "build",
 			},
 			{
-				"label": "copy library dependencies to dist folder",
+				"label": "g++ linux compile current homework",
+				"type": "shell",
+				"command": "/usr/bin/g++",
+				"args": [
+					"${workspaceFolder}/src/main.cpp",
+					"-g",
+					"-D _DEBUG _LINUX",
+					"-std=gnu++20",
+					"-I", "${workspaceFolder}/dep/opencv/include",
+					"-I", "${workspaceFolder}/build",
+					"-I", "${workspaceFolder}/dep/opencv/modules/core/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/highgui/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/imgcodecs/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/videoio/include",
+					"-I", "${workspaceFolder}/dep/traceparser/include",
+					"-I", "${workspaceFolder}/dep/traceparser/src",
+					"-I", "${workspaceFolder}/dep/camera/include",
+					"-I", "${workspaceFolder}/dep/camera/src",
+					"-L", "${workspaceFolder}/build/lib",
+					"-lopencv_core",
+					"-lopencv_highgui",
+					"-lopencv_video",
+					"-lopencv_imgcodecs",
+					"-o", "${workspaceFolder}/dist/${workspaceFolderBasename}",
+				],
+				"group": "build",
+			},
+			{
+				"label": "windows copy library dependencies to dist folder",
 				"type": "shell",
 				"command": "cp",
 				"args": [
@@ -214,12 +267,21 @@
 				]
 			},
 			{
+				"label": "linux copy library dependencies to dist folder",
+				"type": "shell",
+				"command": "cp",
+				"args": [
+					"${workspaceFolder}/build/lib/*",
+					"${workspaceFolder}/dist"
+				]
+			},
+			{
 				"label": "copy asset dependencies to dist folder",
 				"type": "shell",
 				"command": "cp",
 				"args": [
-					"${workspaceFolder}\\asset\\*",
-					"${workspaceFolder}\\dist\\asset\\"
+					"${workspaceFolder}/asset/*",
+					"${workspaceFolder}/dist/asset/"
 				]
 			},
 			{
@@ -233,9 +295,18 @@
 				"group": "build",
 			},
 			{
-				"label": "g++ compile and copy dependencies to dist folder",
+				"label": "g++ windows compile and copy dependencies to dist folder",
 				"dependsOn": [
 					"g++ windows compile current homework",
+					"copy library dependencies to dist folder",
+					"copy asset dependencies to dist folder"
+				],
+				"dependsOrder": "sequence"
+			},
+			{
+				"label": "g++ linux compile and copy dependencies to dist folder",
+				"dependsOn": [
+					"g++ linux compile current homework",
 					"copy library dependencies to dist folder",
 					"copy asset dependencies to dist folder"
 				],
