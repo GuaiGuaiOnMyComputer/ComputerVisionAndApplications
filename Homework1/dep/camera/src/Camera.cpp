@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 class Camera
 {
@@ -45,6 +44,7 @@ public:
             _kMat[i] = strtof(floatStartPtr, &floatEndPtr);
             floatStartPtr = floatEndPtr;
         }
+        _initTransformMatrix();
     }
 
     void GetParameterFromFile(const std::filesystem::path filePath, const char* kMatName, const char* rtMatName)
@@ -66,6 +66,7 @@ public:
             std::cerr << e.what() << '\n';
             cameraParamFileHandle.close();
         }
+        _initTransformMatrix();
     }
 
     /// @brief Remaps the points in pointsInWorldNoneHomo to the image coordinate system in place.
@@ -76,13 +77,13 @@ public:
         std::vector<float> pointsInImageHomo(pointsInWorldNoneHomo.size());
         for (size_t i = 0; i < pointCount; i++)
         {
-            std::array<float, 3> pointInWorldNoneHomo;
-            std::array<float, 3> pointInImageHomo;
+            std::array<float, 3> pointInWorldNoneHomo{1, 1, 1};
+            std::array<float, 3> pointInImageHomo{1, 1, 1};
             memcpy_s(pointInWorldNoneHomo.data(), pointInWorldNoneHomo.size() * sizeof(float), &pointsInWorldNoneHomo.at(3 * i), sizeof(float) * 3);
             pointInImageHomo = MapToImage(pointInWorldNoneHomo);
-            for (size_t j = 0; j < 4; j++)
+            for (size_t j = 0; j < 3; j++)
             {
-                pointsInImageHomo[j + 3 * i] = pointInImageHomo[j];
+                pointsInImageHomo.at(j + 3 * i) = pointInImageHomo[j];
             }
         }
         return pointsInImageHomo;
@@ -90,12 +91,17 @@ public:
 
     std::array<float, 3> MapToImage(const std::array<float, 3>& pointInWorldNoneHomo)
     {
-        std::array<float, 3> pointInImageHomo{0};
-        std::array<float, 4> pointInWorldHomo{1};
+        std::array<float, 3> pointInImageHomo{0, 0, 0};
+        std::array<float, 4> pointInWorldHomo{1, 1, 1, 1};
         memcpy_s(pointInWorldHomo.data(), pointInWorldHomo.size() * sizeof(float), pointInWorldNoneHomo.data(), pointInWorldNoneHomo.size() * sizeof(float));
         for (size_t i = 0; i < 3; i++)
+        {
             for (size_t j = 0; j < 4; j ++)
-                pointInImageHomo[j + 3 * i] = _transformMat[j + 4 * i];
+            {
+                pointInImageHomo[j + 3 * i] = _transformMat[j + 4 * i] * pointInWorldHomo[j];
+                pointInImageHomo[j + 3  * i] /= _rtMat[4 * 3 - 1]; // normalize the projected coordinate by dividing z
+            }
+        }
         return pointInImageHomo;
     }
 
@@ -105,13 +111,8 @@ private:
     void _initTransformMatrix()
     {
         for (size_t i = 0; i < 3; i++)
-        {
             for (size_t j = 0; j < 4; j++)
-            {
                 _transformMat[j + 4 * i] = _rtMat[j + 4 * i] * _kMat[j + 3 * i];
-                _transformMat[j + 4 * i] /= _rtMat[4 * 3 - 1]; // normalize the projected coordinate by dividing z
-            }
-        }
     }
 
 private:
