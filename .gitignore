@@ -50,3 +50,6 @@ _deps
 # User specific files
 # All the necessary settings to reproduce the vscode environment is written in .code-workspace in each homework folder
 **.vscode
+**copy**
+# exclude files used to submit to moodle
+**M112**

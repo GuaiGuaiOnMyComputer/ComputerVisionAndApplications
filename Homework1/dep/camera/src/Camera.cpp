@@ -4,16 +4,25 @@
 #include <filesystem>
 #include <iostream>
 #include <vector>
+#include <opencv2/core/core.hpp>
+#include <opencv2/core/types.hpp>
 
+/// @brief container of a camera matrix and an rT matrix that can project 3D points onto a given 2D plane.
 class Camera
 {
 public:
-    Camera(const char* name): _kMat{0}, _rtMat{0}, _cameraName{name}, _transformMat{0}
+    Camera(const char* name):_cameraName{name}
     {
+        _kMat = cv::Mat(3, 3, CV_32FC1);
+        _rtMat = cv::Mat(3, 4, CV_32FC1);
+        _transformMat = cv::Mat(3, 4, CV_32FC1);
     }
 
-    Camera(): _kMat{0}, _rtMat{0}, _cameraName{"No name"}, _transformMat{0}
+    Camera(): _cameraName{"No name"}
     {
+        _kMat = cv::Mat(3, 3, CV_32FC1);
+        _rtMat = cv::Mat(3, 4, CV_32FC1);
+        _transformMat = cv::Mat(3, 4, CV_32FC1);
     }
 
     Camera(const char* name, const std::string& parameterString, const char* kMatName, const char* rtMatName): _kMat{0}, _rtMat{0}, _cameraName{name}, _transformMat{0}
@@ -21,6 +30,10 @@ public:
         GetParameterFromText(parameterString, kMatName, rtMatName);
     }
 
+    /// @brief Loads the camera matrix and rT matrix from a string.
+    /// @param textBuff The string containg information about both the camrea matrix and the rT matrix.
+    /// @param kMatName Name of the camera matrix in textBuff
+    /// @param rtMatName Name of the rT matrix in textBuff
     void GetParameterFromText(const std::string& textBuff, const char* kMatName, const char* rtMatName)
     {
         // specify the begining character of the context of the arrays
@@ -32,21 +45,31 @@ public:
         // \t \n characters and empty spaces are skipped by strtof
         char *floatEndPtr = nullptr;
         const char *floatStartPtr = &textBuff[rtMatStart];
-        for (size_t i = 0; i < 3 * 4; i++)
+        for (size_t i = 0; i < 3; i++)
         {
-            _rtMat.at<float>(i) = strtof(floatStartPtr, &floatEndPtr);
-            floatStartPtr = floatEndPtr;
+            for (size_t j = 0; j < 4; j++)
+            {
+                _rtMat.at<float>(i, j) = strtof(floatStartPtr, &floatEndPtr);
+                floatStartPtr = floatEndPtr;
+            }
         }
 
         floatStartPtr = &textBuff[kMatStart];
-        for (size_t i = 0; i < 3 * 3; i++)
+        for (size_t i = 0; i < 3; i++)
         {
-            _kMat.at<float>(i) = strtof(floatStartPtr, &floatEndPtr);
-            floatStartPtr = floatEndPtr;
+            for (size_t j = 0; j < 3; j++)
+            {
+                _kMat.at<float>(i, j) = strtof(floatStartPtr, &floatEndPtr);
+                floatStartPtr = floatEndPtr;
+            }
         }
         _initTransformMatrix();
     }
 
+    /// @brief Loads the camera matrix and rT matrix from a file. Calls GetParameterFromText internally.
+    /// @param textBuff Path to the file containg information about both the camrea matrix and the rT matrix.
+    /// @param kMatName Name of the camera matrix in the file.
+    /// @param rtMatName Name of the rT matrix in the file.
     void GetParameterFromFile(const std::filesystem::path filePath, const char* kMatName, const char* rtMatName)
     {
         std::ifstream cameraParamFileHandle;
@@ -82,19 +105,25 @@ public:
         return pointsInImageHomo;
     }
 
+    /// @brief Projects a non-homogeneous point in 3D space onto a plane.
+    /// @param pointInWorldNoneHomo The coordinate of a non-homogeneous point.
+    /// @return The homogeneous coordinate of the projected point on the plane.
     cv::Mat MapToImage(const cv::Point3f& pointInWorldNoneHomo)
     {
         cv::Vec4f pointInWorldHomo(pointInWorldNoneHomo.x, pointInWorldNoneHomo.y, pointInWorldNoneHomo.z, 1);
-        cv::Vec2f pointInImageNoneHomo;
-        return _transformMat *pointInWorldHomo;
+        cv::Mat pointInImageHomo = _transformMat *pointInWorldHomo;
+        pointInImageHomo /= pointInImageHomo.at<float>(2);
+        return pointInImageHomo;
     }
 
 public:
 
 private:
+
+    /// @brief Multiplies the _kMat and _rtMat together
     void _initTransformMatrix()
     {
-        // TODO: please implement this
+        _transformMat = _kMat * _rtMat;
     }
 
 private:

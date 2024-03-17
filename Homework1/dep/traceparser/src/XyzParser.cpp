@@ -9,6 +9,8 @@
 // #include "XyzParser.hpp"
 // TODO: include header file instead
 
+
+/// @brief A parser for xyz files that encodes each point's x, y, z component as 3 floats in each line.
 class XyzParser
 {
 public:
@@ -19,7 +21,7 @@ public:
         _fileHandle = std::ifstream();
     }
 
-    /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The resultant vector will be in 1D with length=3*rows elements. Every 3 floats in this vector represents a point's xyz coordinate.
+    /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The resultant vector will be have each element as a loaded point stored as cv::Point3f.
     /// @param out_trackPoints An output variable storing all the parsed floats.
     /// @param headerLen Number of characters in the file header. Skip the file header without parsing it as floats.
     void ParseAll(std::vector<cv::Point3f>& out_trackPoints, int64_t headerLen = -1)
@@ -29,9 +31,10 @@ public:
         out_trackPoints = ParseAll(headerLen);
     }
 
-    /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The returned vector will be in 1D with length=3*rows elements. Every 3 floats in this vector represents a point's xyz coordinate.
+    /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The returned vector will be have each element as a loaded point stored as cv::Point3f.
     /// @param headerLen Number of characters in the file header. Skip the file header without parsing it as floats.
-    /// @return A 1D vector of length=nPoints*3
+    /// @return A 1D vector of cv::Point3f
+    /// @throw std::runtime_error occurrs when the xyz file is not found.
     std::vector<cv::Point3f> ParseAll(int64_t headerLen = -1)
     {
         if (!_fileExist)
@@ -82,6 +85,9 @@ private:
         return 0; // TODO: determine the header length automatically
     }
 
+    /// @brief Parse a line of string containing 3 floats 
+    /// @param lineContent The string content of a line
+    /// @return cv::Point3f containing xyz components
     cv::Point3f _parseLine(std::string& lineContent)
     {
         char* floatStart = &lineContent[0];
