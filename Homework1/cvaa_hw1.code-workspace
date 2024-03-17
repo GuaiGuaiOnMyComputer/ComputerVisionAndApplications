@@ -258,6 +258,7 @@
 					"-lopencv_video",
 					"-lopencv_imgcodecs",
 					"-lopencv_imgproc",
+					"-Wl,-rpath=${workspaceFolder}/build/lib",
 					"-o", "${workspaceFolder}/dist/${workspaceFolderBasename}",
 				],
 				"group": "build",
@@ -269,15 +270,6 @@
 				"args": [
 					"${workspaceFolder}\\build\\bin\\*",
 					"${workspaceFolder}\\dist"
-				]
-			},
-			{
-				"label": "linux copy library dependencies to dist folder",
-				"type": "shell",
-				"command": "cp",
-				"args": [
-					"${workspaceFolder}/build/lib/*",
-					"${workspaceFolder}/dist"
 				]
 			},
 			{
@@ -303,15 +295,6 @@
 				"label": "g++ windows compile and copy dependencies to dist folder",
 				"dependsOn": [
 					"g++ windows compile current homework",
-					"copy library dependencies to dist folder",
-					"copy asset dependencies to dist folder"
-				],
-				"dependsOrder": "sequence"
-			},
-			{
-				"label": "g++ linux compile and copy dependencies to dist folder",
-				"dependsOn": [
-					"g++ linux compile current homework",
 					"copy library dependencies to dist folder",
 					"copy asset dependencies to dist folder"
 				],
