@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <fstream>
+#include <opencv2/core.hpp>
 // #include "XyzParser.hpp"
 // TODO: include header file instead
 
@@ -21,23 +22,22 @@ public:
     /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The resultant vector will be in 1D with length=3*rows elements. Every 3 floats in this vector represents a point's xyz coordinate.
     /// @param out_trackPoints An output variable storing all the parsed floats.
     /// @param headerLen Number of characters in the file header. Skip the file header without parsing it as floats.
-    void ParseAll(std::vector<float>& out_trackPoints, int64_t headerLen = -1)
+    void ParseAll(std::vector<cv::Point3f>& out_trackPoints, int64_t headerLen = -1)
     {
         if (!_fileExist)
             throw std::runtime_error("File not found at location specified by member _xyzFilePath");
-
         out_trackPoints = ParseAll(headerLen);
     }
 
     /// @brief Read the entire file and returns the parsed floats as xyz coordinates. The returned vector will be in 1D with length=3*rows elements. Every 3 floats in this vector represents a point's xyz coordinate.
     /// @param headerLen Number of characters in the file header. Skip the file header without parsing it as floats.
     /// @return A 1D vector of length=nPoints*3
-    std::vector<float> ParseAll(int64_t headerLen = -1)
+    std::vector<cv::Point3f> ParseAll(int64_t headerLen = -1)
     {
         if (!_fileExist)
             throw std::runtime_error("File not found at location specified by member _xyzFilePath");
 
-        std::vector<float> out_trackPoints;
+        std::vector<cv::Point3f> out_trackPoints;
         const uint64_t _dataStart = headerLen > -1 ? headerLen : _getHeaderLen();
         _fileHandle.open(_xyzFilePath, std::ios_base::in);
         _fileHandle.seekg(_dataStart); // skip the header if there is any
@@ -55,11 +55,7 @@ public:
             {
                 std::string lineContent;
                 std::getline(_fileHandle, lineContent);
-                std::array<float, 3> lineAsFloats = _parseLine(lineContent);
-
-                // copy parsed floats into out_trackPoints
-                for (size_t parsedFloatIndex = 0; parsedFloatIndex < 3; parsedFloatIndex++)
-                    out_trackPoints.push_back(lineAsFloats[parsedFloatIndex]);
+                out_trackPoints.push_back(_parseLine(lineContent));
             }
         }
         catch(const std::exception& e)
@@ -86,18 +82,18 @@ private:
         return 0; // TODO: determine the header length automatically
     }
 
-    std::array<float, 3> _parseLine(std::string& lineContent)
+    cv::Point3f _parseLine(std::string& lineContent)
     {
-        std::array<float, 3> xyz;
         char* floatStart = &lineContent[0];
         char* floatEnd{NULL};
+        std::array<float, 3> parsedFloats;
         for (size_t parsedFloatCount = 0; parsedFloatCount < 3; parsedFloatCount++)
         {
             // FIXME: symbols other than spaces will result in silent runtime error
-            xyz[parsedFloatCount] = strtof(floatStart, &floatEnd);
+            parsedFloats[parsedFloatCount] = strtof(floatStart, &floatEnd);
             floatStart = floatEnd;
         }
-        return xyz;
+        return cv::Point3f(parsedFloats[0], parsedFloats[1], parsedFloats[2]);
     }
 
 private:

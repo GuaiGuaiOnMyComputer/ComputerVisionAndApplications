@@ -34,14 +34,14 @@ public:
         const char *floatStartPtr = &textBuff[rtMatStart];
         for (size_t i = 0; i < 3 * 4; i++)
         {
-            _rtMat[i] = strtof(floatStartPtr, &floatEndPtr);
+            _rtMat.at<float>(i) = strtof(floatStartPtr, &floatEndPtr);
             floatStartPtr = floatEndPtr;
         }
 
         floatStartPtr = &textBuff[kMatStart];
         for (size_t i = 0; i < 3 * 3; i++)
         {
-            _kMat[i] = strtof(floatStartPtr, &floatEndPtr);
+            _kMat.at<float>(i) = strtof(floatStartPtr, &floatEndPtr);
             floatStartPtr = floatEndPtr;
         }
         _initTransformMatrix();
@@ -71,38 +71,22 @@ public:
 
     /// @brief Remaps the points in pointsInWorldNoneHomo to the image coordinate system in place.
     /// @param pointsInWorldNoneHomo The points in world coordinate. Each point occupies 3 consecutive elements in this std::vector as its x, y, and z components
-    std::vector<float> WorldToImageCoordinate(const std::vector<float>& pointsInWorldNoneHomo)
+    std::vector<cv::Point3f> WorldToImageCoordinate(const std::vector<cv::Point3f>& pointsInWorldNoneHomo)
     {
-        size_t pointCount = pointsInWorldNoneHomo.size() / 3;
-        std::vector<float> pointsInImageHomo(pointsInWorldNoneHomo.size());
-        for (size_t i = 0; i < pointCount; i++)
+        std::vector<cv::Point3f> pointsInImageHomo(pointsInWorldNoneHomo.size());
+        for (size_t i = 0; i < pointsInWorldNoneHomo.size(); i++)
         {
-            std::array<float, 3> pointInWorldNoneHomo{1, 1, 1};
-            std::array<float, 3> pointInImageHomo{1, 1, 1};
-            memcpy_s(pointInWorldNoneHomo.data(), pointInWorldNoneHomo.size() * sizeof(float), &pointsInWorldNoneHomo.at(3 * i), sizeof(float) * 3);
-            pointInImageHomo = MapToImage(pointInWorldNoneHomo);
-            for (size_t j = 0; j < 3; j++)
-            {
-                pointsInImageHomo.at(j + 3 * i) = pointInImageHomo[j];
-            }
+            cv::Mat pointInImageHomo = MapToImage(pointsInWorldNoneHomo[i]);
+            pointsInImageHomo[i] = cv::Point3f(pointInImageHomo.at<float>(0), pointInImageHomo.at<float>(1), pointInImageHomo.at<float>(2));
         }
         return pointsInImageHomo;
     }
 
-    std::array<float, 3> MapToImage(const std::array<float, 3>& pointInWorldNoneHomo)
+    cv::Mat MapToImage(const cv::Point3f& pointInWorldNoneHomo)
     {
-        std::array<float, 3> pointInImageHomo{0, 0, 0};
-        std::array<float, 4> pointInWorldHomo{1, 1, 1, 1};
-        memcpy_s(pointInWorldHomo.data(), pointInWorldHomo.size() * sizeof(float), pointInWorldNoneHomo.data(), pointInWorldNoneHomo.size() * sizeof(float));
-        for (size_t i = 0; i < 3; i++)
-        {
-            for (size_t j = 0; j < 4; j ++)
-            {
-                pointInImageHomo[j + 3 * i] = _transformMat[j + 4 * i] * pointInWorldHomo[j];
-                pointInImageHomo[j + 3  * i] /= _rtMat[4 * 3 - 1]; // normalize the projected coordinate by dividing z
-            }
-        }
-        return pointInImageHomo;
+        cv::Vec4f pointInWorldHomo(pointInWorldNoneHomo.x, pointInWorldNoneHomo.y, pointInWorldNoneHomo.z, 1);
+        cv::Vec2f pointInImageNoneHomo;
+        return _transformMat *pointInWorldHomo;
     }
 
 public:
@@ -110,14 +94,12 @@ public:
 private:
     void _initTransformMatrix()
     {
-        for (size_t i = 0; i < 3; i++)
-            for (size_t j = 0; j < 4; j++)
-                _transformMat[j + 4 * i] = _rtMat[j + 4 * i] * _kMat[j + 3 * i];
+        // TODO: please implement this
     }
 
 private:
-    std::array<float, 4 * 3> _rtMat;
-    std::array<float, 3 * 3> _kMat;
-    std::array<float, 4 * 3> _transformMat;
+    cv::Mat _rtMat;
+    cv::Mat _kMat;
+    cv::Mat _transformMat;
     std::string _cameraName;
 };
