@@ -1,0 +1,306 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.repositoryScanMaxDepth": 0,
+		"git.autoRepositoryDetection": "openEditors",
+		"git.detectSubmodules": false,
+		"files.associations": {
+			"atomic": "cpp",
+			"algorithm": "cpp",
+			"array": "cpp",
+			"bit": "cpp",
+			"cctype": "cpp",
+			"cfenv": "cpp",
+			"charconv": "cpp",
+			"chrono": "cpp",
+			"cinttypes": "cpp",
+			"clocale": "cpp",
+			"cmath": "cpp",
+			"codecvt": "cpp",
+			"compare": "cpp",
+			"complex": "cpp",
+			"concepts": "cpp",
+			"condition_variable": "cpp",
+			"coroutine": "cpp",
+			"cstdarg": "cpp",
+			"cstddef": "cpp",
+			"cstdint": "cpp",
+			"cstdio": "cpp",
+			"cstdlib": "cpp",
+			"cstring": "cpp",
+			"ctime": "cpp",
+			"cwchar": "cpp",
+			"deque": "cpp",
+			"exception": "cpp",
+			"filesystem": "cpp",
+			"format": "cpp",
+			"forward_list": "cpp",
+			"fstream": "cpp",
+			"functional": "cpp",
+			"future": "cpp",
+			"initializer_list": "cpp",
+			"iomanip": "cpp",
+			"ios": "cpp",
+			"iosfwd": "cpp",
+			"iostream": "cpp",
+			"istream": "cpp",
+			"iterator": "cpp",
+			"limits": "cpp",
+			"list": "cpp",
+			"locale": "cpp",
+			"map": "cpp",
+			"memory": "cpp",
+			"mutex": "cpp",
+			"new": "cpp",
+			"numeric": "cpp",
+			"optional": "cpp",
+			"ostream": "cpp",
+			"queue": "cpp",
+			"random": "cpp",
+			"ranges": "cpp",
+			"ratio": "cpp",
+			"regex": "cpp",
+			"set": "cpp",
+			"span": "cpp",
+			"sstream": "cpp",
+			"stack": "cpp",
+			"stdexcept": "cpp",
+			"stop_token": "cpp",
+			"streambuf": "cpp",
+			"string": "cpp",
+			"system_error": "cpp",
+			"thread": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"typeindex": "cpp",
+			"typeinfo": "cpp",
+			"unordered_map": "cpp",
+			"unordered_set": "cpp",
+			"utility": "cpp",
+			"vector": "cpp",
+			"xfacet": "cpp",
+			"xhash": "cpp",
+			"xiosbase": "cpp",
+			"xlocale": "cpp",
+			"xlocbuf": "cpp",
+			"xlocinfo": "cpp",
+			"xlocmes": "cpp",
+			"xlocmon": "cpp",
+			"xlocnum": "cpp",
+			"xloctime": "cpp",
+			"xmemory": "cpp",
+			"xstring": "cpp",
+			"xtr1common": "cpp",
+			"xtree": "cpp",
+			"xutility": "cpp"
+		},
+		"dotnet.defaultSolution": "disable",
+		"C_Cpp.default.includePath": [
+			"${workspaceFolder}\\dep\\opencv\\include",
+			"${workspaceFolder}\\dep\\opencv_build",
+			"${workspaceFolder}\\dep\\opencv\\modules\\core\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\highgui\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\imgcodecs\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\imgproc\\include",
+			"${workspaceFolder}\\dep\\opencv\\modules\\videoio\\include",
+			"${workspaceFolder}\\dep\\opencv_build\\lib",
+			"${workspaceFolder}\\dep\\traceparser\\include",
+			"${workspaceFolder}\\dep\\traceparser\\src",
+			"${workspaceFolder}\\dep\\camera\\include",
+			"${workspaceFolder}\\dep\\camera\\src"
+		],
+		"C_Cpp.default.cppStandard": "c++20",
+		"C_Cpp.default.intelliSenseMode": "gcc-x64"
+	},
+	"launch": {
+		"configurations": [
+			{
+				"name": "(gdb) Windows Launch",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\dist\\${workspaceFolderBasename}.exe",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\dist",
+				"environment": [],
+				"preLaunchTask": "g++ windows compile current homework",
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\w64devkit\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "(gdb) Linux Launch",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\dist\\${workspaceFolderBasename}",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\dist",
+				"environment": [],
+				"preLaunchTask": "g++ linux compile current homework",
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "(gdb) Windows Launch any file",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
+				"args": [],
+				"stopAtEntry": true,
+				"cwd": "${workspaceFolder}",
+				"environment": [],
+				"preLaunchTask": "g++ windows compile current file without dependencies.",
+				"externalConsole": false,
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\w64devkit\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			}
+		]
+	},
+
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "g++ windows compile current homework",
+				"type": "shell",
+				"command": "C:\\w64devkit\\bin\\g++.exe",
+				"args": [
+					"${workspaceFolder}\\src\\main.cpp",
+					"-g",
+					"-D _DEBUG WIN32",
+					"-std=gnu++20",
+					"-I", "${workspaceFolder}\\dep\\opencv\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv_build",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\core\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\highgui\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\imgcodecs\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\imgproc\\include",
+					"-I", "${workspaceFolder}\\dep\\opencv\\modules\\videoio\\include",
+					"-I", "${workspaceFolder}\\dep\\traceparser\\include",
+					"-I", "${workspaceFolder}\\dep\\traceparser\\src",
+					"-I", "${workspaceFolder}\\dep\\camera\\include",
+					"-I", "${workspaceFolder}\\dep\\camera\\src",
+					"-L", "${workspaceFolder}\\dep\\opencv_build\\bin",
+					"-llibopencv_core490",
+					"-llibopencv_highgui490",
+					"-llibopencv_video490",
+					"-llibopencv_imgcodecs490",
+					"-llibopencv_imgproc490",
+					"-o", "${workspaceFolder}\\dist\\${workspaceFolderBasename}.exe",
+				],
+				"group": "build",
+			},
+			{
+				"label": "g++ linux compile current homework",
+				"type": "shell",
+				"command": "/usr/bin/g++",
+				"args": [
+					"${workspaceFolder}/src/main.cpp",
+					"-g",
+					"-D _DEBUG _LINUX",
+					"-std=gnu++20",
+					"-I", "${workspaceFolder}/dep/opencv/include",
+					"-I", "${workspaceFolder}/dep/opencv_build",
+					"-I", "${workspaceFolder}/dep/opencv/modules/core/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/highgui/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/imgcodecs/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/imgproc/include",
+					"-I", "${workspaceFolder}/dep/opencv/modules/videoio/include",
+					"-I", "${workspaceFolder}/dep/traceparser/include",
+					"-I", "${workspaceFolder}/dep/traceparser/src",
+					"-I", "${workspaceFolder}/dep/camera/include",
+					"-I", "${workspaceFolder}/dep/camera/src",
+					"-L", "${workspaceFolder}/dep/opencv_build/lib",
+					"-lopencv_core",
+					"-lopencv_highgui",
+					"-lopencv_video",
+					"-lopencv_imgcodecs",
+					"-lopencv_imgproc",
+					"-Wl,-rpath=${workspaceFolder}/dep/opencv_build/lib",
+					"-o", "${workspaceFolder}/dist/${workspaceFolderBasename}",
+				],
+				"group": "build",
+			},
+			{
+				"label": "windows copy library dependencies to dist folder",
+				"type": "shell",
+				"command": "cp",
+				"args": [
+					"${workspaceFolder}\\dep\\opencv_build\\bin\\*",
+					"${workspaceFolder}\\dist"
+				]
+			},
+			{
+				"label": "copy asset dependencies to dist folder",
+				"type": "shell",
+				"command": "cp",
+				"args": [
+					"${workspaceFolder}/asset/*",
+					"${workspaceFolder}/dist/asset/"
+				]
+			},
+			{
+				"label": "g++ windows compile current file without dependencies",
+				"type": "shell",
+				"command": "C:\\w64devkit\\bin\\g++.exe",
+				"args": [
+					"${workspaceFolder}\\${fileBasenameNoExtension}.cpp",
+					"-o", "${workspaceFolder}\\${fileBasenameNoExtension}.exe",
+				],
+				"group": "build",
+			},
+			{
+				"label": "g++ windows compile and copy dependencies to dist folder",
+				"dependsOn": [
+					"g++ windows compile current homework",
+					"copy library dependencies to dist folder",
+					"copy asset dependencies to dist folder"
+				],
+				"dependsOrder": "sequence"
+			}
+		]
+	}
+
+}
