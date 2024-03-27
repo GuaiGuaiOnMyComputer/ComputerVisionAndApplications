@@ -20,7 +20,7 @@ Build the library by:
 mkdir opencv_build
 cd dep
 
-cmake -S .\opencv\ -B .\opencv_build\  -DCMAKE_INSTALL_PREFIX=opencv_build  -DBUILD_WITH_DEGUG_INFO=OFF  -DWITH_DSHOW=OFF  -DWITH_FFMPEG=OFF  -DBUILD_opencv_calib3d=OFF  -DBUILD_opencv_features2d=OFF -DBUILD_opencvflann=OFF  -DBUILD_opencv_ml=OFF  -DBUILD_opencv_dnn=OFF -DBUILD_opencv_ts=OFF  -DBUILD_opencv_video=OFF  -DBUILD_opencv_videoio=OFF  -G "MinGW Makefiles"
+cmake -S .\opencv\ -B .\opencv_build\  -DCMAKE_INSTALL_PREFIX=opencv_build  -DBUILD_WITH_DEGUG_INFO=OFF  -DWITH_DSHOW=OFF  -DWITH_FFMPEG=OFF  -DBUILD_opencv_calib3d=ON  -DBUILD_opencv_features2d=ON -DBUILD_opencvflann=ON  -DBUILD_opencv_ml=OFF  -DBUILD_opencv_dnn=OFF -DBUILD_opencv_ts=OFF  -DBUILD_opencv_video=OFF  -DBUILD_opencv_videoio=OFF  -G "MinGW Makefiles"
 
 cmake --build .\opencv_build -j6
 ```
