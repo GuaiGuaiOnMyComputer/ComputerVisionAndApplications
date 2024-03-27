@@ -96,9 +96,16 @@
 			"xstring": "cpp",
 			"xtr1common": "cpp",
 			"xtree": "cpp",
-			"xutility": "cpp"
+			"xutility": "cpp",
+			"*.tcc": "cpp",
+			"cwctype": "cpp",
+			"memory_resource": "cpp",
+			"string_view": "cpp",
+			"numbers": "cpp",
+			"semaphore": "cpp"
 		},
 		"dotnet.defaultSolution": "disable",
+		"C_Cpp.default.compilerPath": "C:\\w64devkit\\bin\\g++.exe",
 		"C_Cpp.default.includePath": [
 			"${workspaceFolder}\\dep\\opencv\\include",
 			"${workspaceFolder}\\dep\\opencv_build",
