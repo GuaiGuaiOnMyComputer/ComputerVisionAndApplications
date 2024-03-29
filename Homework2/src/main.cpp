@@ -68,10 +68,6 @@ cv::Mat catToLadyAndLadyToCat(cv::Mat galleryImage, const std::vector<cv::Point2
     pleaseMakeSureThePolygonBoundedByTheseVerticsIsAboslutelyFilled(catAreaMask, catMaskVerticsInt);
     pleaseMakeSureThePolygonBoundedByTheseVerticsIsAboslutelyFilled(ladyAreaMask, ladyMaskVerticsInt);
 
-    cv::imshow("Cat area mask", catAreaMask);
-    cv::imshow("Lady area mask", ladyAreaMask);
-    cv::waitKey(0);
-
     cv::Mat tmp;
     cv::Mat catToLadyHomographyMat = cv::findHomography(catCornerPoints, ladyCornerPoints, 0);
     cv::Mat catOnLady = cv::Mat::zeros(galleryImageFloat.size(), galleryImageFloat.type());
@@ -80,7 +76,7 @@ cv::Mat catToLadyAndLadyToCat(cv::Mat galleryImage, const std::vector<cv::Point2
 
     cv::Mat ladyToCatHomographyMat = cv::findHomography(ladyCornerPoints, catCornerPoints, 0);
     cv::Mat ladyOnCat = cv::Mat::zeros(galleryImageFloat.size(), galleryImageFloat.type());
-    cv::warpPerspective(ladyCornerPoints, tmp, ladyToCatHomographyMat, galleryImage.size());
+    cv::warpPerspective(galleryImage, tmp, ladyToCatHomographyMat, galleryImage.size());
     cv::copyTo(tmp, outputImageWithCatAndLadySwapped, catAreaMask);
 
     return outputImageWithCatAndLadySwapped;
