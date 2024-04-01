@@ -4,3 +4,6 @@
 [submodule "Homework2/dep/opencv"]
 	path = Homework2/dep/opencv
 	url = https://github.com/opencv/opencv.git
+[submodule "MidtermProject/dep/opencv"]
+	path = MidtermProject/dep/opencv
+	url = https://github.com/opencv/opencv.git
