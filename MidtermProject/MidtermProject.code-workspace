@@ -1,0 +1,57 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"dotnet.defaultSolution": "disable",
+		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "cmake build project",
+				"type": "shell",
+				"command": "cmake",
+				"args": [
+					"--build",
+					"${workspaceFolder}\\build"
+				]
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch Gdb with Cmake on Windows",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\build\\${workspaceFolderBasename}.exe",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\build",
+				"environment": [],
+				"externalConsole": false,
+				"preLaunchTask": "cmake build project",
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\w64devkit\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			}
+		],
+		"compounds": []
+	}
+}
