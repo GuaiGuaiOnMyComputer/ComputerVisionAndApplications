@@ -1,4 +1,6 @@
 #include "redpixelfinder.hpp"
+#include "virtualcamera.hpp"
+#include "xyzio.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdint.h>
@@ -17,13 +19,11 @@ int main(int32_t argc, char** argv)
     assetCheck();
 
     std::vector<cv::Point> redPoints;
-    cv::Mat img = cv::imread("assets/ShadowStrip/0035.jpg");
-    midproj::find_red_pixels(img, redPoints);
-    cv::imshow("Test image", img);
-    cv::waitKey();
     return 0;
 }
 
+/// @brief Check if all 54 images are present. Quit the program if not.
+/// @return true if all the images are found.
 bool assetCheck()
 {
     namespace fs = std::filesystem;
