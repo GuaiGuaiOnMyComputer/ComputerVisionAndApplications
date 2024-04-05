@@ -8,17 +8,24 @@
 #include <iostream>
 #include <sstream>
 
+#if false
+template class std::vector<cv::Point2i>;
+template class std::vector<cv::Point2f>;
+#endif
 
 bool assetCheck(); 
 
 int main(int32_t argc, char** argv)
 {
+    std::filesystem::path frameCorner2dFilePath("assets//FrameCornerCoordinates2d.xyz");
+    std::filesystem::path frameCorner3dFilePath("assets//FrameCornerCoordinates3d.xyz");
     // Step1: determine the camera matrix from the corners of the wire frame
     // Step2: identify the red pixels
     // Step3: project the red
     assetCheck();
+    std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(frameCorner2dFilePath);
+    std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(frameCorner3dFilePath);
 
-    std::vector<cv::Point> redPoints;
     return 0;
 }
 
@@ -27,6 +34,8 @@ int main(int32_t argc, char** argv)
 bool assetCheck()
 {
     namespace fs = std::filesystem;
+
+    // check for all 54 images
     std::stringstream fileName;
     fs::path filePath;
     filePath /= "assets//ShadowStrip";
@@ -41,6 +50,13 @@ bool assetCheck()
         }
         filePath.remove_filename();
         fileName.str(std::string());
+    }
+
+    // check for the two xyz files
+    if (! fs::exists("assets//FrameCornerCoordinates2d.xyz") || !fs::exists("assets//FrameCornerCoordinates3d.xyz"))
+    {
+        std::cout << "At least one of the required file containing the coordinates of the frame corner is missing";
+        exit(0);
     }
     return true;
 }
