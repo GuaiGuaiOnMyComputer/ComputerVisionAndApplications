@@ -87,12 +87,21 @@
 		"version": "2.0.0",
 		"tasks": [
 			{
-				"label": "cmake build project",
+				"label": "cmake windows build project",
 				"type": "shell",
 				"command": "cmake",
 				"args": [
 					"--build",
 					"${workspaceFolder}\\build"
+				]
+			},
+			{
+				"label": "cmake linux build project",
+				"type": "shell",
+				"command": "cmake",
+				"args": [
+					"--build",
+					"${workspaceFolder}/build"
 				]
 			}
 		]
@@ -110,9 +119,35 @@
 				"cwd": "${workspaceFolder}\\build",
 				"environment": [],
 				"externalConsole": false,
-				"preLaunchTask": "cmake build project",
+				"preLaunchTask": "cmake windows build project",
 				"MIMode": "gdb",
 				"miDebuggerPath": "C:\\w64devkit\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "Launch Gdb with Cmake on Linux",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}/build/${workspaceFolderBasename}",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}/build",
+				"environment": [],
+				"externalConsole": false,
+				"preLaunchTask": "cmake linux build project",
+				"MIMode": "gdb",
+				"miDebuggerPath": "/usr/bin/gdb",
 				"setupCommands": [
 					{
 						"description": "Enable pretty-printing for gdb",

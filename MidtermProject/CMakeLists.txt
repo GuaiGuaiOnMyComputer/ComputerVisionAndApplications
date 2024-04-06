@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 
 set(OpenCV_DIR dep/opencv_build/ )
+
+add_subdirectory(src/xyzio)
+add_subdirectory(src/masking)
+add_subdirectory(src/sculptureslice)
 find_package( OpenCV REQUIRED )
 include_directories( 
     dep/opencv/include
@@ -25,71 +29,18 @@ include_directories(
     dep/opencv/modules/calib3d/include
     dep/opencv_build
     src/masking
+    src/sculptureslice
     src/xyzio
-    )
-
-add_library( masking SHARED
-    src/masking/masking.cpp
-    src/masking/masking.hpp
-    )
-add_library( xyzio SHARED
-    src/xyzio/xyzio.cpp
-    src/xyzio/xyzio.hpp
-    )
-add_library( sculptureslice SHARED
-    src/sculptureslice/sculptureslice.cpp
-    src/sculptureslice/sculptureslice.hpp
     )
 
 add_executable( MidtermProject 
     src/main.cpp
     )
 
-
-link_directories( MidtermProject 
-    dep/opencv_build/lib/
-    build/masking
-    )
-link_directories( masking 
-    dep/opencv_build/lib/
-    )
-link_directories( sculptureslice
-    dep/opencv_build/lib/
-    )
-link_directories( xyzio 
-    dep/opencv_build/lib/
-    )
 target_sources( MidtermProject
     PUBLIC src/main.cpp
     )
 
-target_link_libraries(masking
-    opencv_calib3d
-    opencv_imgcodecs
-    opencv_highgui
-    opencv_imgproc
-    opencv_features2d
-    opencv_flann
-    opencv_core
-    )
-target_link_libraries(sculptureslice
-    opencv_calib3d
-    opencv_imgcodecs
-    opencv_highgui
-    opencv_imgproc
-    opencv_features2d
-    opencv_flann
-    opencv_core
-    )
-target_link_libraries(xyzio
-    opencv_calib3d
-    opencv_imgcodecs
-    opencv_highgui
-    opencv_imgproc
-    opencv_features2d
-    opencv_flann
-    opencv_core
-    )
 target_link_libraries(MidtermProject 
     opencv_calib3d
     opencv_imgcodecs
