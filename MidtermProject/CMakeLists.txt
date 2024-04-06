@@ -25,7 +25,6 @@ include_directories(
     dep/opencv/modules/calib3d/include
     dep/opencv_build
     src/redpixelfinder
-    src/virtualcamera
     src/xyzio
     )
 
@@ -33,13 +32,13 @@ add_library( redpixelfinder SHARED
     src/redpixelfinder/redpixelfinder.cpp
     src/redpixelfinder/redpixelfinder.hpp
     )
-add_library( virtualcamera SHARED
-    src/virtualcamera/virtualcamera.cpp
-    src/virtualcamera/virtualcamera.hpp
-    )
 add_library( xyzio SHARED
     src/xyzio/xyzio.cpp
     src/xyzio/xyzio.hpp
+    )
+add_library( sculptureslice SHARED
+    src/sculptureslice/sculptureslice.cpp
+    src/sculptureslice/sculptureslice.hpp
     )
 
 add_executable( MidtermProject 
@@ -54,7 +53,7 @@ link_directories( MidtermProject
 link_directories( redpixelfinder 
     dep/opencv_build/lib/
     )
-link_directories( virtualcamera 
+link_directories( sculptureslice
     dep/opencv_build/lib/
     )
 link_directories( xyzio 
@@ -73,7 +72,7 @@ target_link_libraries(redpixelfinder
     opencv_flann
     opencv_core
     )
-target_link_libraries(virtualcamera
+target_link_libraries(sculptureslice
     opencv_calib3d
     opencv_imgcodecs
     opencv_highgui
@@ -100,6 +99,6 @@ target_link_libraries(MidtermProject
     opencv_flann
     opencv_core
     redpixelfinder
-    virtualcamera
     xyzio
+    sculptureslice
     )
