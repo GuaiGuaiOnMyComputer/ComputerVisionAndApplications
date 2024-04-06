@@ -26,6 +26,7 @@ int main(int32_t argc, char** argv)
     assetCheck();
     std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, 55);
     cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, imageSize);
+    cv::imshow("foregroundMask", foregroundMask);
     std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(frameCorner2dFilePath);
     std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(frameCorner3dFilePath);
 
