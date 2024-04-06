@@ -11,7 +11,6 @@ namespace
     public:
         SculptureSlice(const fs::path& scanProfileImagePath): _imgPath{scanProfileImagePath}
         {
-            _redPixelCoordinates.reserve(200);
         }
 
         void get_red_scan_line()
