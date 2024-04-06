@@ -7,25 +7,50 @@
 #include <iostream>
 #include <sstream>
 
-#if false
+#if true
 template class std::vector<cv::Point2i>;
 template class std::vector<cv::Point2f>;
+template class std::vector<cv::Mat>;
 #endif
 
-bool assetCheck(); 
+bool assetCheck();
+std::vector<cv::Mat> loadAllImages(const std::filesystem::path &allImageFolderPath, int32_t imageCount);
 
 int main(int32_t argc, char** argv)
 {
-    std::filesystem::path frameCorner2dFilePath("assets//FrameCornerCoordinates2d.xyz");
-    std::filesystem::path frameCorner3dFilePath("assets//FrameCornerCoordinates3d.xyz");
-    // Step1: determine the camera matrix from the corners of the wire frame
-    // Step2: identify the red pixels
-    // Step3: project the red
+    const std::filesystem::path frameCorner2dFilePath("assets//FrameCornerCoordinates2d.xyz");
+    const std::filesystem::path frameCorner3dFilePath("assets//FrameCornerCoordinates3d.xyz");
+    const std::filesystem::path pathToAllScanImages("assets//ShadowStrip");
+    const cv::Size2i imageSize(1080, 1080);
+
     assetCheck();
+    std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, 55);
+    cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, imageSize);
+    // midproj::get_scan_area_mask(scanImages, foregroundMask, imageSize);
     std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(frameCorner2dFilePath);
     std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(frameCorner3dFilePath);
 
+    cv::imshow("Forground Mask", foregroundMask);
+    cv::waitKey(0);
     return 0;
+}
+
+std::vector<cv::Mat> loadAllImages(const std::filesystem::path& allImageFolderPath, int32_t imageCount)
+{
+    std::vector<cv::Mat> images;
+    images.reserve(imageCount);
+    std::filesystem::path filePath;
+    std::stringstream fileName;
+
+    for (size_t i = 0; i < imageCount; i++)
+    {
+        fileName << std::setfill('0') << std::setw(4) << i << ".jpg";
+        filePath = allImageFolderPath / fileName.str();
+        images.push_back(cv::imread(filePath.string(), cv::IMREAD_COLOR));
+        filePath.remove_filename();
+        fileName.str(std::string());
+    }
+    return images;
 }
 
 /// @brief Check if all 54 images are present. Quit the program if not.
