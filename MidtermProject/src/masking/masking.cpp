@@ -52,6 +52,8 @@ namespace midproj
             cv::threshold(imgGray, imgGray, 2, 255, cv::THRESH_BINARY);
             cv::bitwise_or(foregroundMask, imgGray, foregroundMask);
         }
+        cv::Mat erosionKernel = cv::getStructuringElement(cv::MORPH_CROSS, cv::Size2i(3, 3));
+        cv::erode(foregroundMask, foregroundMask, erosionKernel, cv::Point2i(-1, -1), 2);
         return foregroundMask;
     }
 
