@@ -1,5 +1,4 @@
-#include "redpixelfinder.hpp"
-#include "virtualcamera.hpp"
+#include "masking.hpp"
 #include "xyzio.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>

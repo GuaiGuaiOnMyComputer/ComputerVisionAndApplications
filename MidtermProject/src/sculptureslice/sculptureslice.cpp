@@ -1,6 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
-#include "redpixelfinder.hpp"
+#include "masking.hpp"
 
 namespace 
 {

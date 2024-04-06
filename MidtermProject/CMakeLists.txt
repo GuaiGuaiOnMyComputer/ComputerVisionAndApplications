@@ -24,13 +24,13 @@ include_directories(
     dep/opencv/modules/features2d/include
     dep/opencv/modules/calib3d/include
     dep/opencv_build
-    src/redpixelfinder
+    src/masking
     src/xyzio
     )
 
-add_library( redpixelfinder SHARED
-    src/redpixelfinder/redpixelfinder.cpp
-    src/redpixelfinder/redpixelfinder.hpp
+add_library( masking SHARED
+    src/masking/masking.cpp
+    src/masking/masking.hpp
     )
 add_library( xyzio SHARED
     src/xyzio/xyzio.cpp
@@ -48,9 +48,9 @@ add_executable( MidtermProject
 
 link_directories( MidtermProject 
     dep/opencv_build/lib/
-    build/redpixelfinder
+    build/masking
     )
-link_directories( redpixelfinder 
+link_directories( masking 
     dep/opencv_build/lib/
     )
 link_directories( sculptureslice
@@ -63,7 +63,7 @@ target_sources( MidtermProject
     PUBLIC src/main.cpp
     )
 
-target_link_libraries(redpixelfinder
+target_link_libraries(masking
     opencv_calib3d
     opencv_imgcodecs
     opencv_highgui
@@ -98,7 +98,7 @@ target_link_libraries(MidtermProject
     opencv_features2d
     opencv_flann
     opencv_core
-    redpixelfinder
+    masking
     xyzio
     sculptureslice
     )
