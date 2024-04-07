@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <stdint.h>
+#include <charconv>
 #include <opencv2/opencv.hpp>
 #include "xyzio.hpp"
 
