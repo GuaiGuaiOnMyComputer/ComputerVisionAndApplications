@@ -15,17 +15,13 @@ namespace midproj
         {
         }
 
-        void get_red_scan_line(cv::InputArray foregroundMask)
+        void GetRedScanLine(cv::InputArray foregroundMask)
         {
             _redPixelMap = midproj::find_red_pixels(_scanImage, foregroundMask, _redPixelCoordinates);
         }
 
         // dummy constructor
         SculptureSlice(): _imageIndex{-1}, _scanImage{cv::Mat()}
-        {
-        }
-
-        virtual ~SculptureSlice()
         {
         }
 
