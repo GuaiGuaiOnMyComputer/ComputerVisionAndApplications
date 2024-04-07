@@ -1,5 +1,6 @@
 #include "masking.hpp"
 #include "xyzio.hpp"
+#include "sculptureslice.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdint.h>
@@ -11,6 +12,7 @@
 template class std::vector<cv::Point2i>;
 template class std::vector<cv::Point2f>;
 template class std::vector<cv::Mat>;
+// template class std::vector<midproj::SculptureSlice>;
 #endif
 
 bool assetCheck();
@@ -21,11 +23,23 @@ int main(int32_t argc, char** argv)
     const std::filesystem::path frameCorner2dFilePath("assets//FrameCornerCoordinates2d.xyz");
     const std::filesystem::path frameCorner3dFilePath("assets//FrameCornerCoordinates3d.xyz");
     const std::filesystem::path pathToAllScanImages("assets//ShadowStrip");
-    const cv::Size2i imageSize(1080, 1080);
+    const cv::Size2i IMG_SIZE(1080, 1080);
+    constexpr int32_t SCAN_IMAGE_COUNT = 55;
 
     assetCheck();
-    std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, 55);
-    cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, imageSize);
+    std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, SCAN_IMAGE_COUNT);
+    const cv::Mat fgMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
+
+    // std::vector<midproj::SculptureSlice> scanSlices;
+    // scanSlices.reserve(SCAN_IMAGE_COUNT);
+
+    for (size_t imgIndex = 0; imgIndex < SCAN_IMAGE_COUNT; imgIndex++)
+    {
+        // midproj::SculptureSlice aSliceOfSculpture(scanImages.at(imgIndex), imgIndex);
+        // scanSlices.push_back(aSliceOfSculpture);
+        // scanSlices.at(imgIndex).get_red_scan_line(fgMask);
+    }
+    cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
     cv::imshow("foregroundMask", foregroundMask);
     std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(frameCorner2dFilePath);
     std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(frameCorner3dFilePath);

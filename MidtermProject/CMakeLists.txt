@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED On)
 set(OpenCV_DIR build/opencv_build )
 find_package(OpenCV REQUIRED)
 
-set(OPENCV_INCLUDE_DIR 
+set(OPENCV_INCLUDE_DIR CACHE
     dep/opencv/include
     dep/opencv/modules/core/include
     dep/opencv/modules/highgui/include
@@ -24,7 +24,7 @@ set(OPENCV_INCLUDE_DIR
     dep/opencv/modules/flann/include
     dep/opencv/modules/features2d/include
     dep/opencv/modules/calib3d/include
-    dep/opencv_build
+    build/opencv_build
     )
 set(OPENCV_LIB_DIR
     build/opencv_build/lib

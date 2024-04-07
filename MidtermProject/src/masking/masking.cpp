@@ -1,3 +1,4 @@
+#include "sculptureslice.hpp"
 #include <stdint.h>
 #include <array>
 #include <vector>
@@ -20,7 +21,8 @@ namespace midproj
     StationaryMasks get_stationary_masks(const std::vector<midproj::SculptureSlice>& sculptureScanSlices, const cv::Size2i& imageSize)
     {
         StationaryMasks masks;
-        masks.ForegroundMask = get_foreground_mask()
+        // TODO: implement this method
+        // masks.ForegroundMask = get_foreground_mask()
     }
     
 

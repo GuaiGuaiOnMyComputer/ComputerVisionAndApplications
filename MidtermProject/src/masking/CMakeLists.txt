@@ -11,6 +11,13 @@ add_library( midproj_masking SHARED
     masking.hpp
     )
 
-target_include_directories( midproj_masking PUBLIC ${OPENCV_INCLUDE_DIR})
-target_link_directories( midproj_masking PUBLIC ${OPENCV_LIB_DIR})
-target_link_libraries(midproj_masking PUBLIC ${OPENCV_LINK_LIBS})
+target_include_directories( midproj_masking 
+    PUBLIC ${OPENCV_INCLUDE_DIR}
+    PUBLIC ../sculptureslice
+    )
+target_link_directories( midproj_masking 
+    PUBLIC ${OPENCV_LIB_DIR}
+    )
+target_link_libraries(midproj_masking 
+    PUBLIC ${OPENCV_LINK_LIBS}
+    )
