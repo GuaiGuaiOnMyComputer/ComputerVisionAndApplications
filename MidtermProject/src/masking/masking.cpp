@@ -20,10 +20,8 @@ namespace midproj
 
     /// @brief Finds the coordinate of red pixels in image. If a pixel's red value is greater than both its blue and green values, its coordinate will be stored into out_redPxCoors.
     /// @param image The image to be search.
-    /// @param out_redPxCoors The coordinates of red pixels stored in a vector<Point>
-    cv::Mat find_red_pixels(cv::InputArray image, cv::InputArray foregroundMask, std::vector<cv::Point>& out_redPxCoors)
+    cv::Mat get_red_pixel_map(cv::InputArray image, cv::InputArray foregroundMask)
     {
-        out_redPxCoors.reserve(1000);
         cv::Mat imageForegroundOnly;
         cv::copyTo(image, imageForegroundOnly, foregroundMask);
 
@@ -45,7 +43,6 @@ namespace midproj
         morphKernel = cv::getStructuringElement(cv::MorphShapes::MORPH_CROSS, cv::Size2i(3, 3));
         cv::erode(imgRedCh, imgRedCh, morphKernel, cv::Point2i(-1, -1), 1);
 
-        cv::findNonZero(imgRedCh, out_redPxCoors);
         return imgRedCh;
     }
 

@@ -29,16 +29,12 @@ int main(int32_t argc, char** argv)
     assetCheck(pathToAllScanImages, {frameCorner2dFilePath, frameCorner3dFilePath, sculptureCornerRoiFilePath});
     std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, SCAN_IMAGE_COUNT);
     std::vector<cv::Mat> redPixelMaps;
-    std::vector<std::vector<cv::Point2i>> allRedPointCoors;
     redPixelMaps.reserve(SCAN_IMAGE_COUNT);
-    allRedPointCoors.reserve(SCAN_IMAGE_COUNT);
 
     const cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
     for (size_t imgIndex = 0; imgIndex < SCAN_IMAGE_COUNT; imgIndex++)
     {
-        allRedPointCoors.emplace_back();
-        allRedPointCoors.at(imgIndex).reserve(800);
-        redPixelMaps.push_back(midproj::find_red_pixels(scanImages.at(imgIndex), foregroundMask, allRedPointCoors.at(imgIndex)));
+        redPixelMaps.push_back(midproj::get_red_pixel_map(scanImages.at(imgIndex), foregroundMask));
     }
 
     const cv::Mat scannedAreaMask = midproj::get_scanned_area_mask(redPixelMaps, foregroundMask, IMG_SIZE);
