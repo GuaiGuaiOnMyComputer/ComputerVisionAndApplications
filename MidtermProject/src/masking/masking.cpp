@@ -74,29 +74,31 @@ namespace midproj
     /// @return The scanning area mask.
     cv::Mat get_scanned_area_mask(const std::vector<cv::Mat>& allScanProfiles, cv::InputArray foregroundMask, const cv::Size2i& imageSize)
     {
-        cv::Mat scanAreaMask = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));
+        cv::Mat scannedAreaMask = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));
         cv::Mat tmp = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));
         for(const cv::Mat& scanProfile : allScanProfiles)
         {
             cv::bitwise_and(foregroundMask, scanProfile, tmp);
-            cv::bitwise_or(tmp, tmp, scanAreaMask);
+            cv::bitwise_or(tmp, scannedAreaMask, scannedAreaMask);
         }
-        return scanAreaMask;
+        cv::Mat dialiateKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size2i(3, 3));
+        cv::dilate(scannedAreaMask, scannedAreaMask, dialiateKernel);
+        return scannedAreaMask;
     }
 
-    cv::Mat get_scanned_sculpture_mask(cv::InputArray scanAreaMask, const cv::Rect2i& sculptureArea)
+    cv::Mat get_scanned_sculpture_mask(cv::InputArray scannedAreaMask, const cv::Rect2i& sculptureArea)
     {
-        cv::Mat sculptureAreaMask = cv::Mat(scanAreaMask.size(), CV_8UC1, cv::Scalar(0));
+        cv::Mat sculptureAreaMask = cv::Mat(scannedAreaMask.size(), CV_8UC1, cv::Scalar(0));
         sculptureAreaMask(sculptureArea).setTo(255);
-        cv::bitwise_and(sculptureAreaMask, scanAreaMask, sculptureAreaMask);
+        cv::bitwise_and(sculptureAreaMask, scannedAreaMask, sculptureAreaMask);
         return sculptureAreaMask;
     }
 
-    cv::Mat get_scanned_frame_mask(cv::InputArray scanAreaMask, const cv::Rect2i& sculptureArea)
+    cv::Mat get_scanned_frame_mask(cv::InputArray scannedAreaMask, const cv::Rect2i& sculptureArea)
     {
-        cv::Mat scannedFrameAreaMask = cv::Mat(scanAreaMask.size(), CV_8UC1, cv::Scalar(255));
+        cv::Mat scannedFrameAreaMask = cv::Mat(scannedAreaMask.size(), CV_8UC1, cv::Scalar(255));
         scannedFrameAreaMask(sculptureArea).setTo(0);
-        cv::bitwise_and(scannedFrameAreaMask, scanAreaMask, scannedFrameAreaMask);
+        cv::bitwise_and(scannedFrameAreaMask, scannedAreaMask, scannedFrameAreaMask);
         return scannedFrameAreaMask;
     }
 }; // namespace midproj
