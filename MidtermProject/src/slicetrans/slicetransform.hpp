@@ -26,18 +26,11 @@ namespace midproj
         };
 
         static std::vector<cv::Point2f> get_red_pixels_on_frame(cv::InputArray redPixelMap);
-        static FrameBeamLines fit_frame_beam_lines(FrameBeamCornerPoints cornerPoints);
+        static void fit_frame_beam_lines(FrameBeamCornerPoints cornerPoints);
 
 
         private : 
-        static cv::Vec4f _nearUpperBeamLine;
-        static cv::Vec4f _nearLowerBeamLine;
-        static cv::Vec4f _farUpperBeamLine;
-        static cv::Vec4f _farLowerBeamLine;
-    };
 
-    cv::Vec4f SliceTransform::_nearUpperBeamLine;
-    cv::Vec4f SliceTransform::_nearLowerBeamLine;
-    cv::Vec4f SliceTransform::_farUpperBeamLine;
-    cv::Vec4f SliceTransform::_farLowerBeamLine;
+        static FrameBeamLines s_beamLines;
+    };
 }

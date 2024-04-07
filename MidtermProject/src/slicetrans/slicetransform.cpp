@@ -10,4 +10,15 @@ namespace midproj
 
         cv::findNonZero(redPixelMap, redPixelCoors);
     }
+
+    void SliceTransform::fit_frame_beam_lines(FrameBeamCornerPoints cornerPoints)
+    {
+        using PointPair = std::array<cv::Point2i, 2>;
+        cv::fitLine(PointPair{cornerPoints.CornerNearTopLf, cornerPoints.CornerNearTopRt}, s_beamLines.BeamNearTop, cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{cornerPoints.CornerNearBotLf, cornerPoints.CornerNearBotRt}, s_beamLines.BeamNearBot, cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{cornerPoints.CornerFarTopLf, cornerPoints.CornerFarTopRt}, s_beamLines.BeamFarTop, cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{cornerPoints.CornerFarBotLf, cornerPoints.CornerFarBotRt}, s_beamLines.BeamFarBot, cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+    }
+
+    SliceTransform::FrameBeamLines s_beamLines;
 } // namespace midproj
