@@ -92,7 +92,8 @@
 				"command": "cmake",
 				"args": [
 					"--build",
-					"${workspaceFolder}\\build"
+					"${workspaceFolder}\\build",
+					"-j4"
 				]
 			}
 		]
