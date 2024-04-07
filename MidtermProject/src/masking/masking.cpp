@@ -1,4 +1,3 @@
-#include "sculptureslice.hpp"
 #include <stdint.h>
 #include <array>
 #include <vector>
@@ -18,13 +17,6 @@ namespace midproj
         StationaryMasks(){};
     };
 
-    StationaryMasks get_stationary_masks(const std::vector<midproj::SculptureSlice>& sculptureScanSlices, const cv::Size2i& imageSize)
-    {
-        StationaryMasks masks;
-        // TODO: implement this method
-        // masks.ForegroundMask = get_foreground_mask()
-    }
-    
 
     /// @brief Finds the coordinate of red pixels in image. If a pixel's red value is greater than both its blue and green values, its coordinate will be stored into out_redPxCoors.
     /// @param image The image to be search.

@@ -1,6 +1,5 @@
 #include "masking.hpp"
 #include "xyzio.hpp"
-#include "sculptureslice.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdint.h>
@@ -12,7 +11,6 @@
 template class std::vector<cv::Point2i>;
 template class std::vector<cv::Point2f>;
 template class std::vector<cv::Mat>;
-// template class std::vector<midproj::SculptureSlice>;
 #endif
 
 bool assetCheck();
@@ -30,14 +28,8 @@ int main(int32_t argc, char** argv)
     std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, SCAN_IMAGE_COUNT);
     const cv::Mat fgMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
 
-    std::vector<midproj::SculptureSlice> scanSlices;
-    scanSlices.reserve(SCAN_IMAGE_COUNT);
-
     for (size_t imgIndex = 0; imgIndex < SCAN_IMAGE_COUNT; imgIndex++)
     {
-        // midproj::SculptureSlice aSliceOfSculpture(scanImages.at(imgIndex), imgIndex);
-        // scanSlices.push_back(aSliceOfSculpture);
-        // scanSlices.at(imgIndex).get_red_scan_line(fgMask);
     }
     cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
     cv::imshow("foregroundMask", foregroundMask);
