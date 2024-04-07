@@ -6,18 +6,11 @@ set(OpenCV_DIR ../../build/opencv_build)
 
 find_package( OpenCV REQUIRED )
 
-add_library( masking SHARED
+add_library( midproj_masking SHARED
     masking.cpp
     masking.hpp
     )
 
-target_include_directories( masking
-    PUBLIC ${OPENCV_INCLUDE_DIR}
-)
-
-target_link_directories( masking 
-    PUBLIC ${OPENCV_LIB_DIR}
-    )
-target_link_libraries(masking
-    PUBLIC ${OPENCV_LINK_LIBS}
-    )
+target_include_directories( midproj_masking PUBLIC ${OPENCV_INCLUDE_DIR})
+target_link_directories( midproj_masking PUBLIC ${OPENCV_LIB_DIR})
+target_link_libraries(midproj_masking PUBLIC ${OPENCV_LINK_LIBS})

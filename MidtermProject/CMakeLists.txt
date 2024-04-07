@@ -42,10 +42,11 @@ set(OPENCV_LINK_LIBS
 add_subdirectory(src/xyzio)
 add_subdirectory(src/masking)
 add_subdirectory(src/sculptureslice)
+set_target_properties(midproj_sculptureslice PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
+set_target_properties(midproj_xyzio PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
+set_target_properties(midproj_masking PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
 
-add_executable( MidtermProject 
-    src/main.cpp
-    )
+add_executable(MidtermProject)
 
 target_include_directories( MidtermProject
     PUBLIC src/masking
@@ -55,13 +56,11 @@ target_include_directories( MidtermProject
     )
 
 
-target_sources( MidtermProject
-    PUBLIC src/main.cpp
-    )
+target_sources( MidtermProject PUBLIC src/main.cpp)
 
 target_link_libraries(MidtermProject 
-    masking
-    xyzio
-    sculptureslice
+    midproj_masking
+    midproj_xyzio
+    midproj_sculptureslice
     ${OPENCV_LINK_LIBS}
     )

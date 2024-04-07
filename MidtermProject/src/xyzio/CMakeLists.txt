@@ -6,18 +6,12 @@ set(OpenCV_DIR ../../build/opencv_build)
 
 find_package( OpenCV REQUIRED )
 
-add_library( xyzio SHARED
-    xyzio.cpp
-    xyzio.hpp
-    )
-
-target_include_directories( xyzio
-    PUBLIC ${OPENCV_INCLUDE_DIR}
+add_library( midproj_xyzio SHARED)
+target_sources(midproj_xyzio 
+    PUBLIC xyzio.cpp
+    PUBLIC xyzio.hpp
 )
-
-target_link_directories( xyzio 
-    PUBLIC ${OPENCV_LIB_DIR}
-    )
-target_link_libraries(xyzio
-    PUBLIC ${OPENCV_LINK_LIBS}
-    )
+    
+target_include_directories( midproj_xyzio PUBLIC ${OPENCV_INCLUDE_DIR})
+target_link_directories( midproj_xyzio  PUBLIC ${OPENCV_LIB_DIR})
+target_link_libraries(midproj_xyzio PUBLIC ${OPENCV_LINK_LIBS})

@@ -23,12 +23,9 @@ cmake ./build/opencv_build --build -j8
 cmake -S . -B build
 cmake ./build --build -j10
 ```
-5. Copy the dynamically-linked libraries to the directory containing the executable.
+5. Copy the opencv dynamically-linked libraries to the directory containing the executable so they can be loaded in runtime.
 ```powershell
 cp build/opencv_build/bin build/
-cp build/src/masking/libmasking.dll build/
-cp build/src/sculptureslice/sculptureslice.dll build/
-cp build/src/xyzio/xyzio.dll build/
 ```
 6. Run the project executable
 ```powershell
