@@ -7,6 +7,23 @@ namespace midproj
 {
     namespace fs = std::filesystem;
 
+    struct StationaryMasks
+    {
+        cv::Mat ForegroundMask;
+        cv::Mat ScannedAreaMask;
+        cv::Mat ScannedSculptureAreaMask;
+        cv::Mat ScannedFrameAreaMask;
+
+        StationaryMasks(){};
+    };
+
+    StationaryMasks get_stationary_masks(const std::vector<midproj::SculptureSlice>& sculptureScanSlices, const cv::Size2i& imageSize)
+    {
+        StationaryMasks masks;
+        masks.ForegroundMask = get_foreground_mask()
+    }
+    
+
     /// @brief Finds the coordinate of red pixels in image. If a pixel's red value is greater than both its blue and green values, its coordinate will be stored into out_redPxCoors.
     /// @param image The image to be search.
     /// @param out_redPxCoors The coordinates of red pixels stored in a vector<Point>
@@ -61,7 +78,7 @@ namespace midproj
     /// @param allScanProfiles All of the scan profiles as binary images stored in a vector.
     /// @param foregroundMask Binary image where both the frame and the sculpture area are white, and everywhere else black.
     /// @return The scanning area mask.
-    cv::Mat get_scan_area_mask(const std::vector<cv::Mat>& allScanProfiles, cv::InputArray foregroundMask, const cv::Size2i& imageSize)
+    cv::Mat get_scanned_area_mask(const std::vector<cv::Mat>& allScanProfiles, cv::InputArray foregroundMask, const cv::Size2i& imageSize)
     {
         cv::Mat scanAreaMask = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));
         cv::Mat tmp = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));

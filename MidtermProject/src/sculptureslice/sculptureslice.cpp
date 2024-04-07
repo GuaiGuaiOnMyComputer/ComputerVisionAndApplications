@@ -13,7 +13,7 @@ namespace
         {
         }
 
-        void get_red_scan_line()
+        void get_red_scan_line(cv::InputArray foregroundMask)
         {
             cv::Mat scanProfileImage = cv::imread(_imgPath.string());
             // midproj::find_red_pixels(scanProfileImage, _redPixelCoordinates);
@@ -23,9 +23,13 @@ namespace
         SculptureSlice()
         {
         }
+
+        virtual ~SculptureSlice()
+        {
+        }
     private:
         std::vector<cv::Point2i> _redPixelCoordinates;
-        const cv::Mat _redProfile;
+        const cv::Mat _scanImage;
         const fs::path _imgPath;
     };
 } // namespace SculptureSlice
