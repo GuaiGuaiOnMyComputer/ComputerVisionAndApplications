@@ -25,12 +25,14 @@ namespace midproj
             cv::Vec4f BeamFarBot;
         };
 
-        static std::vector<cv::Point2f> get_red_pixels_on_frame(cv::InputArray redPixelMap);
+        static std::vector<cv::Point2f> get_red_pixels_on_frame(cv::InputArray redPixelMap, cv::InputArray scannedFrameMask);
         static void fit_frame_beam_lines(FrameBeamCornerPoints cornerPoints);
+    
+    private:
+        static bool _check_if_on_line(cv::Vec4f line2d, cv::Point2f point, double maxDistance);
 
-
-        private : 
-
+    private : 
         static FrameBeamLines s_beamLines;
+        static bool s_beamLinesAreFitted;
     };
 }
