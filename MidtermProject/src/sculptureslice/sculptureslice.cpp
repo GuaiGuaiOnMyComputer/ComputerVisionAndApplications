@@ -16,7 +16,7 @@ namespace
         void get_red_scan_line()
         {
             cv::Mat scanProfileImage = cv::imread(_imgPath.string());
-            midproj::find_red_pixels(scanProfileImage, _redPixelCoordinates);
+            // midproj::find_red_pixels(scanProfileImage, _redPixelCoordinates);
         }
 
         // dummy constructor
