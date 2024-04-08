@@ -50,7 +50,7 @@ add_executable(MidtermProject)
 
 target_include_directories( MidtermProject
     PUBLIC src/masking
-    PUBLIC src/sculptureslice
+    PUBLIC src/slicetrans
     PUBLIC src/xyzio
     PUBLIC ${OPENCV_INCLUDE_DIR}
     )

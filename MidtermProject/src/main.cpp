@@ -1,5 +1,6 @@
 #include "masking.hpp"
 #include "xyzio.hpp"
+#include "slicetransform.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdint.h>
@@ -11,6 +12,7 @@
 template class std::vector<cv::Point2i>;
 template class std::vector<cv::Point2f>;
 template class std::vector<cv::Mat>;
+template class std::vector<midproj::SliceTransform::BeamIndex>;
 #endif
 
 bool assetCheck(const std::filesystem::path &pathToImageAssetFolder, const std::vector<std::filesystem::path> &pathToEachXyzAssets);
@@ -28,14 +30,11 @@ int main(int32_t argc, char** argv)
 
     assetCheck(pathToAllScanImages, {frameCorner2dFilePath, frameCorner3dFilePath, sculptureCornerRoiFilePath});
     std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, SCAN_IMAGE_COUNT);
-    std::vector<cv::Mat> redPixelMaps;
-    redPixelMaps.reserve(SCAN_IMAGE_COUNT);
+    std::vector<cv::Mat> redPixelMaps(SCAN_IMAGE_COUNT);
 
     const cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
     for (size_t imgIndex = 0; imgIndex < SCAN_IMAGE_COUNT; imgIndex++)
-    {
-        redPixelMaps.push_back(midproj::get_red_pixel_map(scanImages.at(imgIndex), foregroundMask));
-    }
+        redPixelMaps.at(imgIndex) = (midproj::get_red_pixel_map(scanImages.at(imgIndex), foregroundMask));
 
     const cv::Mat scannedAreaMask = midproj::get_scanned_area_mask(redPixelMaps, foregroundMask, IMG_SIZE);
     const cv::Mat scannedSculptureMask = midproj::get_scanned_sculpture_mask(scannedAreaMask, SCULPTURE_ROI);
@@ -43,11 +42,13 @@ int main(int32_t argc, char** argv)
     std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(frameCorner2dFilePath);
     std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(frameCorner3dFilePath);
 
-    cv::imshow("Foreground Mask", foregroundMask);
-    cv::imshow("Scanned Area Mask", scannedAreaMask);
-    cv::imshow("scanned Sculpture Mask", scannedSculptureMask);
-    cv::imshow("scanned frame mask", scannedFrameMask);
-    cv::waitKey(0);
+    midproj::SliceTransform::load_frame_corners_from_vector(frameCorners2i);
+    midproj::SliceTransform::fit_frame_beam_lines();
+    for (size_t imgIndex = 0; imgIndex < SCAN_IMAGE_COUNT; imgIndex++)
+    {
+        cv::bitwise_and(scannedFrameMask, redPixelMaps.at(imgIndex), redPixelMaps.at(imgIndex));
+        std::array<cv::Point2f, midproj::SliceTransform::BEAM_COUNT> avgRedPixelOnEachBeam = midproj::SliceTransform::get_red_pixels_on_frame(redPixelMaps.at(imgIndex));
+    }
     return 0;
 }
 
