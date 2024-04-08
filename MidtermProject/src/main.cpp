@@ -1,6 +1,7 @@
 #include "masking.hpp"
 #include "xyzio.hpp"
 #include "slicetransform.hpp"
+#include "predefines.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdint.h>
@@ -8,28 +9,14 @@
 #include <iostream>
 #include <sstream>
 
-#if true
-template class std::vector<cv::Point2i>;
-template class std::vector<cv::Point2f>;
-template class std::vector<cv::Mat>;
-template class std::vector<midproj::SliceTransform::BeamIndex>;
-#endif
 
 bool assetCheck(const std::filesystem::path &pathToImageAssetFolder, const std::vector<std::filesystem::path> &pathToEachXyzAssets);
 std::vector<cv::Mat> loadAllImages(const std::filesystem::path &allImageFolderPath, int32_t imageCount);
 
 int main(int32_t argc, char** argv)
 {
-    const std::filesystem::path frameCorner2dFilePath("assets//FrameCornerCoordinates2d.xyz");
-    const std::filesystem::path frameCorner3dFilePath("assets//FrameCornerCoordinates3d.xyz");
-    const std::filesystem::path sculptureCornerRoiFilePath("assets//SculptureRoi.xyz");
-    const std::filesystem::path pathToAllScanImages("assets//ShadowStrip");
-    const cv::Size2i IMG_SIZE(1080, 1080);
-    const cv::Rect2i SCULPTURE_ROI(379, 263, 220, 417);
-    constexpr int32_t SCAN_IMAGE_COUNT = 55;
-
-    assetCheck(pathToAllScanImages, {frameCorner2dFilePath, frameCorner3dFilePath, sculptureCornerRoiFilePath});
-    std::vector<cv::Mat> scanImages = loadAllImages(pathToAllScanImages, SCAN_IMAGE_COUNT);
+    assetCheck(PATH_TO_ALL_SCAN_IMAGES, {FRAME_CORNER_2D_FILE_PATH, FRAME_CORNER_3D_FILE_PATH, SCULPTURE_ROI_FILE_PATH});
+    std::vector<cv::Mat> scanImages = loadAllImages(PATH_TO_ALL_SCAN_IMAGES, SCAN_IMAGE_COUNT);
     std::vector<cv::Mat> redPixelMaps(SCAN_IMAGE_COUNT);
 
     const cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
@@ -39,8 +26,8 @@ int main(int32_t argc, char** argv)
     const cv::Mat scannedAreaMask = midproj::get_scanned_area_mask(redPixelMaps, foregroundMask, IMG_SIZE);
     const cv::Mat scannedSculptureMask = midproj::get_scanned_sculpture_mask(scannedAreaMask, SCULPTURE_ROI);
     const cv::Mat scannedFrameMask = midproj::get_scanned_frame_mask(scannedAreaMask, SCULPTURE_ROI);
-    std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(frameCorner2dFilePath);
-    std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(frameCorner3dFilePath);
+    const std::vector<cv::Point2i> frameCorners2i = midproj::XyzIo::load_points_from_file_2i(FRAME_CORNER_2D_FILE_PATH);
+    const std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(FRAME_CORNER_3D_FILE_PATH);
 
     midproj::SliceTransform::load_frame_corners_from_vector(frameCorners2i);
     midproj::SliceTransform::fit_frame_beam_lines();

@@ -56,7 +56,10 @@ target_include_directories( MidtermProject
     )
 
 
-target_sources( MidtermProject PUBLIC src/main.cpp)
+target_sources( MidtermProject 
+    PUBLIC src/main.cpp
+    PUBLIC src/predefines.hpp
+    )
 
 target_link_libraries(MidtermProject 
     midproj_masking
