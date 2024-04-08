@@ -30,31 +30,80 @@ namespace midproj
         return avgCoorOnFrameBeams;
     }
 
+    void SliceTransform::init_front_panel_homography()
+    {
+        std::array<cv::Point2f, 4> frontPanelVerticsWorld;
+        frontPanelVerticsWorld[NEAR_TL] = cv::Point2f(s_frameCornersOnWorldCoor[NEAR_TL].x, s_frameCornersOnWorldCoor[NEAR_TL].z);
+        frontPanelVerticsWorld[NEAR_TR] = cv::Point2f(s_frameCornersOnWorldCoor[NEAR_TR].x, s_frameCornersOnWorldCoor[NEAR_TR].z);
+        frontPanelVerticsWorld[NEAR_BL] = cv::Point2f(s_frameCornersOnWorldCoor[NEAR_BL].x, s_frameCornersOnWorldCoor[NEAR_BL].z);
+        frontPanelVerticsWorld[NEAR_BR] = cv::Point2f(s_frameCornersOnWorldCoor[NEAR_BR].x, s_frameCornersOnWorldCoor[NEAR_BR].z);
+
+        std::array<cv::Point2f, 4> frontPanelVerticsImage;
+        frontPanelVerticsImage[NEAR_TL] = cv::Point2f(s_frameCornersOnImageCoor[NEAR_TL].x, s_frameCornersOnImageCoor[NEAR_TL].y);
+        frontPanelVerticsImage[NEAR_TR] = cv::Point2f(s_frameCornersOnImageCoor[NEAR_TR].x, s_frameCornersOnImageCoor[NEAR_TR].y);
+        frontPanelVerticsImage[NEAR_BL] = cv::Point2f(s_frameCornersOnImageCoor[NEAR_BL].x, s_frameCornersOnImageCoor[NEAR_BL].y);
+        frontPanelVerticsImage[NEAR_BR] = cv::Point2f(s_frameCornersOnImageCoor[NEAR_BR].x, s_frameCornersOnImageCoor[NEAR_BR].y);
+        s_frontPanelHomographyMat = cv::findHomography(frontPanelVerticsImage, frontPanelVerticsWorld);
+    }
+
+    std::vector<cv::Point3d> SliceTransform::get_slice_world_coordinate(const std::array<cv::Point2f, BEAM_COUNT>& pointsOnBeams, cv::InputArray sculpturePixelMap)
+    {
+        std::vector<cv::Point2f> sculptureRedPixelCoorsImg2f;
+        cv::findNonZero(sculpturePixelMap, sculptureRedPixelCoorsImg2f);
+        const size_t sculptureRedPixelCount = sculptureRedPixelCoorsImg2f.size();
+        std::vector<cv::Point3d> sculptureRedPixelCoorsWorld3f(sculptureRedPixelCount);
+        double sliceWorldX = _get_world_x_from_front_panel_homography(pointsOnBeams);
+
+        std::array<cv::Point2f, BEAM_COUNT> frameCornersOnWorldCoor2d;
+        frameCornersOnWorldCoor2d[NEAR_TOP] = cv::Point2f(s_frameCornersOnWorldCoor[NEAR_TL].y, s_frameCornersOnWorldCoor[NEAR_TL].z);
+        frameCornersOnWorldCoor2d[NEAR_BOT] = cv::Point2f(s_frameCornersOnWorldCoor[NEAR_BL].y, s_frameCornersOnWorldCoor[NEAR_BL].z);
+        frameCornersOnWorldCoor2d[FAR_TOP] = cv::Point2f(s_frameCornersOnWorldCoor[FAR_TL].y, s_frameCornersOnWorldCoor[FAR_TL].z);
+        frameCornersOnWorldCoor2d[FAR_BOT] = cv::Point2f(s_frameCornersOnWorldCoor[FAR_BL].y, s_frameCornersOnWorldCoor[FAR_BL].z);
+        const cv::Mat homographyMatrix = cv::findHomography(pointsOnBeams, frameCornersOnWorldCoor2d);
+        const std::vector<cv::Vec2f> yzOnWorldCoors = _get_world_yz_from_homography_projection(homographyMatrix, sculptureRedPixelCoorsImg2f);
+
+        for (size_t i = 0; i < sculptureRedPixelCount; i++)
+            sculptureRedPixelCoorsWorld3f.at(i) = cv::Point3d(sliceWorldX, yzOnWorldCoors.at(i)[0], yzOnWorldCoors.at(i)[1]);
+
+        return sculptureRedPixelCoorsWorld3f;
+    }
+
     /// @brief Loads the corner points into private static member s_frameBeamCorners. The corner order of cornerPoints must not be changed.
     /// @param cornerPoints 8 of the corner coordinates of the frame.
-    void SliceTransform::load_frame_corners_from_vector(const std::vector<cv::Point2i>& cornerPoints)
+    void SliceTransform::load_frame_corners_from_vector(const std::vector<cv::Point2i>& cornerPointsImg, const std::vector<cv::Point3i>& cornerPointsWorld)
     {
-        s_frameBeamCorners.CornerNearTopLf = cornerPoints[2];
-        s_frameBeamCorners.CornerNearTopRt = cornerPoints[3];
-        s_frameBeamCorners.CornerNearBotLf = cornerPoints[6];
-        s_frameBeamCorners.CornerNearBotRt = cornerPoints[7];
-        s_frameBeamCorners.CornerFarTopLf = cornerPoints[1];
-        s_frameBeamCorners.CornerFarTopRt = cornerPoints[0];
-        s_frameBeamCorners.CornerFarBotRt = cornerPoints[4];
-        s_frameBeamCorners.CornerFarBotLf = cornerPoints[5];
+        using midproj::SliceTransform;
+        s_frameCornersOnImageCoor[NEAR_TL] = cornerPointsImg[2];
+        s_frameCornersOnImageCoor[NEAR_TR] = cornerPointsImg[3];
+        s_frameCornersOnImageCoor[NEAR_BL] = cornerPointsImg[6];
+        s_frameCornersOnImageCoor[NEAR_BR] = cornerPointsImg[7];
+        s_frameCornersOnImageCoor[FAR_TL] = cornerPointsImg[1];
+        s_frameCornersOnImageCoor[FAR_TR] = cornerPointsImg[0];
+        s_frameCornersOnImageCoor[FAR_BR] = cornerPointsImg[4];
+        s_frameCornersOnImageCoor[FAR_BL] = cornerPointsImg[5];
+
+        s_frameCornersOnWorldCoor[NEAR_TL] = cornerPointsWorld[2];
+        s_frameCornersOnWorldCoor[NEAR_TR] = cornerPointsWorld[3];
+        s_frameCornersOnWorldCoor[NEAR_BL] = cornerPointsWorld[6];
+        s_frameCornersOnWorldCoor[NEAR_BR] = cornerPointsWorld[7];
+        s_frameCornersOnWorldCoor[FAR_TL] = cornerPointsWorld[1];
+        s_frameCornersOnWorldCoor[FAR_TR] = cornerPointsWorld[0];
+        s_frameCornersOnWorldCoor[FAR_BR] = cornerPointsWorld[4];
+        s_frameCornersOnWorldCoor[FAR_BL] = cornerPointsWorld[5];
     }
 
     /// @brief Fit the line of the 4 beams using the point coordinates specified by s_frameBeamCorners.
     void SliceTransform::fit_frame_beam_lines()
     {
         using PointPair = std::array<cv::Point2i, 2>;
+        using midproj::SliceTransform;
 
         // fit the line of beam from a pair of corner points using cv::fitLine
         std::array<cv::Vec4f, BEAM_COUNT> beamLines4f;
-        cv::fitLine(PointPair{s_frameBeamCorners.CornerNearTopLf, s_frameBeamCorners.CornerNearTopRt}, beamLines4f[NEAR_TOP], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
-        cv::fitLine(PointPair{s_frameBeamCorners.CornerNearBotLf, s_frameBeamCorners.CornerNearBotRt}, beamLines4f[NEAR_BOT], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
-        cv::fitLine(PointPair{s_frameBeamCorners.CornerFarTopLf, s_frameBeamCorners.CornerFarTopRt}, beamLines4f[FAR_TOP], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
-        cv::fitLine(PointPair{s_frameBeamCorners.CornerFarBotLf, s_frameBeamCorners.CornerFarBotRt}, beamLines4f[FAR_BOT], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{s_frameCornersOnImageCoor[NEAR_TL], s_frameCornersOnImageCoor[NEAR_TR]}, beamLines4f[NEAR_TOP], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{s_frameCornersOnImageCoor[NEAR_BL], s_frameCornersOnImageCoor[NEAR_BR]}, beamLines4f[NEAR_BOT], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{s_frameCornersOnImageCoor[FAR_TL], s_frameCornersOnImageCoor[FAR_TR]}, beamLines4f[FAR_TOP], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
+        cv::fitLine(PointPair{s_frameCornersOnImageCoor[FAR_BL], s_frameCornersOnImageCoor[FAR_BR]}, beamLines4f[FAR_BOT], cv::DistanceTypes::DIST_L1, 0, 0.01, 0.01);
 
         // convert each line fitted by cv::fitLine from cv::Vec4f to cv::Vec3f containing 3 line coefficients
         // the output of cv::fitLine is a cv::Vec4f where:
@@ -83,11 +132,6 @@ namespace midproj
         s_beamLinesAreFitted = true;
     }
 
-    void SliceTransform::set_world_beam_length(double length)
-    {
-        SliceTransform::s_beamLengthWorld = length;
-    }
-
     /// @brief Classify which beam the given point belongs to by evaluating its distance to the beam's line.
     /// @param point Point to classify.
     /// @return Index of the beam that point belongs to. Returns -1 when point is far away from all 4 beams.
@@ -99,6 +143,22 @@ namespace midproj
                 return static_cast<SliceTransform::BeamIndex>(beamIndex);
         }
         return static_cast<SliceTransform::BeamIndex>(-1); // returns an error -1 if this pixel is not near to any beam lines
+    }
+
+    double SliceTransform::_get_world_x_from_front_panel_homography(const std::array<cv::Point2f, SliceTransform::BEAM_COUNT> &pointsOnBeams)
+    {
+        const std::array<cv::Vec2f, 2> pointsOnFrontPanelBeamsImg = {pointsOnBeams[NEAR_TOP], pointsOnBeams[NEAR_BOT]};
+        std::array<cv::Vec2f, 2> pointsOnFrontPanelBeamsWorld;
+        cv::perspectiveTransform(pointsOnFrontPanelBeamsImg, pointsOnFrontPanelBeamsWorld, s_frontPanelHomographyMat);
+        double avgXCoordinateWorld = (pointsOnFrontPanelBeamsWorld[0][0] + pointsOnFrontPanelBeamsWorld[1][0]) / 2.0;
+        return avgXCoordinateWorld;
+    }
+
+    std::vector<cv::Vec2f> SliceTransform::_get_world_yz_from_homography_projection(cv::InputArray homographyMat, const std::vector<cv::Point2f>& pixelCoorsOnImage)
+    {
+        std::vector<cv::Vec2f> reprojectedPoints(pixelCoorsOnImage.size());
+        cv::perspectiveTransform(pixelCoorsOnImage, reprojectedPoints, homographyMat);
+        return reprojectedPoints;
     }
 
     /// @brief Find the average location of pixels in allFrameBeamRedPixelCoors that are close to the beam spevified by beamIndex.
@@ -130,7 +190,8 @@ namespace midproj
     }
 
     std::array<cv::Vec3f, SliceTransform::BEAM_COUNT> SliceTransform::s_beamLines;
-    SliceTransform::FrameBeamCornerPoints SliceTransform::s_frameBeamCorners;
+    std::array<cv::Point2f, SliceTransform::CORNER_COUNT> SliceTransform::s_frameCornersOnImageCoor;
+    std::array<cv::Point3f, SliceTransform::CORNER_COUNT> SliceTransform::s_frameCornersOnWorldCoor;
     bool SliceTransform::s_beamLinesAreFitted = false;
-    double SliceTransform::s_beamLengthWorld = -1;
+    cv::Mat SliceTransform::s_frontPanelHomographyMat;
 } // namespace midproj
