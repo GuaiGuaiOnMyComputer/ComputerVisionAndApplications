@@ -16,14 +16,13 @@ namespace midproj
     {
         std::ifstream fileHandle(filePath, std::ifstream::in);
         uint64_t pointCount = _getLineCount(fileHandle);
-        std::vector<cv::Point2i> parsedCoordinates;
-        parsedCoordinates.reserve(pointCount);
+        std::vector<cv::Point2i> parsedCoordinates(pointCount);
 
         std::string lineContent;
         for (size_t i = 0; i < pointCount; i++)
         {
             std::getline(fileHandle, lineContent);
-            parsedCoordinates.push_back(_parseLineAsPoint_2i(lineContent));
+            parsedCoordinates.at(i) = _parseLineAsPoint_2i(lineContent);
         }
         return parsedCoordinates;
     }
@@ -32,14 +31,13 @@ namespace midproj
     {
         std::ifstream fileHandle(filePath, std::ifstream::in);
         uint64_t pointCount = _getLineCount(fileHandle);
-        std::vector<cv::Point2f> parsedCoordinates;
-        parsedCoordinates.reserve(pointCount);
+        std::vector<cv::Point2f> parsedCoordinates(pointCount);
 
         std::string lineContent;
         for (size_t i = 0; i < pointCount; i++)
         {
             std::getline(fileHandle, lineContent);
-            parsedCoordinates.push_back(_parseLineAsPoint_2f(lineContent));
+            parsedCoordinates.at(i) = _parseLineAsPoint_2f(lineContent);
         }
         return parsedCoordinates;
     }
