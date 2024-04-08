@@ -15,3 +15,4 @@ const std::filesystem::path PATH_TO_ALL_SCAN_IMAGES("assets//ShadowStrip");
 const cv::Size2i IMG_SIZE(1080, 1080);
 const cv::Rect2i SCULPTURE_ROI(379, 263, 220, 417);
 constexpr int32_t SCAN_IMAGE_COUNT = 55;
+constexpr double BEAM_LENGTH_WORLD = 200;

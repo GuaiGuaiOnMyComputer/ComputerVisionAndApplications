@@ -30,6 +30,7 @@ int main(int32_t argc, char** argv)
     const std::vector<cv::Point2i> frameCorners3i = midproj::XyzIo::load_points_from_file_2i(FRAME_CORNER_3D_FILE_PATH);
 
     midproj::SliceTransform::load_frame_corners_from_vector(frameCorners2i);
+    midproj::SliceTransform::set_world_beam_length(BEAM_LENGTH_WORLD);
     midproj::SliceTransform::fit_frame_beam_lines();
     for (size_t imgIndex = 0; imgIndex < SCAN_IMAGE_COUNT; imgIndex++)
     {

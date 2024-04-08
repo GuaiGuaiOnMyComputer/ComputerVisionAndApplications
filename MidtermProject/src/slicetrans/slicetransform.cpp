@@ -83,6 +83,11 @@ namespace midproj
         s_beamLinesAreFitted = true;
     }
 
+    void SliceTransform::set_world_beam_length(double length)
+    {
+        SliceTransform::s_beamLengthWorld = length;
+    }
+
     /// @brief Classify which beam the given point belongs to by evaluating its distance to the beam's line.
     /// @param point Point to classify.
     /// @return Index of the beam that point belongs to. Returns -1 when point is far away from all 4 beams.
@@ -127,4 +132,5 @@ namespace midproj
     std::array<cv::Vec3f, SliceTransform::BEAM_COUNT> SliceTransform::s_beamLines;
     SliceTransform::FrameBeamCornerPoints SliceTransform::s_frameBeamCorners;
     bool SliceTransform::s_beamLinesAreFitted = false;
+    double SliceTransform::s_beamLengthWorld = -1;
 } // namespace midproj

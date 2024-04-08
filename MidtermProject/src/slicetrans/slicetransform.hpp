@@ -31,6 +31,7 @@ namespace midproj
         static std::array<cv::Point2f, BEAM_COUNT> get_red_pixels_on_frame(cv::InputArray redPixelMap);
         static void fit_frame_beam_lines();
         static void load_frame_corners_from_vector(const std::vector<cv::Point2i>& cornerPoints);
+        static void set_world_beam_length(double length);
 
     private:
         static inline bool _check_if_on_line(const cv::Vec3f& line2d, const cv::Point2f& point, const double maxDistance);
@@ -41,5 +42,6 @@ namespace midproj
         static std::array<cv::Vec3f, BEAM_COUNT> s_beamLines;
         static bool s_beamLinesAreFitted;
         static FrameBeamCornerPoints s_frameBeamCorners;
+        static double s_beamLengthWorld;
     };
 }
