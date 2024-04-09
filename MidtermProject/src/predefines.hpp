@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <opencv2/opencv.hpp>
 
-#if true
+#if false
 template class std::vector<cv::Point2i>;
 template class std::vector<cv::Point2f>;
 template class std::vector<cv::Point3i>;

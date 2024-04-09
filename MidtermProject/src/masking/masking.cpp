@@ -43,7 +43,7 @@ namespace midproj
     {
         cv::Mat imgGray;
         cv::Mat foregroundMask = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));
-        for (cv::InputArray img : images)
+        for (const cv::Mat& img : images)
         {
             cv::cvtColor(img, imgGray, cv::COLOR_BGR2GRAY);
             cv::threshold(imgGray, imgGray, 2, 255, cv::THRESH_BINARY);

@@ -11,9 +11,9 @@
 
 
 bool assetCheck(const std::filesystem::path &pathToImageAssetFolder, const std::vector<std::filesystem::path> &pathToEachXyzAssets);
-std::vector<cv::Mat> loadAllImages(const std::filesystem::path &allImageFolderPath, int32_t imageCount);
+std::vector<cv::Mat> loadAllImages(const std::filesystem::path &allImageFolderPath, uint32_t imageCount);
 
-int main(int32_t argc, char** argv)
+int main(int32_t, char**)
 {
     // Check if all of the require images are present
     // Load them all into cv::Mat or exit the program if they are not
@@ -79,7 +79,7 @@ int main(int32_t argc, char** argv)
 /// @param allImageFolderPath The path to folder containing all of the scan images.
 /// @param imageCount Number of images to load.
 /// @return A vector containing all of the 3-channel scan images.
-std::vector<cv::Mat> loadAllImages(const std::filesystem::path& allImageFolderPath, int32_t imageCount)
+std::vector<cv::Mat> loadAllImages(const std::filesystem::path& allImageFolderPath, uint32_t imageCount)
 {
     std::vector<cv::Mat> images;
     images.reserve(imageCount);
@@ -107,7 +107,7 @@ bool assetCheck(const std::filesystem::path& pathToImageAssetFolder, const std::
     std::vector<fs::path> missingImageList;
     std::stringstream fileName;
     fs::path filePath;
-    filePath /= "assets//ShadowStrip";
+    filePath /= pathToImageAssetFolder;
     for (size_t i = 0; i < 54; i++)
     {
         fileName << std::setfill('0') << std::setw(4) << i << ".jpg";
@@ -129,7 +129,7 @@ bool assetCheck(const std::filesystem::path& pathToImageAssetFolder, const std::
     for (const fs::path& missingFilePath : missingXyzFileList)
         std::cout << "The necessary xyz file " << fs::absolute(missingFilePath) << " is missing.";
 
-    if (missingImageList.size() != 0 | missingXyzFileList.size() != 0)
+    if ((missingImageList.size() != 0) | (missingXyzFileList.size() != 0))
         exit(-1);
 
     return true;

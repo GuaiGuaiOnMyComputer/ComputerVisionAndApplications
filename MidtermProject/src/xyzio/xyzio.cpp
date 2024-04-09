@@ -15,7 +15,7 @@ namespace midproj
 
     bool XyzIo::write_xyz_point_cloud_file(const fs::path& filePath, const std::vector<std::vector<cv::Point3d>>& pointsInAllSlices)
     {
-        _create_output_path_if_not_exist(filePath);
+        _create_output_directory_if_not_exist(filePath.parent_path());
         std::ofstream outputFile(filePath, std::ios_base::out);
         outputFile.seekp(0, std::ios_base::beg);
 
@@ -93,7 +93,6 @@ namespace midproj
     
     cv::Point2i XyzIo::_parseLineAsPoint_2i(const std::string& lineContent)
     {
-        size_t intStart, intEnd;
         int32_t x, y;
         const char *stringEndPtr = lineContent.data() + lineContent.size();
         std::from_chars_result parsedResult = std::from_chars(lineContent.data(), stringEndPtr, x);
@@ -103,7 +102,6 @@ namespace midproj
 
     cv::Point2f XyzIo::_parseLineAsPoint_2f(const std::string& lineContent)
     {
-        size_t intStart, intEnd;
         float x, y;
         const char *stringEndPtr = lineContent.data() + lineContent.size();
         std::from_chars_result parsedResult = std::from_chars(lineContent.data(), stringEndPtr, x);
@@ -113,7 +111,6 @@ namespace midproj
 
     cv::Point3i XyzIo::_parseLineAsPoint_3i(const std::string& lineContent)
     {
-        size_t intStart, intEnd;
         int32_t x, y, z;
         const char *stringEndPtr = lineContent.data() + lineContent.size();
         std::from_chars_result parsedResult = std::from_chars(lineContent.data(), stringEndPtr, x);
@@ -124,7 +121,6 @@ namespace midproj
 
     cv::Point3f XyzIo::_parseLineAsPoint_3f(const std::string& lineContent)
     {
-        size_t intStart, intEnd;
         float x, y, z;
         const char *stringEndPtr = lineContent.data() + lineContent.size();
         std::from_chars_result parsedResult = std::from_chars(lineContent.data(), stringEndPtr, x);
@@ -141,16 +137,11 @@ namespace midproj
         return lineCount;
     }
 
-    void XyzIo::_create_output_path_if_not_exist(const fs::path& filePath)
+    std::error_code XyzIo::_create_output_directory_if_not_exist(const fs::path& filePath)
     {
-        // TODO: to be implemented
-        // const fs::path absfilePath = fs::absolute(filePath);
-        // fs::path filePathParent = absfilePath.parent_path();
-
-        // if(!fs::exists(absfilePath))
-        //     _create_output_path_if_not_exist(absfilePath);
-        // else
-        //     fs::create_directory(absfilePath);
+        std::error_code errorCode;
+        fs::create_directories(filePath, errorCode);
+        return errorCode;
     }
 
 } // namespace midproj

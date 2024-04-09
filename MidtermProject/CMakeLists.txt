@@ -4,6 +4,15 @@ project( MidtermProject )
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 
+# set the default build type as release
+# build with debug sybmols if build types other than Release is given
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 set(OpenCV_DIR build/opencv_build )
 find_package(OpenCV REQUIRED)
 

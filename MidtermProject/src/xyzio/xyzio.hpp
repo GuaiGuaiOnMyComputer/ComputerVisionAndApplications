@@ -19,6 +19,6 @@ namespace midproj
         static cv::Point3i _parseLineAsPoint_3i(const std::string &lineContent);
         static cv::Point3f _parseLineAsPoint_3f(const std::string &lineContent);
         static uint64_t _getLineCount(std::ifstream &fileHandle);
-        static void _create_output_path_if_not_exist(const fs::path &filePath);
+        static std::error_code _create_output_directory_if_not_exist(const fs::path &filePath);
     };
 }
