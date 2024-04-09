@@ -63,6 +63,8 @@ int main(int32_t argc, char** argv)
         cv::bitwise_and(scannedFrameMask, redPixelMaps.at(imgIndex), onBeamRedPixelMap);
         std::array<cv::Point2f, midproj::SliceTransform::BEAM_COUNT> avgRedPixelOnEachBeam = midproj::SliceTransform::get_red_pixels_on_frame(onBeamRedPixelMap);
         cv::bitwise_and(scannedSculptureMask, redPixelMaps.at(imgIndex), sculptureRedPixelMap);
+
+        midproj::SliceTransform::refine_sculpture_pixel_map(sculptureRedPixelMap, 2);
         sculpturePointCloudWorldInEachSlice.at(imgIndex) = midproj::SliceTransform::get_slice_world_coordinate(avgRedPixelOnEachBeam, sculptureRedPixelMap);
     }
     const bool fileOutputStatus = midproj::XyzIo::write_xyz_point_cloud_file(OUTPUT_XYZ_FILE, sculpturePointCloudWorldInEachSlice);
@@ -73,6 +75,10 @@ int main(int32_t argc, char** argv)
     return 0;
 }
 
+/// @brief Load all of the 3-channel scan images into a vector.
+/// @param allImageFolderPath The path to folder containing all of the scan images.
+/// @param imageCount Number of images to load.
+/// @return A vector containing all of the 3-channel scan images.
 std::vector<cv::Mat> loadAllImages(const std::filesystem::path& allImageFolderPath, int32_t imageCount)
 {
     std::vector<cv::Mat> images;

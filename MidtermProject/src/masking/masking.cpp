@@ -7,19 +7,8 @@ namespace midproj
 {
     namespace fs = std::filesystem;
 
-    struct StationaryMasks
-    {
-        cv::Mat ForegroundMask;
-        cv::Mat ScannedAreaMask;
-        cv::Mat ScannedSculptureAreaMask;
-        cv::Mat ScannedFrameAreaMask;
-
-        StationaryMasks(){};
-    };
-
-
-    /// @brief Finds the coordinate of red pixels in image. If a pixel's red value is greater than both its blue and green values, its coordinate will be stored into out_redPxCoors.
-    /// @param image The image to be search.
+    /// @brief Returns binarized image where pixels whose R values are larger than B and G values are true.
+    /// @param image The image to be binarized.
     cv::Mat get_red_pixel_map(cv::InputArray image, cv::InputArray foregroundMask)
     {
         cv::Mat imageForegroundOnly;
@@ -46,7 +35,7 @@ namespace midproj
         return imgRedCh;
     }
 
-    /// @brief Acquire a binary image where the frames and the sculpture areas are white and everywhere else is black.
+    /// @brief Acquire a binary image where the frames and the sculpture areas are true and everywhere else is false.
     /// @param images All of the 3-channel images loaded from file and stored into a vector.
     /// @param imageSize Size of the images
     /// @return The foreground mask.
@@ -65,9 +54,9 @@ namespace midproj
         return foregroundMask;
     }
 
-    /// @brief Acquire a binary image where all the pixels that have been swept by the red scan lines are white, and everywhere else black
+    /// @brief Acquire a binary image where all the pixels that have been swept by the red scan lines are true, and everywhere else false
     /// @param allScanProfiles All of the scan profiles as binary images stored in a vector.
-    /// @param foregroundMask Binary image where both the frame and the sculpture area are white, and everywhere else black.
+    /// @param foregroundMask Binary image where both the frame and the sculpture area are true, and everywhere else false.
     /// @return The scanning area mask.
     cv::Mat get_scanned_area_mask(const std::vector<cv::Mat>& allScanProfiles, cv::InputArray foregroundMask, const cv::Size2i& imageSize)
     {
@@ -83,6 +72,10 @@ namespace midproj
         return scannedAreaMask;
     }
 
+    /// @brief Acquire a binary image where all the pixels on the sculpture that have been swept by the red scan lines are true, and everywhere else false.
+    /// @param scannedAreaMask A binary image where all the red pixels from all the scan images combined are true, and everywhere else false. Acquired from function get_scanned_area_mask.
+    /// @param sculptureArea Predefined rectangular area bounding the sculpture in every scan images.
+    /// @return The scanned sculpture mask.
     cv::Mat get_scanned_sculpture_mask(cv::InputArray scannedAreaMask, const cv::Rect2i& sculptureArea)
     {
         cv::Mat sculptureAreaMask = cv::Mat(scannedAreaMask.size(), CV_8UC1, cv::Scalar(0));
@@ -91,6 +84,10 @@ namespace midproj
         return sculptureAreaMask;
     }
 
+    /// @brief Acquire a binary image where all the pixels on the frame that have been swept by the red scan lines are true, and everywhere else false.
+    /// @param scannedAreaMask A binary image where all the red pixels from all the scan images combined are true, and everywhere else false. Acquired from function get_scanned_area_mask.
+    /// @param sculptureArea Predefined rectangular area bounding the sculpture in every scan images.
+    /// @return The scanned sculpture mask.
     cv::Mat get_scanned_frame_mask(cv::InputArray scannedAreaMask, const cv::Rect2i& sculptureArea)
     {
         cv::Mat scannedFrameAreaMask = cv::Mat(scannedAreaMask.size(), CV_8UC1, cv::Scalar(255));
