@@ -30,8 +30,26 @@ namespace midproj
         return avgCoorOnFrameBeams;
     }
 
+    std::array<cv::Point2f, SliceTransform::CORNER_COUNT> SliceTransform::get_corner_image_coordinates()
+    {
+        return SliceTransform::s_frameCornersImgCoor;
+    }
 
-    /// @brief Initializes the static private class member s_frontPanelHomgraphyMat used to find the world x coordinate of each slice.
+    /// @brief Acquires a copy of the static private class member s_frontPanelHomographyMat
+    /// @return Copy of the specified class member
+    cv::Mat SliceTransform::get_front_panel_homography_mat() 
+    {
+        return SliceTransform::s_frontPanelHomographyMat.clone();
+    }
+
+    /// @brief Acquires a copy of the static private class member s_leftPanelHomographyMat.
+    /// @return Copy of the specified class member.
+    cv::Mat SliceTransform::get_left_panel_homography_mat() 
+    {
+        return SliceTransform::s_leftPanelHomographyMat.clone();
+    }
+
+    /// @brief Initializes the static private class member s_frontPanelHomgraphyMat used to find the world x coordinate of each slice. Front panel homography mat is shared among all slices.
     void SliceTransform::init_front_panel_homography()
     {
         std::array<cv::Point2f, 4> frontPanelVerticsWorld;
@@ -48,6 +66,18 @@ namespace midproj
         s_frontPanelHomographyMat = cv::findHomography(frontPanelVerticsImage, frontPanelVerticsWorld);
     }
 
+    /// @brief Initialize the static private class member s_leftPanelHomographyMat used to find world y and z coordinates of each slice. Left panel homography mat is specific to each slice.
+    /// @param pointsOnBeams Average coordiantes of the red pixels on frame beams in e slice.
+    void SliceTransform::init_left_panel_homography(const std::array<cv::Point2f, BEAM_COUNT>& pointsOnBeams)
+    {
+        std::array<cv::Point2f, BEAM_COUNT> frameCornersOnWorldCoor2d;
+        frameCornersOnWorldCoor2d[NEAR_TOP] = cv::Point2f(s_frameCornersWorldCoor[NEAR_TL].y, s_frameCornersWorldCoor[NEAR_TL].z);
+        frameCornersOnWorldCoor2d[NEAR_BOT] = cv::Point2f(s_frameCornersWorldCoor[NEAR_BL].y, s_frameCornersWorldCoor[NEAR_BL].z);
+        frameCornersOnWorldCoor2d[FAR_TOP] = cv::Point2f(s_frameCornersWorldCoor[FAR_TL].y, s_frameCornersWorldCoor[FAR_TL].z);
+        frameCornersOnWorldCoor2d[FAR_BOT] = cv::Point2f(s_frameCornersWorldCoor[FAR_BL].y, s_frameCornersWorldCoor[FAR_BL].z);
+        SliceTransform::s_leftPanelHomographyMat = cv::findHomography(pointsOnBeams, frameCornersOnWorldCoor2d);
+    }
+
     /// @brief Get the world coordinates of every true pixel in sculpturePixelMap
     /// @param pointsOnBeams 4 averaged coordinates of the red pixels on the frame beams in image coordinate system.
     /// @param sculpturePixelMap A binary image where the pixels of red scan line on the sculpture is true, and false anywhere else.
@@ -60,13 +90,7 @@ namespace midproj
         std::vector<cv::Point3d> sculptureRedPixelCoorsWorld3f(sculptureRedPixelCount);
         double sliceWorldX = _get_world_x_from_front_panel_homography(pointsOnBeams);
 
-        std::array<cv::Point2f, BEAM_COUNT> frameCornersOnWorldCoor2d;
-        frameCornersOnWorldCoor2d[NEAR_TOP] = cv::Point2f(s_frameCornersWorldCoor[NEAR_TL].y, s_frameCornersWorldCoor[NEAR_TL].z);
-        frameCornersOnWorldCoor2d[NEAR_BOT] = cv::Point2f(s_frameCornersWorldCoor[NEAR_BL].y, s_frameCornersWorldCoor[NEAR_BL].z);
-        frameCornersOnWorldCoor2d[FAR_TOP] = cv::Point2f(s_frameCornersWorldCoor[FAR_TL].y, s_frameCornersWorldCoor[FAR_TL].z);
-        frameCornersOnWorldCoor2d[FAR_BOT] = cv::Point2f(s_frameCornersWorldCoor[FAR_BL].y, s_frameCornersWorldCoor[FAR_BL].z);
-        const cv::Mat homographyMatrix = cv::findHomography(pointsOnBeams, frameCornersOnWorldCoor2d);
-        const std::vector<cv::Vec2f> yzOnWorldCoors = _get_world_yz_from_homography_projection(homographyMatrix, sculptureRedPixelCoorsImg2f);
+        const std::vector<cv::Vec2f> yzOnWorldCoors = _get_world_yz_from_left_panel_homography(sculptureRedPixelCoorsImg2f);
 
         for (size_t i = 0; i < sculptureRedPixelCount; i++)
             sculptureRedPixelCoorsWorld3f.at(i) = cv::Point3d(sliceWorldX, yzOnWorldCoors.at(i)[0], yzOnWorldCoors.at(i)[1]);
@@ -170,10 +194,10 @@ namespace midproj
         return avgXCoordinateWorld;
     }
 
-    std::vector<cv::Vec2f> SliceTransform::_get_world_yz_from_homography_projection(cv::InputArray homographyMat, const std::vector<cv::Point2f>& pixelsOnImageCoor)
+    std::vector<cv::Vec2f> SliceTransform::_get_world_yz_from_left_panel_homography(const std::vector<cv::Point2f>& pixelsOnImageCoor)
     {
         std::vector<cv::Vec2f> pixelsOnLeftPanelCoor(pixelsOnImageCoor.size());
-        cv::perspectiveTransform(pixelsOnImageCoor, pixelsOnLeftPanelCoor, homographyMat);
+        cv::perspectiveTransform(pixelsOnImageCoor, pixelsOnLeftPanelCoor, SliceTransform::s_leftPanelHomographyMat);
         return pixelsOnLeftPanelCoor;
     }
 
@@ -210,4 +234,5 @@ namespace midproj
     std::array<cv::Point3f, SliceTransform::CORNER_COUNT> SliceTransform::s_frameCornersWorldCoor;
     bool SliceTransform::s_beamLinesAreFitted = false;
     cv::Mat SliceTransform::s_frontPanelHomographyMat;
+    cv::Mat SliceTransform::s_leftPanelHomographyMat;
 } // namespace midproj

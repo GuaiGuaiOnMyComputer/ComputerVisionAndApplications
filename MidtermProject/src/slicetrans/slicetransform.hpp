@@ -35,6 +35,10 @@ namespace midproj
         static void fit_frame_beam_lines();
         static void load_frame_corners_from_vector(const std::vector<cv::Point2i>& cornerPointsImg, const std::vector<cv::Point3i>& cornerPointsWorld);
         static void init_front_panel_homography();
+        static void init_left_panel_homography(const std::array<cv::Point2f, BEAM_COUNT>& pointsOnBeams);
+        static std::array<cv::Point2f, CORNER_COUNT> get_corner_image_coordinates();
+        static cv::Mat get_front_panel_homography_mat();
+        static cv::Mat get_left_panel_homography_mat();
         static void refine_sculpture_pixel_map(cv::InputOutputArray sculpturePixelMap, int32_t iterations);
         static std::vector<cv::Point3d> get_slice_world_coordinate(const std::array<cv::Point2f, BEAM_COUNT> &pointsOnBeams, cv::InputArray sculpturePixelMap);
 
@@ -43,13 +47,14 @@ namespace midproj
         static BeamIndex _get_pixel_nearest_beam_index(const cv::Point2f &point);
         static cv::Point2f _get_avg_coordinate_of_pixel_on_beam(const std::vector<cv::Point2f> &allRedPixelCoors, const std::vector<BeamIndex> &allPixelBeamIndice, const BeamIndex beamIndex);
         static double _get_world_x_from_front_panel_homography(const std::array<cv::Point2f, BEAM_COUNT>& pointsOnBeams);
-        static std::vector<cv::Vec2f> _get_world_yz_from_homography_projection(cv::InputArray homographyMat, const std::vector<cv::Point2f>& pixelCoorsOnImage);
+        static std::vector<cv::Vec2f> _get_world_yz_from_left_panel_homography(const std::vector<cv::Point2f>& pixelCoorsOnImage);
 
     private : 
         static std::array<cv::Vec3f, BEAM_COUNT> s_beamLinesImgCoor;
         static std::array<cv::Point2f, CORNER_COUNT> s_frameCornersImgCoor;
         static std::array<cv::Point3f, CORNER_COUNT> s_frameCornersWorldCoor;
         static cv::Mat s_frontPanelHomographyMat;
+        static cv::Mat s_leftPanelHomographyMat;
         static bool s_beamLinesAreFitted;
     };
 }

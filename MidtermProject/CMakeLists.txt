@@ -93,7 +93,7 @@ target_include_directories( MaskDisplay
 
 
 target_sources( MaskDisplay 
-    PUBLIC src/main.cpp
+    PUBLIC src/display_masks.cpp
     PUBLIC src/predefines.hpp
     )
 

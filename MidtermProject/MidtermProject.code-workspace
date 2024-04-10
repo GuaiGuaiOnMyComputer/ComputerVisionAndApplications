@@ -81,7 +81,26 @@
 			"cfenv": "cpp",
 			"typeindex": "cpp",
 			"typeinfo": "cpp",
-			"variant": "cpp"
+			"variant": "cpp",
+			"filesystem": "cpp",
+			"ios": "cpp",
+			"locale": "cpp",
+			"queue": "cpp",
+			"xfacet": "cpp",
+			"xhash": "cpp",
+			"xiosbase": "cpp",
+			"xlocale": "cpp",
+			"xlocbuf": "cpp",
+			"xlocinfo": "cpp",
+			"xlocmes": "cpp",
+			"xlocmon": "cpp",
+			"xlocnum": "cpp",
+			"xloctime": "cpp",
+			"xmemory": "cpp",
+			"xstring": "cpp",
+			"xtr1common": "cpp",
+			"xtree": "cpp",
+			"xutility": "cpp"
 		}
 	},
 	"tasks": {
@@ -116,6 +135,32 @@
 				"type": "cppdbg",
 				"request": "launch",
 				"program": "${workspaceFolder}\\build\\${workspaceFolderBasename}.exe",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\build",
+				"environment": [],
+				"externalConsole": false,
+				"preLaunchTask": "cmake windows build project",
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\w64devkit\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "Launch Gdb with Cmake on Windows(secondary executable)",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\build\\MaskDisplay.exe",
 				"args": [],
 				"stopAtEntry": false,
 				"cwd": "${workspaceFolder}\\build",

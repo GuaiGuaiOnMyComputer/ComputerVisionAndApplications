@@ -64,6 +64,7 @@ int main(int32_t, char**)
         std::array<cv::Point2f, midproj::SliceTransform::BEAM_COUNT> avgRedPixelOnEachBeam = midproj::SliceTransform::get_red_pixels_on_frame(onBeamRedPixelMap);
         cv::bitwise_and(scannedSculptureMask, redPixelMaps.at(imgIndex), sculptureRedPixelMap);
 
+        midproj::SliceTransform::init_left_panel_homography(avgRedPixelOnEachBeam);
         midproj::SliceTransform::refine_sculpture_pixel_map(sculptureRedPixelMap, 2);
         sculpturePointCloudWorldInEachSlice.at(imgIndex) = midproj::SliceTransform::get_slice_world_coordinate(avgRedPixelOnEachBeam, sculptureRedPixelMap);
     }
