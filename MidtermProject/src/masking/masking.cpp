@@ -74,27 +74,38 @@ namespace midproj
         return scannedAreaMask;
     }
 
+    /// @brief Acquires a binary image where the rectangular area bounding the sculpture in all the scan images are true, everywhere else false.
+    /// @param imageSize Width and height of the scane images.
+    /// @param sculptureAreaRoi A predefined rectangular area bounding the sculpture in each scan images.
+    /// @return The mask specified.
+    cv::Mat get_sculpture_area_mask(const cv::Size2i& imageSize, const cv::Rect2i& sculptureAreaRoi)
+    {
+        cv::Mat sculptureAreaMask = cv::Mat(imageSize, CV_8UC1, cv::Scalar(0));
+        sculptureAreaMask(sculptureAreaRoi).setTo(255);
+        return sculptureAreaMask;
+    }
+
     /// @brief Acquire a binary image where all the pixels on the sculpture that have been swept by the red scan lines are true, and everywhere else false.
     /// @param scannedAreaMask A binary image where all the red pixels from all the scan images combined are true, and everywhere else false. Acquired from function get_scanned_area_mask.
     /// @param sculptureArea Predefined rectangular area bounding the sculpture in every scan images.
     /// @return The scanned sculpture mask.
-    cv::Mat get_scanned_sculpture_mask(cv::InputArray scannedAreaMask, const cv::Rect2i& sculptureArea)
+    cv::Mat get_scanned_sculpture_mask(cv::InputArray scannedAreaMask, cv::InputArray sculptureAreaMask)
     {
-        cv::Mat sculptureAreaMask = cv::Mat(scannedAreaMask.size(), CV_8UC1, cv::Scalar(0));
-        sculptureAreaMask(sculptureArea).setTo(255);
-        cv::bitwise_and(sculptureAreaMask, scannedAreaMask, sculptureAreaMask);
-        return sculptureAreaMask;
+        cv::Mat scannedSculptureMask;
+        cv::bitwise_and(sculptureAreaMask, scannedAreaMask, scannedSculptureMask);
+        return scannedSculptureMask;
     }
 
     /// @brief Acquire a binary image where all the pixels on the frame that have been swept by the red scan lines are true, and everywhere else false.
     /// @param scannedAreaMask A binary image where all the red pixels from all the scan images combined are true, and everywhere else false. Acquired from function get_scanned_area_mask.
     /// @param sculptureArea Predefined rectangular area bounding the sculpture in every scan images.
     /// @return The scanned sculpture mask.
-    cv::Mat get_scanned_frame_mask(cv::InputArray scannedAreaMask, const cv::Rect2i& sculptureArea)
+    cv::Mat get_scanned_frame_mask(cv::InputArray scannedAreaMask, cv::InputArray sculptureAreaMask)
     {
-        cv::Mat scannedFrameAreaMask = cv::Mat(scannedAreaMask.size(), CV_8UC1, cv::Scalar(255));
-        scannedFrameAreaMask(sculptureArea).setTo(0);
-        cv::bitwise_and(scannedFrameAreaMask, scannedAreaMask, scannedFrameAreaMask);
-        return scannedFrameAreaMask;
+        cv::Mat scannedFrameMask;
+        cv::Mat notSculptureAreaMask;
+        cv::bitwise_not(sculptureAreaMask, notSculptureAreaMask);
+        cv::bitwise_and(notSculptureAreaMask, scannedAreaMask, scannedFrameMask);
+        return scannedFrameMask;
     }
 }; // namespace midproj

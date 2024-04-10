@@ -34,11 +34,13 @@ int main(int32_t, char**)
     // A binary image in which everywhere the red scan line can reach is true, and anywhere else false.
     const cv::Mat scannedAreaMask = midproj::get_scanned_area_mask(redPixelMaps, foregroundMask, IMG_SIZE);
 
+    const cv::Mat sculptureAreaMask = midproj::get_sculpture_area_mask(IMG_SIZE, SCULPTURE_ROI);
+
     // A binary image in which everywhere on the sculpture that the red scan line can reach is true, and anywhere else false.
-    const cv::Mat scannedSculptureMask = midproj::get_scanned_sculpture_mask(scannedAreaMask, SCULPTURE_ROI);
+    const cv::Mat scannedSculptureMask = midproj::get_scanned_sculpture_mask(scannedAreaMask, sculptureAreaMask);
 
     // A binary image in which everywhere on the frame that the red scan line can reach is true, and anywhere else false.
-    const cv::Mat scannedFrameMask = midproj::get_scanned_frame_mask(scannedAreaMask, SCULPTURE_ROI);
+    const cv::Mat scannedFrameMask = midproj::get_scanned_frame_mask(scannedAreaMask, sculptureAreaMask);
 
     // Coordinates of the frame corners in the image coordinate system. Values measured using photo editing software.
     const std::vector<cv::Point2i> frameCornerCoorsImage2i = midproj::XyzIo::load_points_from_file_2i(FRAME_CORNER_2D_FILE_PATH);
