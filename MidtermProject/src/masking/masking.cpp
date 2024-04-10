@@ -8,7 +8,8 @@ namespace midproj
     namespace fs = std::filesystem;
 
     /// @brief Returns binarized image where pixels whose R values are larger than B and G values are true.
-    /// @param image The image to be binarized.
+    /// @param image Image to be binarized.
+    /// @param forgroundMask Binary image where the frame and the sculpture is ture, and anywhere else false.
     cv::Mat get_red_pixel_map(cv::InputArray image, cv::InputArray foregroundMask)
     {
         cv::Mat imageForegroundOnly;
@@ -57,6 +58,7 @@ namespace midproj
     /// @brief Acquire a binary image where all the pixels that have been swept by the red scan lines are true, and everywhere else false
     /// @param allScanProfiles All of the scan profiles as binary images stored in a vector.
     /// @param foregroundMask Binary image where both the frame and the sculpture area are true, and everywhere else false.
+    /// @param imageSize Width and height of the scan images.
     /// @return The scanning area mask.
     cv::Mat get_scanned_area_mask(const std::vector<cv::Mat>& allScanProfiles, cv::InputArray foregroundMask, const cv::Size2i& imageSize)
     {

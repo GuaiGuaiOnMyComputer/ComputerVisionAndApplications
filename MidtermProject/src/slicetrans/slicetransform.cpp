@@ -9,7 +9,6 @@ namespace midproj
 {
     /// @brief Acquires 4 averaged coordinates of the red pixels on the 4 frame beams in a redPixelMapOnBeam.
     /// @param redPixelMapOnBeam The red pixel map in image coordinate system to extract 4 averaged coordinate from.
-    /// @param scannedFrameMask A mask where the area on the frame beam that is scanned by the red line is white and black elsewhere
     /// @return Array of 4 average coordinates of the red pixels on the 4 frame beams.
     std::array<cv::Point2f, SliceTransform::BEAM_COUNT> SliceTransform::get_red_pixels_on_frame(cv::InputArray redPixelMapOnBeam)
     {
