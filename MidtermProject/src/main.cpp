@@ -1,6 +1,7 @@
 #include "masking.hpp"
 #include "xyzio.hpp"
 #include "slicetransform.hpp"
+#include "scanimgio.hpp"
 #include "predefines.hpp"
 #include <opencv2/opencv.hpp>
 #include <vector>
@@ -10,15 +11,12 @@
 #include <sstream>
 
 
-bool assetCheck(const std::filesystem::path &pathToImageAssetFolder, const std::vector<std::filesystem::path> &pathToEachXyzAssets);
-std::vector<cv::Mat> loadAllImages(const std::filesystem::path &allImageFolderPath, uint32_t imageCount);
-
 int main(int32_t, char**)
 {
     // Check if all of the require images are present
     // Load them all into cv::Mat or exit the program if they are not
-    assetCheck(PATH_TO_ALL_SCAN_IMAGES, {FRAME_CORNER_2D_FILE_PATH, FRAME_CORNER_3D_FILE_PATH, SCULPTURE_ROI_FILE_PATH});
-    std::vector<cv::Mat> scanImages = loadAllImages(PATH_TO_ALL_SCAN_IMAGES, SCAN_IMAGE_COUNT);
+    midproj::ScanImageIo::asset_check(PATH_TO_ALL_SCAN_IMAGES, {FRAME_CORNER_2D_FILE_PATH, FRAME_CORNER_3D_FILE_PATH, SCULPTURE_ROI_FILE_PATH});
+    std::vector<cv::Mat> scanImages = midproj::ScanImageIo::load_all_images(PATH_TO_ALL_SCAN_IMAGES, SCAN_IMAGE_COUNT);
 
     // A Binary image where the sculpture and the frames are true, and false anywhere else.
     const cv::Mat foregroundMask = midproj::get_foreground_mask(scanImages, IMG_SIZE);
@@ -75,64 +73,4 @@ int main(int32_t, char**)
     else
         std::cout << "Xyz file has been written to " << std::filesystem::absolute(OUTPUT_XYZ_FILE) << '\n';
     return 0;
-}
-
-/// @brief Load all of the 3-channel scan images into a vector.
-/// @param allImageFolderPath The path to folder containing all of the scan images.
-/// @param imageCount Number of images to load.
-/// @return A vector containing all of the 3-channel scan images.
-std::vector<cv::Mat> loadAllImages(const std::filesystem::path& allImageFolderPath, uint32_t imageCount)
-{
-    std::vector<cv::Mat> images;
-    images.reserve(imageCount);
-    std::filesystem::path filePath;
-    std::stringstream fileName;
-
-    for (size_t i = 0; i < imageCount; i++)
-    {
-        fileName << std::setfill('0') << std::setw(4) << i << ".jpg";
-        filePath = allImageFolderPath / fileName.str();
-        images.push_back(cv::imread(filePath.string(), cv::IMREAD_COLOR));
-        filePath.remove_filename();
-        fileName.str(std::string());
-    }
-    return images;
-}
-
-/// @brief Check if all 54 images are present. Quit the program if not.
-/// @return true if all the images are found.
-bool assetCheck(const std::filesystem::path& pathToImageAssetFolder, const std::vector<std::filesystem::path>& pathToEachXyzAssets)
-{
-    namespace fs = std::filesystem;
-
-    // check for all 54 images
-    std::vector<fs::path> missingImageList;
-    std::stringstream fileName;
-    fs::path filePath;
-    filePath /= pathToImageAssetFolder;
-    for (size_t i = 0; i < 54; i++)
-    {
-        fileName << std::setfill('0') << std::setw(4) << i << ".jpg";
-        filePath /= fileName.str();
-        if (!fs::exists(filePath))
-            missingImageList.push_back(fs::absolute(filePath));
-        filePath.remove_filename();
-        fileName.str(std::string());
-    }
-    for (const fs::path& missingFilePath : missingImageList)
-        std::cout << "The image file at " << fs::absolute(missingFilePath) << " is missing.";
-
-    std::vector<fs::path> missingXyzFileList;
-    for (const fs::path& xyzAssetPath : pathToEachXyzAssets)
-    {
-        if (!fs::exists(xyzAssetPath))
-            missingXyzFileList.push_back(xyzAssetPath);
-    }
-    for (const fs::path& missingFilePath : missingXyzFileList)
-        std::cout << "The necessary xyz file " << fs::absolute(missingFilePath) << " is missing.";
-
-    if ((missingImageList.size() != 0) | (missingXyzFileList.size() != 0))
-        exit(-1);
-
-    return true;
 }

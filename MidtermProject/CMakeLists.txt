@@ -51,9 +51,11 @@ set(OPENCV_LINK_LIBS
 add_subdirectory(src/xyzio)
 add_subdirectory(src/masking)
 add_subdirectory(src/slicetrans)
+add_subdirectory(src/scanimgio)
 set_target_properties(midproj_xyzio PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
 set_target_properties(midproj_masking PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
 set_target_properties(midproj_slicetrans PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
+set_target_properties(midproj_scanimgio PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
 
 add_executable(MidtermProject)
 
@@ -61,6 +63,7 @@ target_include_directories( MidtermProject
     PUBLIC src/masking
     PUBLIC src/slicetrans
     PUBLIC src/xyzio
+    PUBLIC src/scanimgio
     PUBLIC ${OPENCV_INCLUDE_DIR}
     )
 
@@ -74,5 +77,30 @@ target_link_libraries(MidtermProject
     midproj_masking
     midproj_xyzio
     midproj_slicetrans
+    midproj_scanimgio
+    ${OPENCV_LINK_LIBS}
+    )
+
+add_executable(MaskDisplay)
+
+target_include_directories( MaskDisplay
+    PUBLIC src/masking
+    PUBLIC src/slicetrans
+    PUBLIC src/xyzio
+    PUBLIC src/scanimgio
+    PUBLIC ${OPENCV_INCLUDE_DIR}
+    )
+
+
+target_sources( MaskDisplay 
+    PUBLIC src/main.cpp
+    PUBLIC src/predefines.hpp
+    )
+
+target_link_libraries(MaskDisplay 
+    midproj_masking
+    midproj_xyzio
+    midproj_slicetrans
+    midproj_scanimgio
     ${OPENCV_LINK_LIBS}
     )
