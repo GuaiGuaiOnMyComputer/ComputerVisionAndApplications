@@ -117,6 +117,7 @@ int main(int, char**)
             cv::imwrite((maskImagesOutputPath / std::filesystem::path("ScannedSculptureMask.jpg")).string(), scannedSculptureMask(roi));
             cv::imwrite((maskImagesOutputPath / std::filesystem::path("ScannedFrameMask.jpg")).string(), scannedFrameMask(roi));
             cv::imwrite((maskImagesOutputPath / std::filesystem::path("CornersAndBeamLines.jpg")).string(), aribritaryOriginalImage(roi));
+            cv::imwrite((maskImagesOutputPath / std::filesystem::path("RedPixelMap.jpg")).string(), aribritaryRedPixelMap(roi));
             cv::imwrite((maskImagesOutputPath / std::filesystem::path("FrontPanelHomographyProjection.jpg")).string(), aribritaryFrontPanelHomography);
             cv::imwrite((maskImagesOutputPath / std::filesystem::path("LeftPanelHomographyProjection.jpg")).string(), aribritaryLeftPanelHomography);
         }
