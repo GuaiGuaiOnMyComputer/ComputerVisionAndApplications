@@ -35,13 +35,20 @@
 
 # Computer Vision and Applications Midterm Project
 
+<div class="section-title">
+Project Executable
+</div>
+<p>
+The precompiled executable and all of the required dependencies are located in build/MidtermProject.exe, and the output xyz file will be at build/output/吳宇昕_m11225013.xyz.
+</p>
+
 <div class=section-title>
   Output Compared to Ground Truth
 </div>
 <center>
-  <img src="./reportassets/output-vs-groundtruth_left.png" height="300px">
-  <img src="./reportassets/output-vs-groundtruth_front.png" height="300px">
-  <img src="./reportassets/output-vs-groundtruth_top.png" height="300px">
+  <img src="./reportassets/output-vs-groundtruth_left.png" height="260px">
+  <img src="./reportassets/output-vs-groundtruth_front.png" height="260px">
+  <img src="./reportassets/output-vs-groundtruth_top.png" height="260px">
 </center>
 
 <div class=img-text>
@@ -54,7 +61,7 @@
 </div>
 
 <p>
-The red solid mesh is the ground truth provided by professor and the blue points are the predicted sculpture surface generated from the scan images. The blue points generally follow the sculpture surface but there is quite a lot of extras. Maybe some additional refinements can be done to the red scanning profiles to reduce the amount of such noise, but for the time being this is about the best result that the current method can provide.
+The red solid mesh is the ground truth provided by professor and the blue points are the predicted sculpture surface generated from the scan images. The blue points generally follow the sculpture surface but there is quite a lot of extras.
 </p>
 
 <div class=section-title>
@@ -62,7 +69,7 @@ The red solid mesh is the ground truth provided by professor and the blue points
 </div>
 
 <center>
-  <img style="height:350px" src="reportassets/ImageProcessingProcedure.jpg">
+  <img style="height:340px" src="reportassets/ImageProcessingProcedure.jpg">
 </center>
 
 <center>
