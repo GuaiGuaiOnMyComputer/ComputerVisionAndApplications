@@ -1,0 +1,189 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+
+	"settings": {
+		"dotnet.defaultSolution": "disable",
+		"cmake.preferredGenerators": ["MinGW Makefiles", "Unix Makefiles"],
+		"C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+		"files.associations": {
+			"chrono": "cpp",
+			"iosfwd": "cpp",
+			"array": "cpp",
+			"atomic": "cpp",
+			"bit": "cpp",
+			"*.tcc": "cpp",
+			"cctype": "cpp",
+			"charconv": "cpp",
+			"cinttypes": "cpp",
+			"clocale": "cpp",
+			"cmath": "cpp",
+			"codecvt": "cpp",
+			"compare": "cpp",
+			"complex": "cpp",
+			"concepts": "cpp",
+			"condition_variable": "cpp",
+			"cstdarg": "cpp",
+			"cstddef": "cpp",
+			"cstdint": "cpp",
+			"cstdio": "cpp",
+			"cstdlib": "cpp",
+			"cstring": "cpp",
+			"ctime": "cpp",
+			"cwchar": "cpp",
+			"cwctype": "cpp",
+			"deque": "cpp",
+			"forward_list": "cpp",
+			"list": "cpp",
+			"map": "cpp",
+			"set": "cpp",
+			"string": "cpp",
+			"unordered_map": "cpp",
+			"unordered_set": "cpp",
+			"vector": "cpp",
+			"exception": "cpp",
+			"algorithm": "cpp",
+			"functional": "cpp",
+			"iterator": "cpp",
+			"memory": "cpp",
+			"memory_resource": "cpp",
+			"numeric": "cpp",
+			"optional": "cpp",
+			"random": "cpp",
+			"ratio": "cpp",
+			"string_view": "cpp",
+			"system_error": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"utility": "cpp",
+			"format": "cpp",
+			"fstream": "cpp",
+			"future": "cpp",
+			"initializer_list": "cpp",
+			"iomanip": "cpp",
+			"iostream": "cpp",
+			"istream": "cpp",
+			"limits": "cpp",
+			"mutex": "cpp",
+			"new": "cpp",
+			"numbers": "cpp",
+			"ostream": "cpp",
+			"ranges": "cpp",
+			"semaphore": "cpp",
+			"span": "cpp",
+			"sstream": "cpp",
+			"stdexcept": "cpp",
+			"stop_token": "cpp",
+			"streambuf": "cpp",
+			"thread": "cpp",
+			"cfenv": "cpp",
+			"typeindex": "cpp",
+			"typeinfo": "cpp",
+			"variant": "cpp",
+			"filesystem": "cpp",
+			"ios": "cpp",
+			"locale": "cpp",
+			"queue": "cpp",
+			"xfacet": "cpp",
+			"xhash": "cpp",
+			"xiosbase": "cpp",
+			"xlocale": "cpp",
+			"xlocbuf": "cpp",
+			"xlocinfo": "cpp",
+			"xlocmes": "cpp",
+			"xlocmon": "cpp",
+			"xlocnum": "cpp",
+			"xloctime": "cpp",
+			"xmemory": "cpp",
+			"xstring": "cpp",
+			"xtr1common": "cpp",
+			"xtree": "cpp",
+			"xutility": "cpp"
+		}
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "cmake windows build project",
+				"type": "shell",
+				"command": "cmake",
+				"args": [
+					"--build",
+					"${workspaceFolder}\\build",
+					"-j4"
+				]
+			},
+			{
+				"label": "cmake linux build project",
+				"type": "shell",
+				"command": "cmake",
+				"args": [
+					"--build",
+					"${workspaceFolder}/build"
+				]
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch Gdb with Cmake on Windows",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}\\build\\${workspaceFolderBasename}.exe",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}\\build",
+				"environment": [],
+				"externalConsole": false,
+				"preLaunchTask": "cmake windows build project",
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\w64devkit\\bin\\gdb.exe",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			},
+			{
+				"name": "Launch Gdb with Cmake on Linux",
+				"type": "cppdbg",
+				"request": "launch",
+				"program": "${workspaceFolder}/build/${workspaceFolderBasename}",
+				"args": [],
+				"stopAtEntry": false,
+				"cwd": "${workspaceFolder}/build",
+				"environment": [],
+				"externalConsole": false,
+				"preLaunchTask": "cmake linux build project",
+				"MIMode": "gdb",
+				"miDebuggerPath": "/usr/bin/gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					},
+					{
+						"description": "Set Disassembly Flavor to Intel",
+						"text": "-gdb-set disassembly-flavor intel",
+						"ignoreFailures": true
+					}
+				]
+			}
+		],
+		"compounds": []
+	}
+}

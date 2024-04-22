@@ -53,3 +53,5 @@ _deps
 **copy**
 # exclude files used to submit to moodle
 **M112**
+# exculde asset files with large file size
+Homework3/assets/Santa.xyz
