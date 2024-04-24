@@ -35,18 +35,26 @@ namespace hw3
             ~CoorAndNormal3D() noexcept override;
         };
 
-        class CoorAndNormal2D : public _DataPoint
+        class Coor2D : public _DataPoint, cv::Point2d
         {
         public:
-            cv::Point2d Coor;
-            cv::Vec2d Normal;
             static constexpr int32_t Dimensions = 2;
-            static constexpr int32_t Components = 2;
+            static constexpr int32_t Components = 1;
 
-            CoorAndNormal2D(std::array<double, Dimensions> xyzCoordinates, std::array<double, Dimensions> xyzNormals) noexcept;
-            CoorAndNormal2D(const std::array<double, Dimensions * Components> &data) noexcept;
-            CoorAndNormal2D() noexcept;
-            ~CoorAndNormal2D() noexcept override;
+            Coor2D(const std::array<double, Dimensions * Components> &data) noexcept;
+            Coor2D() noexcept;
+            ~Coor2D() noexcept override;
+        };
+
+        class Coor3D : public _DataPoint, cv::Point3d
+        {
+        public:
+            static constexpr int32_t Dimensions = 3;
+            static constexpr int32_t Components = 1;
+
+            Coor3D(const std::array<double, Dimensions * Components> &data) noexcept;
+            Coor3D() noexcept;
+            ~Coor3D() noexcept override;
         };
 
         template<class T>

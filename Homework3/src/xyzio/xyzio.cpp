@@ -22,14 +22,13 @@ namespace hw3
     XyzIo::CoorAndNormal3D::CoorAndNormal3D() noexcept = default;
     XyzIo::CoorAndNormal3D::~CoorAndNormal3D() noexcept = default;
 
-    XyzIo::CoorAndNormal2D::CoorAndNormal2D(std::array<double, Dimensions> xyzCoordinates, std::array<double, Dimensions> xyzNormals) noexcept
-    {
-        Coor = cv::Point2d(xyzCoordinates[0], xyzCoordinates[1]);
-        Normal = cv::Vec2d(xyzNormals[0], xyzNormals[1]);
-    }
-    XyzIo::CoorAndNormal2D::CoorAndNormal2D(const std::array<double, Dimensions * Components> &data) noexcept : Coor{cv::Point2d(data[0], data[1])}, Normal{cv::Vec2d(data[3], data[4])} {}
-    XyzIo::CoorAndNormal2D::CoorAndNormal2D() noexcept = default;
-    XyzIo::CoorAndNormal2D::~CoorAndNormal2D() noexcept = default;
+    XyzIo::Coor2D::Coor2D(const std::array<double, Dimensions * Components> &data) noexcept : cv::Point2d(data[0], data[1]) {}
+    XyzIo::Coor2D::Coor2D() noexcept = default;
+    XyzIo::Coor2D::~Coor2D() noexcept = default;
+
+    XyzIo::Coor3D::Coor3D(const std::array<double, Dimensions * Components> &data) noexcept : cv::Point3d(data[0], data[1], data[2]) {}
+    XyzIo::Coor3D::Coor3D() noexcept = default;
+    XyzIo::Coor3D::~Coor3D() noexcept = default;
 
     XyzIo::_DataPoint::_DataPoint() noexcept = default;
     XyzIo::_DataPoint::~_DataPoint() noexcept = default;
