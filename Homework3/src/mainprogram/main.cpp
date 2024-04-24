@@ -17,5 +17,20 @@ int main(int , char**)
     std::vector<XyzIo::CoorAndNormal3D> santaPointsAndNor3D = XyzIo::load_points_from_file<XyzIo::CoorAndNormal3D>(SANTA_XYZ_PATH, 1);
     std::vector<XyzIo::Coor2D> santaPoints2d = XyzIo::load_points_from_file<XyzIo::Coor2D>(SANTA_FEATURE_POINTS_2D_XYZ_PATH, 0);
     std::vector<XyzIo::Coor3D> santaPoints3d = XyzIo::load_points_from_file<XyzIo::Coor3D>(SANTA_FEATURE_POINTS_3D_XYZ_PATH, 0);
+
+    cv::Mat cameraMatrix, distortionCoeff, rotationVector, translationVector;
+    const cv::Size IMG_SIZE(2747, 1835);
+    std::vector<std::vector<cv::Point3f>> tmpA(1);
+    for (XyzIo::Coor3D pt : santaPoints3d)
+    {
+        tmpA[0].emplace_back(pt.x, pt.y, pt.z);
+    }
+    std::vector<std::vector<cv::Point2f>> tmpB(1);
+    for (XyzIo::Coor2D pt : santaPoints2d)
+    {
+        tmpB[0].emplace_back(pt.x, pt.y);
+    }
+    cv::calibrateCamera(tmpA, tmpB, IMG_SIZE, cameraMatrix, distortionCoeff, rotationVector, translationVector);
+
     return 0;
 }

@@ -35,7 +35,7 @@ namespace hw3
             ~CoorAndNormal3D() noexcept override;
         };
 
-        class Coor2D : public _DataPoint, cv::Point2d
+        class Coor2D : public _DataPoint, public cv::Point2d
         {
         public:
             static constexpr int32_t Dimensions = 2;
@@ -46,7 +46,7 @@ namespace hw3
             ~Coor2D() noexcept override;
         };
 
-        class Coor3D : public _DataPoint, cv::Point3d
+        class Coor3D : public _DataPoint, public cv::Point3d
         {
         public:
             static constexpr int32_t Dimensions = 3;
