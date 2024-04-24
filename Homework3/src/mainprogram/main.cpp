@@ -14,6 +14,6 @@ int main(int , char**)
 
     AssetCheck::check_if_asset_exist(
         {SANTA_XYZ_PATH, SANTA_JPG_PATH, SANTA_FEATURE_POINTS_2D_XYZ_PATH, SANTA_FEATURE_POINTS_3D_XYZ_PATH});
-    std::vector<XyzIo::PointCoorAndNormal> vtr = XyzIo::load_points_from_file<XyzIo::PointCoorAndNormal>(SANTA_XYZ_PATH, 1);
+    std::vector<XyzIo::CoorAndNormal3D> vtr = XyzIo::load_points_from_file<XyzIo::CoorAndNormal3D>(SANTA_XYZ_PATH, 1);
     return 0;
 }

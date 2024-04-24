@@ -9,18 +9,44 @@ namespace hw3
 
     class XyzIo
     {
-    public:
-        struct PointCoorAndNormal
+    private:
+        class _DataPoint
         {
+        public:
+            static constexpr int32_t Dimensions = -1;
+            static constexpr int32_t Components = -1;
+        protected:
+            _DataPoint() noexcept;
+            virtual ~_DataPoint() noexcept;
+        };
+
+    public:
+        class CoorAndNormal3D : public _DataPoint
+        {
+        public:
             cv::Point3d Coor;
             cv::Vec3d Normal;
-            constexpr static int32_t Dimensions = 3;
-            constexpr static int32_t Components = 2;
+            static constexpr int32_t Dimensions = 3;
+            static constexpr int32_t Components = 2;
 
-            PointCoorAndNormal(std::array<double, Dimensions> xyzCoordinates, std::array<double, Dimensions> xyzNormals) noexcept;
-            PointCoorAndNormal(const std::array<double, Dimensions * Components> &data) noexcept;
-            PointCoorAndNormal();
-            ~PointCoorAndNormal();
+            CoorAndNormal3D(std::array<double, Dimensions> xyzCoordinates, std::array<double, Dimensions> xyzNormals) noexcept;
+            CoorAndNormal3D(const std::array<double, Dimensions * Components> &data) noexcept;
+            CoorAndNormal3D() noexcept;
+            ~CoorAndNormal3D() noexcept override;
+        };
+
+        class CoorAndNormal2D : public _DataPoint
+        {
+        public:
+            cv::Point2d Coor;
+            cv::Vec2d Normal;
+            static constexpr int32_t Dimensions = 2;
+            static constexpr int32_t Components = 2;
+
+            CoorAndNormal2D(std::array<double, Dimensions> xyzCoordinates, std::array<double, Dimensions> xyzNormals) noexcept;
+            CoorAndNormal2D(const std::array<double, Dimensions * Components> &data) noexcept;
+            CoorAndNormal2D() noexcept;
+            ~CoorAndNormal2D() noexcept override;
         };
 
         template<class T>
@@ -61,5 +87,7 @@ namespace hw3
             }
             return T(parsedLine);
         }
+
+
     };
 }
