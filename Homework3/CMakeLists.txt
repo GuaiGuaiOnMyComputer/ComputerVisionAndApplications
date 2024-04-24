@@ -50,5 +50,7 @@ set(OPENCV_LINK_LIBS
 
 add_subdirectory(src/xyzio)
 add_subdirectory(src/mainprogram)
+add_subdirectory(src/assetcheck)
 set_target_properties(Homework3 PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
 set_target_properties(hw3_xyzio PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)
+set_target_properties(hw3_assetcheck PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../../../build)

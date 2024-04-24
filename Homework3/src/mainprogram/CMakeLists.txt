@@ -14,6 +14,7 @@ target_sources(Homework3
 target_include_directories( Homework3 PUBLIC
     ${OPENCV_INCLUDE_DIR}
     ../xyzio
+    ../assetcheck
     )
 target_link_directories( Homework3  PUBLIC
     ${OPENCV_LIB_DIR}
@@ -22,4 +23,5 @@ target_link_directories( Homework3  PUBLIC
 target_link_libraries(Homework3 PUBLIC
     ${OPENCV_LINK_LIBS}
     hw3_xyzio
+    hw3_assetcheck
     )
