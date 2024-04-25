@@ -12,63 +12,74 @@ namespace hw3
     private:
         class _DataPoint
         {
-        public:
-            static constexpr int32_t Dimensions = -1;
-            static constexpr int32_t Components = -1;
         protected:
             _DataPoint() noexcept;
             virtual ~_DataPoint() noexcept;
         };
 
     public:
+
+        template<class T>
         class CoorAndNormal3D : public _DataPoint
         {
         public:
-            cv::Point3d Coor;
-            cv::Vec3d Normal;
             static constexpr int32_t Dimensions = 3;
             static constexpr int32_t Components = 2;
+            cv::Point3_<T> Coor;
+            cv::Vec<T, Dimensions> Normal;
 
-            CoorAndNormal3D(std::array<double, Dimensions> xyzCoordinates, std::array<double, Dimensions> xyzNormals) noexcept;
-            CoorAndNormal3D(const std::array<double, Dimensions * Components> &data) noexcept;
-            CoorAndNormal3D() noexcept;
-            ~CoorAndNormal3D() noexcept override;
+            CoorAndNormal3D(std::array<T, Dimensions> xyzCoordinates, std::array<T, Dimensions> xyzNormals) noexcept
+            {
+                Coor = cv::Point3_<T>(xyzCoordinates[0], xyzCoordinates[1], xyzCoordinates[2]);
+                Normal = cv::Vec<T, Dimensions>(xyzNormals[0], xyzNormals[1], xyzNormals[2]);
+            }
+
+            CoorAndNormal3D(const std::array<T, Dimensions * Components> &data) noexcept
+            {
+                Coor = cv::Point3_<T>(data[0], data[1], data[2]);
+                Normal = cv::Vec<T, Dimensions>(data[3], data[4], data[5]);
+            }
+
+            CoorAndNormal3D() noexcept = default;
+            ~CoorAndNormal3D() noexcept override {}
         };
 
-        class Coor2D : public _DataPoint, public cv::Point2d
+        template<class T>
+        class Coor2D : public _DataPoint, public cv::Point_<T>
         {
         public:
             static constexpr int32_t Dimensions = 2;
             static constexpr int32_t Components = 1;
 
-            Coor2D(const std::array<double, Dimensions * Components> &data) noexcept;
-            Coor2D() noexcept;
-            ~Coor2D() noexcept override;
+            Coor2D(const std::array<T, Dimensions * Components> &data) noexcept : cv::Point_<T>(data[0], data[1]) {}
+            Coor2D() noexcept = default;
+            ~Coor2D() noexcept override {}
         };
 
-        class Coor3D : public _DataPoint, public cv::Point3d
+        template<class T>
+        class Coor3D : public _DataPoint, public cv::Point3_<T>
         {
         public:
             static constexpr int32_t Dimensions = 3;
             static constexpr int32_t Components = 1;
 
-            Coor3D(const std::array<double, Dimensions * Components> &data) noexcept;
-            Coor3D() noexcept;
-            ~Coor3D() noexcept override;
+            Coor3D(const std::array<T, Dimensions * Components> &data) noexcept : cv::Point3_<T>(data[0], data[1], data[2]) {}
+            Coor3D() noexcept = default;
+            ~Coor3D() noexcept override {}
         };
 
-        template<class T>
-        static std::vector<T> load_points_from_file(const fs::path &filePath, const uint32_t emptyLineCount)
+        template<class TrowType, class TelementType>
+        static std::vector<TrowType> load_points_from_file(const fs::path &filePath, const uint32_t emptyLineCount)
         {
             std::ifstream fileHandle(filePath, std::ifstream::in);
             uint64_t lineCount = _getLineCount(fileHandle, emptyLineCount);
-            std::vector<T> parsedLines(lineCount);
+            std::vector<TrowType> parsedLines(lineCount);
 
             std::string lineContent;
             for (size_t line = 0; line < lineCount; line++)
             {
                 std::getline(fileHandle, lineContent);
-                parsedLines.at(line) = _parseLine<T,  T::Dimensions,  T::Components>(lineContent);
+                parsedLines.at(line) = _parseLine<TrowType, TelementType, TrowType::Dimensions, TrowType::Components>(lineContent);
             }
             return parsedLines;
         }
@@ -79,10 +90,10 @@ namespace hw3
         static uint64_t _getLineCount(std::ifstream &fileHandle, const uint32_t emptyLineCount);
         static std::error_code _create_output_directory_if_not_exist(const fs::path &filePath);
 
-        template<class T, size_t Tdimensions, size_t Tcomponents>
-        static T _parseLine(const std::string &lineContent)
+        template<class TrowType, class TelementType, size_t Tdimensions, size_t Tcomponents>
+        static TrowType _parseLine(const std::string &lineContent)
         {
-            std::array<double, Tdimensions * Tcomponents> parsedLine; // an array of fixed size storing all the parsed numbers within a line of the file
+            std::array<TelementType, Tdimensions * Tcomponents> parsedLine; // an array of fixed size storing all the parsed numbers within a line of the file
             size_t parsedStringLength{0};
             for (size_t c = 0; c < Tcomponents; c++)
             {
@@ -93,7 +104,7 @@ namespace hw3
                     parsedStringLength += valueStringLen;
                 }
             }
-            return T(parsedLine);
+            return TrowType(parsedLine);
         }
 
 
