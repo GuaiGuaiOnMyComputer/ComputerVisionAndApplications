@@ -139,7 +139,7 @@ public:
 template<> class cv::DataType<hw3::XyzIo::Coor2D<double>>
 {
 public:
-    typedef float       value_type;
+    typedef double      value_type;
     typedef value_type  work_type;
     typedef value_type  channel_type;
     typedef value_type  vec_type;
@@ -169,7 +169,7 @@ public:
 template<> class cv::DataType<hw3::XyzIo::Coor3D<double>>
 {
 public:
-    typedef float       value_type;
+    typedef double      value_type;
     typedef value_type  work_type;
     typedef value_type  channel_type;
     typedef value_type  vec_type;

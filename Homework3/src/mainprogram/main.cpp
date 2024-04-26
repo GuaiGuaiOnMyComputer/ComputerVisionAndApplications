@@ -18,9 +18,6 @@ int main(int , char**)
     std::vector<XyzIo::Coor2D_f> santaPoints2d = XyzIo::load_points_from_file<XyzIo::Coor2D_f, float>(SANTA_FEATURE_POINTS_2D_XYZ_PATH, 0);
     std::vector<XyzIo::Coor3D_f> santaPoints3d = XyzIo::load_points_from_file<XyzIo::Coor3D_f, float>(SANTA_FEATURE_POINTS_3D_XYZ_PATH, 0);
 
-    cv::Mat cameraMatrix, distortionCoeff, rotationVector, translationVector;
-    const cv::Size IMG_SIZE(2747, 1835);
-    cv::calibrateCamera(santaPoints3d, santaPoints2d, IMG_SIZE, cameraMatrix, distortionCoeff, rotationVector, translationVector);
 
     return 0;
 }
