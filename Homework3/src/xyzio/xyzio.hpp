@@ -1,7 +1,8 @@
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/types.hpp>
+#include <opencv2/core/traits.hpp>
 #include <filesystem>
 #include <fstream>
-#include <string_view>
 
 namespace hw3
 {
@@ -16,6 +17,7 @@ namespace hw3
             _DataPoint() noexcept;
             virtual ~_DataPoint() noexcept;
         };
+
 
     public:
 
@@ -50,6 +52,7 @@ namespace hw3
         public:
             static constexpr int32_t Dimensions = 2;
             static constexpr int32_t Components = 1;
+            static constexpr cv::DataType<T> type = CV_MAKE_TYPE(sizeof(T), Components);
 
             Coor2D(const std::array<T, Dimensions * Components> &data) noexcept : cv::Point_<T>(data[0], data[1]) {}
             Coor2D() noexcept = default;
@@ -62,6 +65,7 @@ namespace hw3
         public:
             static constexpr int32_t Dimensions = 3;
             static constexpr int32_t Components = 1;
+            static constexpr cv::DataType<T> type = CV_MAKE_TYPE(sizeof(T), Components);
 
             Coor3D(const std::array<T, Dimensions * Components> &data) noexcept : cv::Point3_<T>(data[0], data[1], data[2]) {}
             Coor3D() noexcept = default;
@@ -83,6 +87,10 @@ namespace hw3
             }
             return parsedLines;
         }
+        using Coor3D_f = XyzIo::Coor3D<float>;
+        using Coor3D_d = XyzIo::Coor3D<double>;
+        using Coor2D_f = XyzIo::Coor2D<float>;
+        using Coor2D_d = XyzIo::Coor2D<double>;
 
         static bool write_xyz_point_cloud_file(const fs::path &filePath, const std::vector<std::vector<cv::Point3d>> &pointsInAllSlices);
 
@@ -109,4 +117,66 @@ namespace hw3
 
 
     };
+
+
 }
+
+template<> class cv::DataType<hw3::XyzIo::Coor2D<float>>
+{
+public:
+    typedef float       value_type;
+    typedef value_type  work_type;
+    typedef value_type  channel_type;
+    typedef value_type  vec_type;
+    enum { generic_type = 0,
+           depth        = CV_32F,
+           channels     = 2,
+           fmt          = (int)'f',
+           type         = CV_MAKETYPE(depth, channels)
+         };
+};
+
+template<> class cv::DataType<hw3::XyzIo::Coor2D<double>>
+{
+public:
+    typedef float       value_type;
+    typedef value_type  work_type;
+    typedef value_type  channel_type;
+    typedef value_type  vec_type;
+    enum { generic_type = 0,
+           depth        = CV_64F,
+           channels     = 2,
+           fmt          = (int)'f',
+           type         = CV_MAKETYPE(depth, channels)
+         };
+};
+
+template<> class cv::DataType<hw3::XyzIo::Coor3D<float>>
+{
+public:
+    typedef float       value_type;
+    typedef value_type  work_type;
+    typedef value_type  channel_type;
+    typedef value_type  vec_type;
+    enum { generic_type = 0,
+           depth        = CV_32F,
+           channels     = 3,
+           fmt          = (int)'f',
+           type         = CV_MAKETYPE(depth, channels)
+         };
+};
+
+template<> class cv::DataType<hw3::XyzIo::Coor3D<double>>
+{
+public:
+    typedef float       value_type;
+    typedef value_type  work_type;
+    typedef value_type  channel_type;
+    typedef value_type  vec_type;
+    enum { generic_type = 0,
+           depth        = CV_64F,
+           channels     = 3,
+           fmt          = (int)'f',
+           type         = CV_MAKETYPE(depth, channels)
+         };
+};
