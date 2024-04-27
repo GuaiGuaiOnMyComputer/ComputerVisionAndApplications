@@ -42,6 +42,7 @@ namespace hw3
         cv::SVD::compute(puvMat, w, u, vt, cv::SVD::FULL_UV);
 
         cv::Mat projectionMat = cv::Mat(u, cv::Range::all(), cv::Range(u.cols - 1, u.cols)).clone().reshape(1, 3);
+        projectionMat /= projectionMat.at<float>(2, 3); // normalize the bottom-left element to 1
         return projectionMat;
     }
 
@@ -50,4 +51,10 @@ namespace hw3
         cv::Mat puvMat = get_puv_mat(objectPoints, imagePoints);
         return get_projection_mat(puvMat);
     }
+
+    cv::Point3f PointProjection::project_to_world(const cv::Point2f &pt)
+    {
+
+    }
+    
 } // namespace hw3
