@@ -15,6 +15,7 @@ target_include_directories( Homework3 PUBLIC
     ${OPENCV_INCLUDE_DIR}
     ../xyzio
     ../assetcheck
+    ../pointprojection
     )
 target_link_directories( Homework3  PUBLIC
     ${OPENCV_LIB_DIR}
@@ -24,4 +25,5 @@ target_link_libraries(Homework3 PUBLIC
     ${OPENCV_LINK_LIBS}
     hw3_xyzio
     hw3_assetcheck
+    hw3_pointprojection
     )

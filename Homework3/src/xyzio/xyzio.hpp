@@ -1,6 +1,6 @@
+#pragma once
+
 #include <opencv2/opencv.hpp>
-#include <opencv2/core/types.hpp>
-#include <opencv2/core/traits.hpp>
 #include <filesystem>
 #include <fstream>
 
@@ -114,8 +114,6 @@ namespace hw3
             }
             return TrowType(parsedLine);
         }
-
-
     };
 
 
