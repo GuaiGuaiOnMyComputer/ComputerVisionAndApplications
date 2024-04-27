@@ -52,9 +52,18 @@ namespace hw3
         return get_projection_mat(puvMat);
     }
 
-    cv::Point3f PointProjection::project_to_world(const cv::Point2f &pt)
+    cv::Point2f PointProjection::project_to_image(const cv::Point3f &worldPt, const cv::Mat& projectionMatrix)
     {
-
+        cv::Vec4f pointInWorldHomo(worldPt.x, worldPt.y, worldPt.z, 1);
+        cv::Point3f pointInImageHomo(0, 0, 0);
+        for (size_t i = 0; i < 4; i++)
+        {
+            pointInImageHomo.x += projectionMatrix.at<float>(0, i) * pointInWorldHomo[0];
+            pointInImageHomo.y += projectionMatrix.at<float>(1, i) * pointInWorldHomo[1];
+            pointInImageHomo.z += projectionMatrix.at<float>(2, i) * pointInWorldHomo[2];
+        }
+        pointInImageHomo /= pointInImageHomo.z;
+        return cv::Point2f(pointInImageHomo.x, pointInImageHomo.y);
     }
     
 } // namespace hw3
