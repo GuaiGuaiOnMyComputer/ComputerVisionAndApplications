@@ -22,24 +22,22 @@ namespace hw3
     public:
 
         template<class T>
-        class CoorAndNormal3D : public _DataPoint
+        class CoorAndNormal3D : public _DataPoint, public cv::Point3_<T>, public cv::Vec<T, 3>
         {
         public:
             static constexpr int32_t Dimensions = 3;
             static constexpr int32_t Components = 2;
-            cv::Point3_<T> Coor;
-            cv::Vec<T, Dimensions> Normal;
 
             CoorAndNormal3D(std::array<T, Dimensions> xyzCoordinates, std::array<T, Dimensions> xyzNormals) noexcept
+                : cv::Point3_<T>(xyzCoordinates[0], xyzCoordinates[1], xyzCoordinates[2]), 
+                cv::Vec<T, Dimensions>(xyzNormals[0], xyzNormals[1], xyzNormals[2]) 
             {
-                Coor = cv::Point3_<T>(xyzCoordinates[0], xyzCoordinates[1], xyzCoordinates[2]);
-                Normal = cv::Vec<T, Dimensions>(xyzNormals[0], xyzNormals[1], xyzNormals[2]);
             }
 
             CoorAndNormal3D(const std::array<T, Dimensions * Components> &data) noexcept
+                : cv::Point3_<T>(data[0], data[1], data[2]),
+                cv::Vec<T, Dimensions>(data[3], data[4], data[5]) 
             {
-                Coor = cv::Point3_<T>(data[0], data[1], data[2]);
-                Normal = cv::Vec<T, Dimensions>(data[3], data[4], data[5]);
             }
 
             CoorAndNormal3D() noexcept = default;
@@ -87,10 +85,13 @@ namespace hw3
             }
             return parsedLines;
         }
+
         using Coor3D_f = XyzIo::Coor3D<float>;
         using Coor3D_d = XyzIo::Coor3D<double>;
         using Coor2D_f = XyzIo::Coor2D<float>;
         using Coor2D_d = XyzIo::Coor2D<double>;
+        using CoorAndNormal3D_f = XyzIo::CoorAndNormal3D<float>;
+        using CoorAndNormal3D_d = XyzIo::CoorAndNormal3D<double>;
 
         static bool write_xyz_point_cloud_file(const fs::path &filePath, const std::vector<std::vector<cv::Point3d>> &pointsInAllSlices);
 
