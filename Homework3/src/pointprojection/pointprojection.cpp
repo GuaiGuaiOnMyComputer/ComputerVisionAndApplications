@@ -44,11 +44,14 @@ namespace hw3
 
     cv::Mat PointProjection::get_projection_mat(cv::Mat& puvMat)
     {
-        cv::Mat w, u, vt;
+        // w, u and vt and represents the eigenvalues, left eigenvector matrix and transposed right eigenvalue matrix
+        cv::Mat w, u, vt, v;
         cv::SVD::compute(puvMat, w, u, vt, cv::SVD::FULL_UV);
+        v = vt.t();
 
-        cv::Mat projectionMat = cv::Mat(u, cv::Range::all(), cv::Range(u.cols - 1, u.cols)).clone().reshape(1, 3);
-        projectionMat /= projectionMat.at<float>(2, 3); // normalize the bottom-left element to 1
+        // get the right-most column in v and reshape it into 3x4 as the projection matrix
+        cv::Mat projectionMat = cv::Mat(v, cv::Range::all(), cv::Range(3, 4)).clone().reshape(1, 3);
+        cv::Mat(projectionMat, cv::Range::all(), cv::Range(0, 4)) /= projectionMat.at<float>(2, 3); // normalize the bottom-left element to 1
         return projectionMat;
     }
 
@@ -76,8 +79,8 @@ namespace hw3
             pointInImageHomo[2] += projectionMatrix.at<float>(2, i) * pointInWorldHomo[2];
         }
         // normalize the projected point by rescaling their z coordinates to 1
-        pointInImageHomo[0] /= pointInImageHomo[2];
-        pointInImageHomo[1] /= pointInImageHomo[2];
+        pointInImageHomo[0] /= worldPt.z;
+        pointInImageHomo[1] /= worldPt.z;
         out_imgPoint = cv::Point2f(pointInImageHomo[0], pointInImageHomo[1]);
     }
 

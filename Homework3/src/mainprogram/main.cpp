@@ -29,6 +29,7 @@ int main(int , char**)
     std::vector<cv::Point2f> reprojectedSantaPointsOnImage = hw3::PointProjection::project_to_image(santaPointsAndNor3D, projectionMat);
     const cv::Mat image = cv::imread(SANTA_JPG_PATH.string());
     cv::Mat debugImage = hw3::PointProjection::show_projected_points(image, reprojectedSantaPointsOnImage);
+    cv::namedWindow("DebugImage", cv::WindowFlags::WINDOW_FREERATIO);
     cv::imshow("DebugImage", debugImage);
     cv::waitKey(0);
     return 0;
