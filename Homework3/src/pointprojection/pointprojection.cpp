@@ -80,8 +80,8 @@ namespace hw3
             pointInImageHomo[2] += projectionMatrix.at<float>(2, i) * pointInWorldHomo[2];
         }
         // normalize the projected point by rescaling their z coordinates to 1
-        pointInImageHomo[0] /= worldPt.z;
-        pointInImageHomo[1] /= worldPt.z;
+        pointInImageHomo[0] /= pointInImageHomo[0];
+        pointInImageHomo[1] /= pointInImageHomo[0];
         out_imgPoint = cv::Point2f(pointInImageHomo[0], pointInImageHomo[1]);
     }
 
