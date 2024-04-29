@@ -106,4 +106,19 @@ namespace hw3
         cv::putText(annotatedImage, textOnImage, cv::Point(0, 0), cv::FONT_HERSHEY_SIMPLEX, 20, cv::Scalar(255, 255, 0));
         return annotatedImage;
     }
+
+    XyzIo::Rgb_ui8 PointProjection::get_rgb_from_2d_coordinate(const cv::Point2f& imagePoint, const cv::Mat& referenceImage)
+    {
+        return referenceImage.at<cv::Vec<uint8_t, 3>>((int32_t)(imagePoint.x), (int32_t)(imagePoint.y));
+    }
+
+    std::vector<XyzIo::Rgb_ui8> PointProjection::get_rgb_from_2d_coordinate(const std::vector<cv::Point2f> &imagePoints, const cv::Mat& referenceImage)
+    {
+        std::vector<XyzIo::Rgb_ui8> pointRgbVals(imagePoints.size());
+        const auto singlePointGetRgbActionWrapper = [&](const cv::Point2f &imgPt) constexpr -> XyzIo::Rgb_ui8
+            { return PointProjection::get_rgb_from_2d_coordinate(imgPt, referenceImage); };
+        std::transform(std::execution::par_unseq, imagePoints.cbegin(), imagePoints.cend(), pointRgbVals.begin(), singlePointGetRgbActionWrapper);
+        return pointRgbVals;
+    }
+
 } // namespace hw3

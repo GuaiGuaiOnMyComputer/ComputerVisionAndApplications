@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <fstream>
+#include <stdint.h>
 
 namespace hw3
 {
@@ -70,6 +71,21 @@ namespace hw3
             ~Coor3D() noexcept override {}
         };
 
+        template<class T>
+        class Rgb : public _DataPoint, public cv::Vec<T, 3>
+        {
+        public: 
+            static constexpr int32_t Dimensions = 3;
+            static constexpr int32_t Components = 1;
+            static constexpr cv::DataType<T> type = CV_MAKE_TYPE(sizeof(T), Components);
+
+            Rgb(const std::array<T, Dimensions> &data) noexcept : cv::Vec<T, 3>(data[0], data[1], data[2]) {};
+            Rgb(const T r, const T g, const T b): cv::Vec<T, 3>(r, g, b) {};
+            Rgb(const cv::Vec<T, 3> &rgbAsVec) : cv::Vec<T, 3>(rgbAsVec[0], rgbAsVec[1], rgbAsVec[2]){};
+            Rgb() noexcept = default;
+            ~Rgb() noexcept override {}
+        };
+
         template<class TrowType, class TelementType>
         static std::vector<TrowType> load_points_from_file(const fs::path &filePath, const uint32_t emptyLineCount)
         {
@@ -90,6 +106,7 @@ namespace hw3
         using Coor3D_d = XyzIo::Coor3D<double>;
         using Coor2D_f = XyzIo::Coor2D<float>;
         using Coor2D_d = XyzIo::Coor2D<double>;
+        using Rgb_ui8 = XyzIo::Rgb<uint8_t>;
         using CoorAndNormal3D_f = XyzIo::CoorAndNormal3D<float>;
         using CoorAndNormal3D_d = XyzIo::CoorAndNormal3D<double>;
 
