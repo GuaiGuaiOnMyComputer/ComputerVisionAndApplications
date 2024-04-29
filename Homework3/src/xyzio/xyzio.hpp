@@ -78,6 +78,9 @@ namespace hw3
             static constexpr int32_t Dimensions = 3;
             static constexpr int32_t Components = 1;
             static constexpr cv::DataType<T> type = CV_MAKE_TYPE(sizeof(T), Components);
+            T R() { return (*this)[0]; }
+            // T G() { return *(this)[1]; }
+            // T B() { return *(this)[2]; }
 
             Rgb(const std::array<T, Dimensions> &data) noexcept : cv::Vec<T, 3>(data[0], data[1], data[2]) {};
             Rgb(const T r, const T g, const T b): cv::Vec<T, 3>(r, g, b) {};
@@ -102,6 +105,8 @@ namespace hw3
             return parsedLines;
         }
 
+        static bool write_xyz_normal_and_rgb(const fs::path& filePath, const std::vector<CoorAndNormal3D<float>> &coorsAndNors, const std::vector<Rgb<uint8_t>> &rgbs);
+
         using Coor3D_f = XyzIo::Coor3D<float>;
         using Coor3D_d = XyzIo::Coor3D<double>;
         using Coor2D_f = XyzIo::Coor2D<float>;
@@ -114,7 +119,7 @@ namespace hw3
 
     private:
         static uint64_t _getLineCount(std::ifstream &fileHandle, const uint32_t emptyLineCount);
-        static std::error_code _create_output_directory_if_not_exist(const fs::path &filePath);
+        static bool _create_output_directory_if_not_exist(const fs::path &filePath);
 
         template<class TrowType, class TelementType, size_t Tdimensions, size_t Tcomponents>
         static TrowType _parseLine(const std::string &lineContent)
