@@ -25,7 +25,7 @@ int main(int , char**)
     std::vector<hw3::XyzIo::Coor2D_f> santaPoints2d = hw3::XyzIo::load_points_from_file<hw3::XyzIo::Coor2D_f, float>(SANTA_FEATURE_POINTS_2D_XYZ_PATH, 0);
     std::vector<hw3::XyzIo::Coor3D_f> santaPoints3d = hw3::XyzIo::load_points_from_file<hw3::XyzIo::Coor3D_f, float>(SANTA_FEATURE_POINTS_3D_XYZ_PATH, 0);
 
-    cv::Mat projectionMat = hw3::PointProjection::get_projection_mat(santaPoints3d, santaPoints2d);
+    const cv::Mat projectionMat = hw3::PointProjection::get_projection_mat(santaPoints3d, santaPoints2d);
     std::vector<cv::Point2f> reprojectedSantaPointsOnImage = hw3::PointProjection::project_to_image(santaPointsAndNor3D, projectionMat);
     const cv::Mat image = cv::imread(SANTA_JPG_PATH.string());
     cv::Mat debugImage = hw3::PointProjection::show_projected_points(image, reprojectedSantaPointsOnImage);
