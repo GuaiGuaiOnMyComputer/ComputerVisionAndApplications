@@ -48,7 +48,7 @@ namespace hw3
         cv::SVD::compute(puvMat, w, u, vt, cv::SVD::FULL_UV);
 
         cv::Mat projectionMat = cv::Mat(u, cv::Range::all(), cv::Range(u.cols - 1, u.cols)).clone().reshape(1, 3);
-        projectionMat /= projectionMat.at<float>(2, 3); // normalize the bottom-left element to 1
+        cv::divide(projectionMat.at<float>(2, 3), projectionMat, projectionMat);
         return projectionMat;
     }
 
@@ -71,9 +71,9 @@ namespace hw3
         cv::Vec3f pointInImageHomo(0, 0, 0);
         for (size_t i = 0; i < 4; i++)
         {
-            pointInImageHomo[0] += projectionMatrix.at<float>(0, i) * pointInWorldHomo[0];
-            pointInImageHomo[1] += projectionMatrix.at<float>(1, i) * pointInWorldHomo[1];
-            pointInImageHomo[2] += projectionMatrix.at<float>(2, i) * pointInWorldHomo[2];
+            pointInImageHomo[0] += projectionMatrix.at<float>(0, i) * pointInWorldHomo[i];
+            pointInImageHomo[1] += projectionMatrix.at<float>(1, i) * pointInWorldHomo[i];
+            pointInImageHomo[2] += projectionMatrix.at<float>(2, i) * pointInWorldHomo[i];
         }
         // normalize the projected point by rescaling their z coordinates to 1
         pointInImageHomo[0] /= pointInImageHomo[2];
