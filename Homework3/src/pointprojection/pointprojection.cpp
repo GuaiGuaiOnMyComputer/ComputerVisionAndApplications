@@ -28,10 +28,10 @@ namespace hw3
 
             memset(&puvMat.at<float>(2 * i, 4), 0, 4 * sizeof(float));
 
-            puvMat.at<float>(2 * i, 9) =  -imagePoints[i].x * objectPointsHomo[0];
-            puvMat.at<float>(2 * i, 10) = -imagePoints[i].x * objectPointsHomo[1];
-            puvMat.at<float>(2 * i, 11) = -imagePoints[i].x * objectPointsHomo[2];
-            puvMat.at<float>(2 * i, 12) = -imagePoints[i].x * objectPointsHomo[3];
+            puvMat.at<float>(2 * i, 8) =  -imagePoints[i].x * objectPointsHomo[0];
+            puvMat.at<float>(2 * i, 9) = -imagePoints[i].x * objectPointsHomo[1];
+            puvMat.at<float>(2 * i, 10) = -imagePoints[i].x * objectPointsHomo[2];
+            puvMat.at<float>(2 * i, 11) = -imagePoints[i].x * objectPointsHomo[3];
 
             memset(&puvMat.at<float>(2 * i + 1, 0), 0, 4 * sizeof(float));
 
@@ -106,9 +106,6 @@ namespace hw3
             cv::circle(annotatedImage, pt, 2, cv::Scalar(255, 255, 0));
             validPointCount++;
         }
-        char textOnImage[80]{0};
-        std::snprintf(textOnImage, 80, "Valid point Count: %i", validPointCount);
-        cv::putText(annotatedImage, textOnImage, cv::Point(0, 0), cv::FONT_HERSHEY_SIMPLEX, 20, cv::Scalar(255, 255, 0));
         return annotatedImage;
     }
 
