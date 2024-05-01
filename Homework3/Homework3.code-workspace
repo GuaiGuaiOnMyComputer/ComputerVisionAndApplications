@@ -103,7 +103,8 @@
 			"xtree": "cpp",
 			"xutility": "cpp",
 			"bitset": "cpp",
-			"regex": "cpp"
+			"regex": "cpp",
+			"execution": "cpp"
 		}
 	},
 	"tasks": {
