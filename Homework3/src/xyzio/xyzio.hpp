@@ -72,21 +72,22 @@ namespace hw3
         };
 
         template<class T>
-        class Rgb : public _DataPoint, public cv::Vec<T, 3>
+        class Rgb 
         {
         public: 
             static constexpr int32_t Dimensions = 3;
             static constexpr int32_t Components = 1;
             static constexpr cv::DataType<T> type = CV_MAKE_TYPE(sizeof(T), Components);
-            T R() { return (*this)[0]; }
-            // T G() { return *(this)[1]; }
-            // T B() { return *(this)[2]; }
 
-            Rgb(const std::array<T, Dimensions> &data) noexcept : cv::Vec<T, 3>(data[0], data[1], data[2]) {};
-            Rgb(const T r, const T g, const T b): cv::Vec<T, 3>(r, g, b) {};
-            Rgb(const cv::Vec<T, 3> &rgbAsVec) : cv::Vec<T, 3>(rgbAsVec[0], rgbAsVec[1], rgbAsVec[2]){};
+            T R;
+            T G;
+            T B;
+
+            Rgb(const std::array<T, Dimensions> &data) noexcept : R(data[0]), G(data[1]), B(data[2]) {};
+            Rgb(const T r, const T g, const T b): R(r), G(g), B(b) {};
+            Rgb(const cv::Vec<T, 3> &rgbAsVec) : R(rgbAsVec[0]), G(rgbAsVec[1]), B(rgbAsVec[2]) {};
             Rgb() noexcept = default;
-            ~Rgb() noexcept override {}
+            ~Rgb() noexcept {}
         };
 
         template<class TrowType, class TelementType>

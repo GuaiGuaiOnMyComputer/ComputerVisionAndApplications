@@ -6,6 +6,7 @@
 #include "xyzio.hpp"
 
 template class cv::Mat_<float>;
+template class cv::Mat_<double>;
 template class cv::Mat_<uint8_t>;
 template class std::vector<cv::Point2f>;
 template class std::vector<cv::Point3f>;
@@ -30,9 +31,9 @@ int main(int , char**)
     const cv::Mat santaPhoto = cv::imread(SANTA_JPG_PATH.string());
 
     
-    // cv::Mat debugImage = hw3::PointProjection::show_projected_points(image, reprojectedSantaPointsOnImage);
-    // cv::namedWindow("DebugImage", cv::WindowFlags::WINDOW_FREERATIO);
-    // cv::imshow("DebugImage", debugImage);
-    // cv::waitKey(0);
+    cv::Mat debugImage = hw3::PointProjection::show_projected_points(santaPhoto, reprojectedSantaPointsOnImage);
+    cv::namedWindow("DebugImage", cv::WindowFlags::WINDOW_FREERATIO);
+    cv::imshow("DebugImage", debugImage);
+    cv::waitKey(0);
     return 0;
 }

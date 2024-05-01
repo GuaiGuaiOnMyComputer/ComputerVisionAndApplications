@@ -32,7 +32,7 @@ namespace hw3
 
         for (size_t i = 0; i < coorsAndNors.size(); i++)
         {
-            outputFile << std::setprecision(4) << coorsAndNors[i].x << ' ' << coorsAndNors[i].y << ' ' << coorsAndNors[i].z << ' ' << rgbs[i][0] << ' ' << rgbs[i].G() << ' ' << rgbs[i].B() << '\n';
+            outputFile << std::setprecision(4) << coorsAndNors[i].x << ' ' << coorsAndNors[i].y << ' ' << coorsAndNors[i].z << ' ' << rgbs[i].R << ' ' << rgbs[i].G << ' ' << rgbs[i].B << '\n';
         } 
         outputFile.close();
         return true;

@@ -19,25 +19,31 @@ namespace hw3
         cv::Mat puvMat(2 * pointPairCount, 12, CV_32FC1, cv::Scalar(0));
         for (size_t i = 0; i < pointPairCount; i++)
         {
-            puvMat.at<float>(2 * i, 0) = objectPoints[i].x;
-            puvMat.at<float>(2 * i, 1) = objectPoints[i].y;
-            puvMat.at<float>(2 * i, 2) = objectPoints[i].z;
+            const cv::Vec4f objectPointsHomo(objectPoints[i].x, objectPoints[i].y, objectPoints[i].z, 1);
 
-            memset(&puvMat.at<float>(2 * i, 3), 0, 6 * sizeof(float));
+            puvMat.at<float>(2 * i, 0) = objectPointsHomo[0];
+            puvMat.at<float>(2 * i, 1) = objectPointsHomo[1];
+            puvMat.at<float>(2 * i, 2) = objectPointsHomo[2];
+            puvMat.at<float>(2 * i, 3) = objectPointsHomo[3];
 
-            puvMat.at<float>(2 * i, 9) =  -imagePoints[i].x * objectPoints[i].x;
-            puvMat.at<float>(2 * i, 10) = -imagePoints[i].x * objectPoints[i].y;
-            puvMat.at<float>(2 * i, 11) = -imagePoints[i].x * objectPoints[i].z;
+            memset(&puvMat.at<float>(2 * i, 4), 0, 4 * sizeof(float));
 
-            memset(&puvMat.at<float>(2 * i + 1, 0), 0, 6 * sizeof(float));
+            puvMat.at<float>(2 * i, 9) =  -imagePoints[i].x * objectPointsHomo[0];
+            puvMat.at<float>(2 * i, 10) = -imagePoints[i].x * objectPointsHomo[1];
+            puvMat.at<float>(2 * i, 11) = -imagePoints[i].x * objectPointsHomo[2];
+            puvMat.at<float>(2 * i, 12) = -imagePoints[i].x * objectPointsHomo[3];
 
-            puvMat.at<float>(2 * i + 1, 6) = objectPoints[i].x;
-            puvMat.at<float>(2 * i + 1, 7) = objectPoints[i].y;
-            puvMat.at<float>(2 * i + 1, 8) = objectPoints[i].z;
+            memset(&puvMat.at<float>(2 * i + 1, 0), 0, 4 * sizeof(float));
 
-            puvMat.at<float>(2 * i + 1, 9) =  -imagePoints[i].y * objectPoints[i].x;
-            puvMat.at<float>(2 * i + 1, 10) = -imagePoints[i].y * objectPoints[i].y;
-            puvMat.at<float>(2 * i + 1, 11) = -imagePoints[i].y * objectPoints[i].z;
+            puvMat.at<float>(2 * i + 1, 4) = objectPointsHomo[0];
+            puvMat.at<float>(2 * i + 1, 5) = objectPointsHomo[1];
+            puvMat.at<float>(2 * i + 1, 6) = objectPointsHomo[2];
+            puvMat.at<float>(2 * i + 1, 7) = objectPointsHomo[3];
+
+            puvMat.at<float>(2 * i + 1, 8) =  -imagePoints[i].y * objectPointsHomo[0];
+            puvMat.at<float>(2 * i + 1, 9) =  -imagePoints[i].y * objectPointsHomo[1];
+            puvMat.at<float>(2 * i + 1, 10) = -imagePoints[i].y * objectPointsHomo[2];
+            puvMat.at<float>(2 * i + 1, 11) = -imagePoints[i].y * objectPointsHomo[3];
         }
         return puvMat;
     }
@@ -45,10 +51,10 @@ namespace hw3
     cv::Mat PointProjection::get_projection_mat(cv::Mat& puvMat)
     {
         cv::Mat w, u, vt;
-        cv::SVD::compute(puvMat, w, u, vt, cv::SVD::FULL_UV);
+        cv::SVD::compute(puvMat, w, u, vt);
 
-        cv::Mat projectionMat = cv::Mat(u, cv::Range::all(), cv::Range(u.cols - 1, u.cols)).clone().reshape(1, 3);
-        cv::divide(projectionMat.at<float>(2, 3), projectionMat, projectionMat);
+        cv::Mat projectionMat = cv::Mat(vt.t(), cv::Range::all(), cv::Range(11, 12)).clone().reshape(1, 3);
+        projectionMat /= projectionMat.at<float>(2, 3); // rescale the projection matrix so the bottom-right corner becomes 1
         return projectionMat;
     }
 
@@ -76,8 +82,7 @@ namespace hw3
             pointInImageHomo[2] += projectionMatrix.at<float>(2, i) * pointInWorldHomo[i];
         }
         // normalize the projected point by rescaling their z coordinates to 1
-        pointInImageHomo[0] /= pointInImageHomo[2];
-        pointInImageHomo[1] /= pointInImageHomo[2];
+        pointInImageHomo /= pointInImageHomo[2];
         out_imgPoint = cv::Point2f(pointInImageHomo[0], pointInImageHomo[1]);
     }
 
