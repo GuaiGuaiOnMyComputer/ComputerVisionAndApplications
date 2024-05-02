@@ -93,8 +93,21 @@ namespace hw3
         // create a wrapper for the overloaded functoin project_to_image that calls the function with projection matrix predefined
         const auto singlePointProjectionActionWrapper = [&](const cv::Point3f &worldPt) constexpr -> cv::Point2f
             { return PointProjection::project_to_image(worldPt, projectionMatrix); };
-        std::transform(std::execution::par_unseq, worldPt.cbegin(), worldPt.cend(), pointsInImageNonHomo.begin(), singlePointProjectionActionWrapper);
+        std::transform(std::execution::par, worldPt.cbegin(), worldPt.cend(), pointsInImageNonHomo.begin(), singlePointProjectionActionWrapper);
         return pointsInImageNonHomo;
+    }
+
+    XyzIo::Rgb_ui8 PointProjection::get_rgb_from_image(const XyzIo::CoorAndNormal3D_f& worldPt, const cv::Mat& projectionMat, const cv::Mat& image)
+    {
+        cv::Point2f imagePoint = project_to_image(worldPt, projectionMat);
+        return get_rgb_from_2d_coordinate(imagePoint, image);
+    }
+
+    std::vector<XyzIo::Rgb_ui8> PointProjection::get_rgb_from_image(const std::vector<XyzIo::CoorAndNormal3D_f>& worldPt, const cv::Mat& projectionMat, const cv::Mat& image)
+    {
+        const std::vector<cv::Point2f> imagePoints = project_to_image(worldPt, projectionMat);
+        const std::vector<XyzIo::Rgb_ui8> rgbValues = get_rgb_from_2d_coordinate(imagePoints, image);
+        return rgbValues;
     }
 
     cv::Mat PointProjection::show_projected_points(const cv::Mat& image, std::vector<cv::Point2f>& projectedPoints)
@@ -119,7 +132,7 @@ namespace hw3
         std::vector<XyzIo::Rgb_ui8> pointRgbVals(imagePoints.size());
         const auto singlePointGetRgbActionWrapper = [&](const cv::Point2f &imgPt) constexpr -> XyzIo::Rgb_ui8
             { return PointProjection::get_rgb_from_2d_coordinate(imgPt, referenceImage); };
-        std::transform(std::execution::par_unseq, imagePoints.cbegin(), imagePoints.cend(), pointRgbVals.begin(), singlePointGetRgbActionWrapper);
+        std::transform(std::execution::par, imagePoints.cbegin(), imagePoints.cend(), pointRgbVals.begin(), singlePointGetRgbActionWrapper);
         return pointRgbVals;
     }
 
