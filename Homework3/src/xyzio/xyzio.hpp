@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <fstream>
+#include <stdint.h>
 
 namespace hw3
 {
@@ -70,6 +71,25 @@ namespace hw3
             ~Coor3D() noexcept override {}
         };
 
+        template<class T>
+        class Rgb 
+        {
+        public: 
+            static constexpr int32_t Dimensions = 3;
+            static constexpr int32_t Components = 1;
+            static constexpr cv::DataType<T> type = CV_MAKE_TYPE(sizeof(T), Components);
+
+            T R;
+            T G;
+            T B;
+
+            Rgb(const std::array<T, Dimensions> &data) noexcept : R(data[0]), G(data[1]), B(data[2]) {};
+            Rgb(const T r, const T g, const T b): R(r), G(g), B(b) {};
+            Rgb(const cv::Vec<T, 3> &rgbAsVec) : R(rgbAsVec[0]), G(rgbAsVec[1]), B(rgbAsVec[2]) {};
+            Rgb() noexcept = default;
+            ~Rgb() noexcept {}
+        };
+
         template<class TrowType, class TelementType>
         static std::vector<TrowType> load_points_from_file(const fs::path &filePath, const uint32_t emptyLineCount)
         {
@@ -86,10 +106,13 @@ namespace hw3
             return parsedLines;
         }
 
+        static bool write_xyz_normal_and_rgb(const fs::path& filePath, const std::vector<CoorAndNormal3D<float>> &coorsAndNors, const std::vector<Rgb<uint8_t>> &rgbs);
+
         using Coor3D_f = XyzIo::Coor3D<float>;
         using Coor3D_d = XyzIo::Coor3D<double>;
         using Coor2D_f = XyzIo::Coor2D<float>;
         using Coor2D_d = XyzIo::Coor2D<double>;
+        using Rgb_ui8 = XyzIo::Rgb<uint8_t>;
         using CoorAndNormal3D_f = XyzIo::CoorAndNormal3D<float>;
         using CoorAndNormal3D_d = XyzIo::CoorAndNormal3D<double>;
 
@@ -97,7 +120,7 @@ namespace hw3
 
     private:
         static uint64_t _getLineCount(std::ifstream &fileHandle, const uint32_t emptyLineCount);
-        static std::error_code _create_output_directory_if_not_exist(const fs::path &filePath);
+        static bool _create_output_directory_if_not_exist(const fs::path &filePath);
 
         template<class TrowType, class TelementType, size_t Tdimensions, size_t Tcomponents>
         static TrowType _parseLine(const std::string &lineContent)
