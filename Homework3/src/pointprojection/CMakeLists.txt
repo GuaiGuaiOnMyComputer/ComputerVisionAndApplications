@@ -17,4 +17,7 @@ target_include_directories( hw3_pointprojection
     ../xyzio
     )
 target_link_directories( hw3_pointprojection  PUBLIC ${OPENCV_LIB_DIR})
-target_link_libraries(hw3_pointprojection PUBLIC ${OPENCV_LINK_LIBS})
+target_link_libraries(hw3_pointprojection PUBLIC
+    ${OPENCV_LINK_LIBS}
+    hw3_xyzio
+    )

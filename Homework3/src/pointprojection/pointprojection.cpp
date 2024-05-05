@@ -97,6 +97,24 @@ namespace hw3
         return pointsInImageNonHomo;
     }
 
+    std::vector<cv::Point2f> PointProjection::project_to_image(const std::vector<XyzIo::CoorAndNormal3D_f> &worldPt, const cv::Mat& projectionMatrix, bool includeOccluded, const cv::Vec3f& cameraPointingVtr, std::vector<XyzIo::CoorAndNormal3D_f>& out_nonOccludedPoints)
+    {
+        out_nonOccludedPoints.reserve(worldPt.size());
+        for (size_t i = 0; i < worldPt.size(); i++)
+        {
+            if (!check_if_point_occluded(worldPt[i], cameraPointingVtr) | includeOccluded)
+                out_nonOccludedPoints.push_back(worldPt[i]);
+        }
+        std::vector<cv::Point2f> pointsInImageNonHomo(out_nonOccludedPoints.size());
+        const auto singlePointProjectionActionWrapper =
+            [&](const XyzIo::CoorAndNormal3D_f &worldPtAndNor) constexpr -> cv::Point2f
+            {
+                return PointProjection::project_to_image(worldPtAndNor, projectionMatrix);
+            };
+        std::transform(std::execution::par, out_nonOccludedPoints.cbegin(), out_nonOccludedPoints.cend(), pointsInImageNonHomo.begin(), singlePointProjectionActionWrapper);
+        return pointsInImageNonHomo;
+    }
+
     XyzIo::Rgb_ui8 PointProjection::get_rgb_from_image(const XyzIo::CoorAndNormal3D_f& worldPt, const cv::Mat& projectionMat, const cv::Mat& image)
     {
         cv::Point2f imagePoint = project_to_image(worldPt, projectionMat);
@@ -110,7 +128,20 @@ namespace hw3
         return rgbValues;
     }
 
-    cv::Mat PointProjection::show_projected_points(const cv::Mat& image, std::vector<cv::Point2f>& projectedPoints)
+    bool PointProjection::check_if_point_occluded(const XyzIo::CoorAndNormal3D_f& worldPt, const cv::Vec3f &cameraPointingVtr)
+    {
+        return cameraPointingVtr.dot(worldPt) > 0;
+    }
+
+    void PointProjection::save_image_with_selected_points(const fs::path& outputPath, const cv::Mat& refImage, const std::vector<XyzIo::Coor2D_f>& selectedPoints)
+    {
+        cv::Mat annotatedImage = refImage.clone();
+        for (const cv::Point2f& pt : selectedPoints)
+            cv::circle(annotatedImage, pt, 5, cv::Scalar(255, 255, 0), 5);
+        cv::imwrite(outputPath.string(), annotatedImage);
+    }
+
+    cv::Mat PointProjection::show_projected_points(const cv::Mat& image, const std::vector<cv::Point2f>& projectedPoints)
     {
         uint32_t validPointCount{0};
         cv::Mat annotatedImage = image.clone();
@@ -124,7 +155,8 @@ namespace hw3
 
     XyzIo::Rgb_ui8 PointProjection::get_rgb_from_2d_coordinate(const cv::Point2f& imagePoint, const cv::Mat& referenceImage)
     {
-        return referenceImage.at<cv::Vec<uint8_t, 3>>((int32_t)(imagePoint.x), (int32_t)(imagePoint.y));
+        const cv::Vec<uint8_t, 3> bgr = referenceImage.at<cv::Vec<uint8_t, 3>>((int32_t)(imagePoint.y), (int32_t)(imagePoint.x));
+        return XyzIo::Rgb_ui8(bgr[2], bgr[1], bgr[0]); // reorder the pixel values from BGR format used by opencv to RGB used by meshlab.
     }
 
     std::vector<XyzIo::Rgb_ui8> PointProjection::get_rgb_from_2d_coordinate(const std::vector<cv::Point2f> &imagePoints, const cv::Mat& referenceImage)

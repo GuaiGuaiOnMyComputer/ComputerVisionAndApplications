@@ -12,6 +12,8 @@ namespace hw3
     class XyzIo
     {
     private:
+
+        /// @brief A base class for all of the other classes to inherit from.
         class _DataPoint
         {
         protected:
@@ -22,6 +24,8 @@ namespace hw3
 
     public:
 
+        /// @brief Contains information about the coordinate and normal vector of a point in 3D space. Access the coordinate values by .x .y or .z and access the normal vector values by [0] [1] and [2].
+        /// @tparam T Data type of the coordinate and normal vector values.
         template<class T>
         class CoorAndNormal3D : public _DataPoint, public cv::Point3_<T>, public cv::Vec<T, 3>
         {
@@ -45,6 +49,8 @@ namespace hw3
             ~CoorAndNormal3D() noexcept override {}
         };
 
+        /// @brief Contains information about the coordinate of a point in 2D space. Access the coordinate values by .x and .y.
+        /// @tparam T Datatype of the coordinate values.
         template<class T>
         class Coor2D : public _DataPoint, public cv::Point_<T>
         {
@@ -58,6 +64,8 @@ namespace hw3
             ~Coor2D() noexcept override {}
         };
 
+        /// @brief Contains information about the coordinate of a point in 3D space. Access the coordinate values by .x and .y.
+        /// @tparam T Datatype of the coordinate values.
         template<class T>
         class Coor3D : public _DataPoint, public cv::Point3_<T>
         {
@@ -71,8 +79,10 @@ namespace hw3
             ~Coor3D() noexcept override {}
         };
 
+        /// @brief Contains information about the RGB values of a pixel or an aribritary point. Access the RGB values by .R .G and .B
+        /// @tparam T Datatype of the RGB values.
         template<class T>
-        class Rgb 
+        class Rgb : public _DataPoint
         {
         public: 
             static constexpr int32_t Dimensions = 3;
@@ -90,6 +100,12 @@ namespace hw3
             ~Rgb() noexcept {}
         };
 
+        /// @brief Load all of the information about each point from an xyz file. Each point is specified as rows in the file.
+        /// @tparam TrowType Determines what kind(s) of information each row in the xyz file provides. If each row contains 3D coordinate and the normal vector of a point, pass ```CoorAndNormal3D``` into this argument.
+        /// @tparam TelementType Data type of the values in the file. All of the values in the file must have identical data type.
+        /// @param filePath Path of the xyz file to load.
+        /// @param emptyLineCount Number of empty lines at the end of the file.
+        /// @return Vector of parsed points in the data type specified by ```TrowType```. 
         template<class TrowType, class TelementType>
         static std::vector<TrowType> load_points_from_file(const fs::path &filePath, const uint32_t emptyLineCount)
         {
@@ -106,6 +122,11 @@ namespace hw3
             return parsedLines;
         }
 
+        /// @brief Export the 3D xyz point coordinates, their normal vectors and RGB values to a text file.
+        /// @param filePath Path to the output file.
+        /// @param coorsAndNors 3D coordinates and normal vectors of each point.
+        /// @param rgbs RGB values of each point.
+        /// @return Whether the output operation is successful.
         static bool write_xyz_normal_and_rgb(const fs::path& filePath, const std::vector<CoorAndNormal3D<float>> &coorsAndNors, const std::vector<Rgb<uint8_t>> &rgbs);
 
         using Coor3D_f = XyzIo::Coor3D<float>;
@@ -115,8 +136,6 @@ namespace hw3
         using Rgb_ui8 = XyzIo::Rgb<uint8_t>;
         using CoorAndNormal3D_f = XyzIo::CoorAndNormal3D<float>;
         using CoorAndNormal3D_d = XyzIo::CoorAndNormal3D<double>;
-
-        static bool write_xyz_point_cloud_file(const fs::path &filePath, const std::vector<std::vector<cv::Point3d>> &pointsInAllSlices);
 
     private:
         static uint64_t _getLineCount(std::ifstream &fileHandle, const uint32_t emptyLineCount);

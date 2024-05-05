@@ -46,6 +46,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+**bin
 
 # User specific files
 # All the necessary settings to reproduce the vscode environment is written in .code-workspace in each homework folder

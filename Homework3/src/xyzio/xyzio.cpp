@@ -14,7 +14,7 @@ namespace hw3
     namespace fs = std::filesystem;
 
     XyzIo::_DataPoint::_DataPoint() noexcept = default;
-    XyzIo::_DataPoint::~_DataPoint() noexcept = default;
+    XyzIo::_DataPoint::~_DataPoint() noexcept {};
 
     bool XyzIo::write_xyz_normal_and_rgb(const fs::path& filePath, const std::vector<XyzIo::CoorAndNormal3D<float>> &coorsAndNors, const std::vector<XyzIo::Rgb<uint8_t>> &rgbs)
     {
@@ -32,7 +32,9 @@ namespace hw3
 
         for (size_t i = 0; i < coorsAndNors.size(); i++)
         {
-            outputFile << std::setprecision(4) << coorsAndNors[i].x << ' ' << coorsAndNors[i].y << ' ' << coorsAndNors[i].z << ' ' << rgbs[i].R << ' ' << rgbs[i].G << ' ' << rgbs[i].B << '\n';
+            outputFile << std::setprecision(4) << coorsAndNors[i].x << ' ' << coorsAndNors[i].y << ' ' << coorsAndNors[i].z << ' ';
+            outputFile << std::setprecision(4) << coorsAndNors[i][0] << ' ' << coorsAndNors[i][1] << ' ' << coorsAndNors[i][2] << ' ';
+            outputFile << std::to_string(rgbs[i].R) << ' ' << std::to_string(rgbs[i].G) << ' ' << std::to_string(rgbs[i].B) << ' ' << 1 << '\n';
         } 
         outputFile.close();
         return true;
@@ -49,6 +51,8 @@ namespace hw3
     bool XyzIo::_create_output_directory_if_not_exist(const fs::path& filePath)
     {
         std::error_code errorCode;
+        if (fs::exists(filePath))
+            return true;
         bool createSuccess = fs::create_directories(filePath, errorCode);
         return createSuccess;
     }
