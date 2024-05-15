@@ -17,6 +17,7 @@ target_include_directories( hw4_cameracalibration
     )
 target_link_directories( hw4_cameracalibration
     PUBLIC ${Opencv_LINK_DIRS}
+    PUBLIC hw4_xyzio
     )
 target_link_libraries(hw4_cameracalibration 
     opencv_world

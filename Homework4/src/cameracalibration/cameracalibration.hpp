@@ -15,6 +15,10 @@ namespace hw4
             PANEL_COUNT
         };
         static cv::Mat find_panel_homography(const std::vector<XyzIo::Coor2D_f>& imagePoints, const std::vector<XyzIo::Coor2D_f>& objectPoints);
-        static std::array<cv::Mat, 3> find_panel_homography(const std::array<std::vector<XyzIo::Coor2D_f>, 3> &imagePoints, const std::array<std::vector<XyzIo::Coor2D_f>, 3> &objectPoints);
+        static std::vector<cv::Mat> find_panel_homography(const std::array<std::vector<XyzIo::Coor2D_f>, PANEL_COUNT> &imagePoints, const std::array<std::vector<XyzIo::Coor2D_f>, PANEL_COUNT> &panelPoints);
+        static cv::Mat get_k_matrix(const std::vector<cv::Mat> &panelHomographyMats);
+
+    private:
+        static cv::Mat _get_the_crazy_mat_that_mulitplies_with_omega_and_i_have_no_idea_how_it_works(const std::vector<cv::Mat> &panelHomographyMats);
     };
 }

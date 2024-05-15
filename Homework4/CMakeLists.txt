@@ -15,6 +15,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 if (UNIX)
     set(OpenCV_DIR "/opt/opencv/build")
+    find_package(Iconv)
 elseif(WIN32)
     set(OpenCV_DIR "C:/opencv/build/MinGW/Release")
 endif()
