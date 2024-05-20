@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "cameracalibration.hpp"
 #include "xyzio.hpp"
+#include "debugcode.hpp"
 
 #if true
 template class std::vector<hw4::XyzIo::Coor2D_f>;
@@ -40,42 +41,57 @@ namespace hw4
 
         cv::Mat u, vt, w;
         cv::SVD::compute(stacksOfVs, w, u, vt);
-        const cv::Mat_<double> lastColumnOfV(vt.t(), cv::Range::all(), cv::Range(5, 6));
+        const cv::Mat v = vt.t();
+        cv::Mat_<double> lastColumnOfV(v, cv::Range::all(), cv::Range(5, 6));
+        lastColumnOfV /= lastColumnOfV(5);
+        hw4::DebugCode::print_cv_mat<double, 4, 10>(v);
         omegaMatrix(0, 0) = lastColumnOfV(0);
         omegaMatrix(0, 1) = lastColumnOfV(1);
         omegaMatrix(0, 2) = lastColumnOfV(2);
-        omegaMatrix(1, 0) = omegaMatrix(0, 1);
+        omegaMatrix(1, 0) = lastColumnOfV(1);
         omegaMatrix(1, 1) = lastColumnOfV(3);
         omegaMatrix(1, 2) = lastColumnOfV(4);
-        omegaMatrix(2, 0) = omegaMatrix(0, 2);
-        omegaMatrix(2, 1) = omegaMatrix(1, 2);
+        omegaMatrix(2, 0) = lastColumnOfV(2);
+        omegaMatrix(2, 1) = lastColumnOfV(4);
         omegaMatrix(2, 2) = lastColumnOfV(5);
         w.release();
         u.release();
         vt.release();
 
         cv::Mat_<double> omegaMat_inv = omegaMatrix.inv();
-        omegaMat_inv /= omegaMat_inv.at<double>(2, 2); // normalize the omega matrix by w33
+        // hw4::DebugCode::print_cv_mat<double, 5, 10>(omegaMat_inv);
+        // omegaMat_inv /= omegaMat_inv(2, 2);
+        hw4::DebugCode::print_cv_mat<double, 5, 10>(omegaMatrix);
         /*
         K = [
             a, b, c
             0, d, e
             0, 0, 1
         ]
-        Assume no skew
-        k = [
-            a, 0, c
-            0, d, e
-            0, 0, 1
-        ]
         */
         cv::Mat k(3, 3, CV_64FC1, cv::Scalar(0));
         cv::Mat_<double> &k_ = (cv::Mat_<double>&)k;
-        k_(0, 2) = omegaMat_inv(0, 2); // c
-        k_(1, 2) = omegaMat_inv(1, 2); // e
-        k_(0, 0) = abs(omegaMat_inv(0, 0) - k_(0, 2) * k_(0, 2)); // a
-        k_(1, 1) = abs(omegaMat_inv(1, 1) - k_(1, 2) * k_(1, 2)); // d
-        k_(2, 2) = 1; // the bottom right element in k is 1
+
+        const double c = omegaMat_inv(0, 2);
+        const double e = omegaMat_inv(1, 2);
+        const double d = sqrt(omegaMat_inv(1, 1) - e * e);
+        const double b = (omegaMat_inv(0, 1) - c * e) / d;
+        const double a = sqrt(omegaMat_inv(0, 0) - b * b - c * c);
+
+        k_(0, 0) = a;
+        k_(0, 1) = b;
+        k_(0, 2) = c;
+        k_(1, 1) = d;
+        k_(1, 2) = e;
+
+        // k_(0, 2) = omegaMat_inv(0, 2); // c
+        // k_(1, 2) = omegaMat_inv(1, 2); // e
+        // k_(1, 1) = sqrt(omegaMat_inv(1, 1) - k_(1, 2) * k_(1, 2)); // d
+        // k_(0, 1) = (omegaMat_inv(0, 1) - k_(0, 2) * k_(1, 2)) / k_(1, 1); // b
+        // k_(0, 0) = sqrt(omegaMat_inv(0, 0) - k_(0, 1) * k_(0, 1) - k_(0, 2) * k_(0, 2)); // a
+        // k_(2, 2) = 1; // the bottom right element in k is 1
+        hw4::DebugCode::print_cv_mat<double, 3, 10>(k);
+
         return k;
     }
 
@@ -88,7 +104,7 @@ namespace hw4
         // please refere to the "CameraCalibration" chapter see "Absolute Conics" for detains about this algorithm.
         for (size_t i = 0; i < Panel::PANEL_COUNT; i++)
         {
-            const cv::Mat_<double> &h = panelHomographyMats[i];
+            const cv::Mat_<double> &h = (cv::Mat_<double>&)panelHomographyMats[i];
 
             // odd rows in theCrazyMatNotatedAsStacksOfVs, which is the first row in a v
             theCrazyMatNotatedAsStacksOfVs_(2 * i, 0) = h(0, 0) * h(1, 0);

@@ -28,6 +28,7 @@ add_subdirectory(src/main)
 add_subdirectory(src/assetcheck)
 add_subdirectory(src/xyzio)
 add_subdirectory(src/cameracalibration)
+add_subdirectory(src/debugcode)
 set_target_properties(Homework4 PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ../../../bin
     ARCHIVE_OUTPUT_DIRECTORY ../../../bin/lib

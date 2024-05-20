@@ -10,6 +10,7 @@ target_include_directories(Homework4
     PUBLIC ../assetcheck
     PUBLIC ../xyzio
     PUBLIC ../cameracalibration
+    PUBLIC ../debugcode
     )
 target_link_directories(Homework4
     PUBLIC ${Opencv_LINK_DIRS}
@@ -19,4 +20,5 @@ target_link_libraries(Homework4
     PUBLIC hw4_assetcheck
     PUBLIC hw4_xyzio
     PUBLIC hw4_cameracalibration
+    PUBLIC hw4_debugcode
 )
