@@ -14,7 +14,7 @@ target_sources(hw4_cameracalibration
 target_include_directories( hw4_cameracalibration
     PUBLIC ${OpenCV_INCLUDE_DIRS}
     PUBLIC "../xyzio"
-    PUBLIC "../debugcode"
+    PUBLIC "../cvmatio"
     )
 target_link_directories( hw4_cameracalibration
     PUBLIC ${Opencv_LINK_DIRS}

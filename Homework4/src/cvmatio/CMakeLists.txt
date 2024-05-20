@@ -7,8 +7,8 @@ find_package( OpenCV REQUIRED )
 
 add_library( hw4_debugcode STATIC)
 target_sources(hw4_debugcode 
-    PUBLIC debugcode.cpp
-    PUBLIC debugcode.hpp
+    PUBLIC cvmatio.cpp
+    PUBLIC cvmatio.hpp
 )
     
 target_include_directories( hw4_debugcode

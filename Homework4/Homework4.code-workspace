@@ -104,7 +104,8 @@
 			"xutility": "cpp",
 			"bitset": "cpp",
 			"regex": "cpp",
-			"execution": "cpp"
+			"execution": "cpp",
+			"text_encoding": "cpp"
 		}
 	},
 	"tasks": {

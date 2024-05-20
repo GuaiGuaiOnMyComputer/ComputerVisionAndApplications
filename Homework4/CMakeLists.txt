@@ -14,6 +14,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 if (UNIX)
+    find_package(Iconv REQUIRED)
     set(OpenCV_DIR "/opt/opencv/build")
     find_package(Iconv)
 elseif(WIN32)
@@ -28,7 +29,7 @@ add_subdirectory(src/main)
 add_subdirectory(src/assetcheck)
 add_subdirectory(src/xyzio)
 add_subdirectory(src/cameracalibration)
-add_subdirectory(src/debugcode)
+add_subdirectory(src/cvmatio)
 set_target_properties(Homework4 PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ../../../bin
     ARCHIVE_OUTPUT_DIRECTORY ../../../bin/lib

@@ -3,7 +3,7 @@
 #include <array>
 #include "assetcheck.hpp"
 #include "cameracalibration.hpp"
-#include "debugcode.hpp"
+#include "cvmatio.hpp"
 
 #if true
 template class std::vector<hw4::XyzIo::Coor2D_f>;
@@ -42,6 +42,11 @@ int main(int, char**)
 
     const std::vector<cv::Mat> panelHomographyMats = hw4::CameraCalibration::find_panel_homography(panelCornerCoorsImage, panelCornerCoorsPanelLocal);
     const cv::Mat k = hw4::CameraCalibration::get_k_matrix(panelHomographyMats);
+    const std::vector<cv::Mat> rtMats = hw4::CameraCalibration::get_rt_matrix(k, panelHomographyMats);
 
+    hw4::CvMatIo::write_cv_mat<double, 6, 10>("../output/kMatrix.txt", k, "k");
+    hw4::CvMatIo::write_cv_mat<double, 6, 10>("../output/leftRtMat.txt", rtMats[Panel::LEFT], "leftPanelRtMat");
+    hw4::CvMatIo::write_cv_mat<double, 6, 10>("../output/rightRtMat.txt", rtMats[Panel::RIGHT], "rightPanelRtMat");
+    hw4::CvMatIo::write_cv_mat<double, 6, 10>("../output/topRtMat.txt", rtMats[Panel::TOP], "topPanelRtMat");
     return 0;
 }

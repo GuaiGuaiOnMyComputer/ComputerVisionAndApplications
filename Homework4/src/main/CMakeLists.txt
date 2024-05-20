@@ -10,7 +10,7 @@ target_include_directories(Homework4
     PUBLIC ../assetcheck
     PUBLIC ../xyzio
     PUBLIC ../cameracalibration
-    PUBLIC ../debugcode
+    PUBLIC ../cvmatio
     )
 target_link_directories(Homework4
     PUBLIC ${Opencv_LINK_DIRS}
