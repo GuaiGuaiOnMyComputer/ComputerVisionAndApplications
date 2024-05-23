@@ -56,3 +56,7 @@ _deps
 **M112**
 # exculde asset files with large file size
 Homework3/assets/Santa.xyz
+
+# exclude scan imamges
+FinalProject/assets/**SBS**
+FinalProject/assets/GroundTruth.stl
