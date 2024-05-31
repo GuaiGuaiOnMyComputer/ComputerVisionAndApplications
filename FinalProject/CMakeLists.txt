@@ -26,6 +26,7 @@ endif()
 find_package(OpenCV REQUIRED)
 
 add_subdirectory(src/main)
+add_subdirectory(src/scanimageio)
 set_target_properties(FinalProject PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ../../../bin
     ARCHIVE_OUTPUT_DIRECTORY ../../../bin/lib
