@@ -9,6 +9,7 @@ target_include_directories(FinalProject
     PUBLIC ${OpenCV_INCLUDE_DIRS}
     PUBLIC ../scanimageio
     PUBLIC ../assetconfig
+    PUBLIC ../directtriangulation
     )
 target_link_directories(FinalProject
     PUBLIC ${Opencv_LINK_DIRS}
@@ -17,4 +18,5 @@ target_link_libraries(FinalProject
     PUBLIC opencv_world
     PUBLIC finalproj_scanimageio
     PUBLIC finalproj_assetconfig
+    PUBLIC finalproj_directtriangulation
 )
