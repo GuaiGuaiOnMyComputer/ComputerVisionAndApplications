@@ -25,7 +25,7 @@ namespace finprj
 
         ImagePair GetNextPair();
         ImagePair GetPairByIndex(const int32_t imagePairIndex);
-        static void get_blue_pixel_mask(const cv::Mat image,cv::Mat &outputMask);
+        static void get_blue_pixel_mask(const cv::Mat& image, cv::Mat &outputMask, const float bluePixelValueMultiple = 1.55);
 
     private:
         static std::string _get_image_pair_file_name(int32_t pairIndex, const std::string &imageExtension);

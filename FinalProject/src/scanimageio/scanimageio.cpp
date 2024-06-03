@@ -45,17 +45,31 @@ namespace finprj
         return ImagePair(cv::imread(filePath.string()), fileName);
     }
 
-    void ScanImageIo::get_blue_pixel_mask(const cv::Mat image, cv::Mat &outputMask)
+    /// @brief A pixel is considered on the blue scan line if: 1. its brightness is greater than 15, 2. blue value/bluePixelValueMultiple is greater than green value, 3. blue value / 1.1 is greater than red value.
+    /// @param image the image to identify blue pixels in
+    /// @param outputMask a binary image where blue pixels are true and everywhere else false
+    /// @param bluePixelValueMultiple a predefined value to scale the blue channel before comparision
+    void ScanImageIo::get_blue_pixel_mask(const cv::Mat& image, cv::Mat &outputMask, const float bluePixelValueMultiple)
     {
         cv::Mat imageBlueChannel, imageGreenChannel, imageRedChannel;
+
+        // the pixels in image with brightness value above a predefined value will be a true pixel in brightnessMask 
+        cv::Mat brightnessMask;
+        cv::cvtColor(image, brightnessMask, cv::COLOR_BGR2GRAY);
+        cv::compare(brightnessMask, cv::Scalar(15), brightnessMask, cv::CMP_GT);
+
         cv::extractChannel(image, imageBlueChannel, 0);  // extract the blue channel of image into imageBlueChannel
         cv::extractChannel(image, imageGreenChannel, 1); // extract the red channel of image into imageRedChannel
         cv::extractChannel(image, imageRedChannel, 2);   // extract the green channel of image into imageGreenChannel
 
         // assume pixel with b/1.1 > g && b/1.1 > a is a pixel on the blue scan line
-        imageBlueChannel = imageBlueChannel.mul(cv::Scalar(1 / 1.2));
-        cv::compare(imageBlueChannel, imageRedChannel, outputMask, cv::CMP_GT);
-        cv::compare(outputMask, imageGreenChannel, outputMask, cv::CMP_GT);
+        cv::Mat blueGreaterThanRedMask, blueGreaterThanGreenMask;
+        imageBlueChannel = imageBlueChannel.mul(cv::Scalar(1 / bluePixelValueMultiple));
+        cv::compare(imageBlueChannel, imageRedChannel, blueGreaterThanRedMask, cv::CMP_GT);
+        cv::compare(imageBlueChannel, imageGreenChannel, blueGreaterThanGreenMask, cv::CMP_GT);
+
+        cv::bitwise_and(brightnessMask, blueGreaterThanGreenMask, brightnessMask);
+        cv::bitwise_and(brightnessMask, blueGreaterThanRedMask, outputMask);
     }
 
     std::string ScanImageIo::_get_image_pair_file_name(int32_t imagePairIndex, const std::string &imageExtension)
