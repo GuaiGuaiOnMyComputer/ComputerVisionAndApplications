@@ -7,9 +7,9 @@ namespace finprj
     {
     public:
         DirectTriangulation(
-            const std::array<double, 4 * 4> &leftRt, const std::array<double, 4 * 4> &rightRt, 
+            const std::array<double, 3 * 4> &leftRt, const std::array<double, 3 * 4> &rightRt, 
             const std::array<double, 3 * 3> &leftK, const std::array<double, 3 * 3>& rightK, 
-            const std::array<double, 4 * 4>& fundementalMatrix) noexcept;
+            const std::array<double, 3 * 3>& fundementalMatrix) noexcept;
 
         DirectTriangulation() = delete;
         DirectTriangulation(DirectTriangulation &&) = delete;

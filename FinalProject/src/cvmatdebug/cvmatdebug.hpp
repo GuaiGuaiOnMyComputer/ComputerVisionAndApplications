@@ -33,6 +33,8 @@ namespace finprj
                 std::cout << message << '\n';
             }
 
+            std::cout << "[rows x cols x channels] = " << "[" << m.rows << ", " << m.cols << ", " << m.channels() << "]" << "\n";
+
             const cv::Mat_<T> &m_ = (cv::Mat_<T> &)m;
             for (int64_t i = 0; i < m.rows; i++)
             {

@@ -13,6 +13,7 @@ target_sources(finalproj_directtriangulation
 
 target_include_directories(finalproj_directtriangulation
     PUBLIC ${OpenCV_INCLUDE_DIRS}
+    PUBLIC ../cvmatdebug
 )
 
 target_link_directories(finalproj_directtriangulation
@@ -21,4 +22,5 @@ target_link_directories(finalproj_directtriangulation
 
 target_link_libraries(finalproj_directtriangulation
     opencv_world
+    finalproj_cvmatdebug
 )
