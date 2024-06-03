@@ -24,7 +24,11 @@ namespace finprj
         ScanImageIo(const std::filesystem::path &imagePathRoot, const std::string &extension, std::error_code& filesystemErrorCode) noexcept;
 
         ImagePair GetNextPair();
+        ImagePair GetPairByIndex(const int32_t imagePairIndex);
         static void get_blue_pixel_mask(const cv::Mat image,cv::Mat &outputMask);
+
+    private:
+        static std::string _get_image_pair_file_name(int32_t pairIndex, const std::string &imageExtension);
 
     private:
         int32_t _imageCount;

@@ -33,16 +33,16 @@ namespace finprj
     {
         if (_currentImagePair > _imageCount)
             return ImagePair();
+        const std::string fileName = ScanImageIo::_get_image_pair_file_name(_currentImagePair, _imageExtension);
+        const fs::path filePath = _imagePathRoot / fileName;
+        return ImagePair(cv::imread(filePath.string()), fileName);
+    }
 
-        uint8_t prependingZeroCount{0};
-        if (_currentImagePair > 99)
-            prependingZeroCount = 0;
-        else if(_currentImagePair <= 99 && _currentImagePair > 9)
-            prependingZeroCount = 1;
-        else
-            prependingZeroCount = 2;
-        std::string fileName = std::string(prependingZeroCount, '0') + std::to_string(_currentImagePair) + _imageExtension;
-        return ImagePair(cv::imread((_imagePathRoot / fileName).string()), fileName);
+    ImagePair ScanImageIo::GetPairByIndex(const int32_t imagePairIndex)
+    {
+        const std::string fileName = ScanImageIo::_get_image_pair_file_name(imagePairIndex, _imageExtension);
+        const fs::path filePath = _imagePathRoot / fileName;
+        return ImagePair(cv::imread(filePath.string()), fileName);
     }
 
     void ScanImageIo::get_blue_pixel_mask(const cv::Mat image, cv::Mat &outputMask)
@@ -58,4 +58,15 @@ namespace finprj
         cv::compare(outputMask, imageGreenChannel, outputMask, cv::CMP_GT);
     }
 
+    std::string ScanImageIo::_get_image_pair_file_name(int32_t imagePairIndex, const std::string &imageExtension)
+    {
+        uint8_t prependingZeroCount{0};
+        if (imagePairIndex > 99)
+            prependingZeroCount = 0;
+        else if(imagePairIndex <= 99 && imagePairIndex > 9)
+            prependingZeroCount = 1;
+        else
+            prependingZeroCount = 2;
+        return std::string(prependingZeroCount, '0') + std::to_string(imagePairIndex) + imageExtension;
+    }
 }
