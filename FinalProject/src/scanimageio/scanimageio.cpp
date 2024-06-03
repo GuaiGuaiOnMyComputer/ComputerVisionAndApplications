@@ -44,4 +44,18 @@ namespace finprj
         std::string fileName = std::string(prependingZeroCount, '0') + std::to_string(_currentImagePair) + _imageExtension;
         return ImagePair(cv::imread((_imagePathRoot / fileName).string()), fileName);
     }
+
+    void ScanImageIo::get_blue_pixel_mask(const cv::Mat image, cv::Mat &outputMask)
+    {
+        cv::Mat imageBlueChannel, imageGreenChannel, imageRedChannel;
+        cv::extractChannel(image, imageBlueChannel, 0);  // extract the blue channel of image into imageBlueChannel
+        cv::extractChannel(image, imageGreenChannel, 1); // extract the red channel of image into imageRedChannel
+        cv::extractChannel(image, imageRedChannel, 2);   // extract the green channel of image into imageGreenChannel
+
+        // assume pixel with b/1.1 > g && b/1.1 > a is a pixel on the blue scan line
+        imageBlueChannel = imageBlueChannel.mul(cv::Scalar(1 / 1.2));
+        cv::compare(imageBlueChannel, imageRedChannel, outputMask, cv::CMP_GT);
+        cv::compare(outputMask, imageGreenChannel, outputMask, cv::CMP_GT);
+    }
+
 }

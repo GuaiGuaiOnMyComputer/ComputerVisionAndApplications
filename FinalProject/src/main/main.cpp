@@ -6,9 +6,10 @@ int main(int, char**)
 {
     std::error_code fileSystemErrorCode;
     finprj::ScanImageIo scanImageIo(std::filesystem::path(finprj::AssetConfig::SideBySideImagePathRoot), finprj::AssetConfig::SideBySideImageFileExtension, fileSystemErrorCode);
-    for (size_t i = 0; i < 150; i++)
-    {
-        finprj::ImagePair imgPair = scanImageIo.GetNextPair();
-    }
+    finprj::ImagePair pair = scanImageIo.GetNextPair();
+    cv::Mat mask;
+    finprj::ScanImageIo::get_blue_pixel_mask(pair.Left, mask);
+    cv::imshow("a mask", mask);
+    cv::waitKey(0);
     return 0;
 }
