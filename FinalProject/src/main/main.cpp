@@ -6,7 +6,20 @@
 int main(int, char**)
 {
     std::error_code fileSystemErrorCode;
-    finprj::ScanImageIo scanImageIo(finprj::AssetConfig::SideBySideImagePathRoot, finprj::AssetConfig::SideBySideImageFileExtension, fileSystemErrorCode);
-    finprj::DirectTriangulation pointProjection(finprj::AssetConfig::LeftCameraRt, finprj::AssetConfig::RightCameraRt, finprj::AssetConfig::LeftCameraK, finprj::AssetConfig::RightCameraK, finprj::AssetConfig::FundementalMatrix);
+
+    finprj::ScanImageIo scanImageIo = finprj::ScanImageIo(
+        finprj::AssetConfig::SideBySideImagePathRoot,
+        finprj::AssetConfig::SideBySideImageFileExtension,
+        fileSystemErrorCode
+    );
+
+    finprj::DirectTriangulation pointProjection = finprj::DirectTriangulation(
+        finprj::AssetConfig::LeftCameraRt,
+        finprj::AssetConfig::RightCameraRt,
+        finprj::AssetConfig::LeftCameraK,
+        finprj::AssetConfig::RightCameraK,
+        finprj::AssetConfig::FundementalMatrix
+    );
+
     return 0;
 }

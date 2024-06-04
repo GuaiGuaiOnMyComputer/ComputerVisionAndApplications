@@ -11,7 +11,7 @@ namespace finprj
             const std::array<double, 3 * 4> &leftRt, const std::array<double, 3 * 4> &rightRt, 
             const std::array<double, 3 * 3> &leftK, const std::array<double, 3 * 3>& rightK, 
             const std::array<double, 3 * 3>& fundementalMatrix) noexcept;
-        DirectTriangulation(const std::array<double, 4 * 3> &leftP, const std::array<double, 4 * 3> &rightP) noexcept;
+        explicit DirectTriangulation(const std::array<double, 4 * 3> &leftP, const std::array<double, 4 * 3> &rightP) noexcept;
 
         DirectTriangulation() = delete;
         DirectTriangulation(DirectTriangulation &&) = delete;

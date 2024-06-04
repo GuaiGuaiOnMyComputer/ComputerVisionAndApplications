@@ -21,7 +21,7 @@ namespace finprj
     class ScanImageIo
     {
     public:
-        ScanImageIo(const std::filesystem::path &imagePathRoot, const std::string &extension, std::error_code& filesystemErrorCode) noexcept;
+        explicit ScanImageIo(const std::filesystem::path &imagePathRoot, const std::string &extension, std::error_code& filesystemErrorCode) noexcept;
 
         ImagePair GetNextPair();
         ImagePair GetPairByIndex(const int32_t imagePairIndex);
