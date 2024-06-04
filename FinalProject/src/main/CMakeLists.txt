@@ -11,6 +11,7 @@ target_include_directories(FinalProject
     PUBLIC ../assetconfig
     PUBLIC ../directtriangulation
     PUBLIC ../cvmatdebug
+    PUBLIC ../featurematching
     )
 target_link_directories(FinalProject
     PUBLIC ${Opencv_LINK_DIRS}
@@ -21,4 +22,5 @@ target_link_libraries(FinalProject
     PUBLIC finalproj_assetconfig
     PUBLIC finalproj_directtriangulation
     PUBLIC finalproj_cvmatdebug
+    PUBLIC finalproj_featurematching
 )

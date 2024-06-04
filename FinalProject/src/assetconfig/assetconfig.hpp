@@ -37,10 +37,21 @@ namespace finprj
             -0.0009, 0.0023, -0.0018, 1.0000
         };
 
-        static inline constexpr std::array<double, 12> TestParameter_RightCameraP{
+        static inline constexpr std::array<double, 3 * 4> TestParameter_RightCameraP{
             2.8143, -1.3450, -0.5673, 347.4957,
             -0.4439, -0.4444, -3.0134, 371.1864,
             0.0023, 0.0023, -0.0018, 1.000
         };
+
+        static inline constexpr std::array<double, 3 * 3> TestParameter_FundementalMatrix{
+            0,  0,  -0.0007,
+            0,  0,  0.0105,
+            -0.0011, -0.0093, 1
+        };
+
+        static inline constexpr std::array<double, 2> TestParameter_PointOnLeft1{227, 212};
+        static inline constexpr std::array<double, 2> TestParameter_PointOnLeft2{275, 322};
+        static inline constexpr std::array<double, 2> TestParameter_PointOnRight1{201, 144};
+        static inline constexpr std::array<double, 2> TestParameter_PointOnRight2{275, 261};
     };
 };
