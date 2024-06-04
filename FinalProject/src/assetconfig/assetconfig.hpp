@@ -10,11 +10,11 @@ namespace finprj
         static inline constexpr char CameraParameterFilePath[] = "../CameraParameter.txt";
         static inline constexpr char SideBySideImageFileExtension[] = ".jpg";
         static inline constexpr int32_t SideBySideImageCount = 179;
-        static inline constexpr std::array<double, 3 * 3> LeftCameraMatrix{
+        static inline constexpr std::array<double, 3 * 3> LeftCameraK{
             1000.0, 0.0, 360.0,
             0.0, 1000.0, 640.0,
             0.0, 0.0, 1.0};
-        static inline constexpr std::array<double, 3 * 3> RightCameraMatrix{
+        static inline constexpr std::array<double, 3 * 3> RightCameraK{
             1000.0, 0.0, 360.0,
             0.0, 1000.0, 640.0,
             0.0, 0.0, 1.0};
