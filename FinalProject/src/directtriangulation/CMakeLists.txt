@@ -21,6 +21,6 @@ target_link_directories(finalproj_directtriangulation
 )
 
 target_link_libraries(finalproj_directtriangulation
-    opencv_world
-    finalproj_cvmatdebug
+    PRIVATE opencv_world
+    PRIVATE finalproj_cvmatdebug
 )

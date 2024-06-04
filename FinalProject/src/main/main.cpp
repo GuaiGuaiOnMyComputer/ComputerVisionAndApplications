@@ -2,6 +2,7 @@
 #include "scanimageio.hpp"
 #include "assetconfig.hpp"
 #include "featurematching.hpp"
+#include "featurematching.hpp"
 #include "directtriangulation.hpp"
 
 int main(int, char**)
@@ -34,10 +35,12 @@ int main(int, char**)
         finprj::AssetConfig::LeftCameraK,
         finprj::AssetConfig::RightCameraK
     );
-    cv::Vec3d line = finprj::FeatureMatching::get_epipolar_line_right_image(
-        cv::Vec2d(finprj::AssetConfig::TestParameter_PointOnLeft2.data()), 
-        cv::Mat(3, 3, CV_64FC1, (void*)finprj::AssetConfig::TestParameter_FundementalMatrix.data())
-    );
+
+    for (size_t i = 0; i < scanImageIo.GetImageCount(); i++)
+    {
+        finprj::ImagePair imagePair = scanImageIo.GetPairByIndex(i);
+        // TODO: implement testing code
+    }
 
     return 0;
 }

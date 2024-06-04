@@ -45,6 +45,11 @@ namespace finprj
         return ImagePair(cv::imread(filePath.string()), fileName);
     }
 
+    int32_t ScanImageIo::GetImageCount() 
+    {
+        return this -> _imageCount;
+    }
+
     /// @brief A pixel is considered on the blue scan line if: 1. its brightness is greater than 15, 2. blue value/bluePixelValueMultiple is greater than green value, 3. blue value / 1.1 is greater than red value.
     /// @param image the image to identify blue pixels in
     /// @param outputMask a binary image where blue pixels are true and everywhere else false
