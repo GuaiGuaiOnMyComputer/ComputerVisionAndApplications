@@ -1,4 +1,6 @@
 #include <array>
+#include <execution>
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 #include "directtriangulation.hpp"
 #include "cvmatdebug.hpp"
@@ -14,7 +16,6 @@ namespace finprj
             _leftP{_leftK * _leftRt}, _rightP{_rightK * _rightRt},
             _fundementalMatrix{cv::Mat(3, 3, CV_64FC1, (void*)fundementalMatrix.data())}
     {
-        finprj::CvMatDebug::print_cv_mat<double, 5, 10>(_leftP, "_leftP");
     }
 
     DirectTriangulation::DirectTriangulation(const std::array<double, 4 * 3> &leftP, const std::array<double, 4 * 3> &rightP) noexcept :
@@ -25,13 +26,25 @@ namespace finprj
     {
     }
 
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::vector<cv::Point2d> &pointsLeft, const std::vector<cv::Point2d> &pointsRight)
+    {
+        std::vector<cv::Point3d> worldPoints(pointsLeft.size());
+        std::transform(
+            std::execution::seq, 
+            pointsLeft.cbegin(),
+            pointsLeft.cend(),
+            pointsRight.cbegin(),
+            worldPoints.begin(),
+            [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3f
+                { return DirectTriangulation::LocalToWorld(pLeft, pRight); });
+        return worldPoints;
+    }
 
     cv::Point3d DirectTriangulation::LocalToWorld(const cv::Point2d& pointLeft, const cv::Point2d& pointRight)
     {
         std::array<double, 4 * 4> uvpMatBuffer;
         cv::Mat_<double> uvpMat(4, 4, (double *)uvpMatBuffer.data());
         DirectTriangulation::_get_uvp_mat(pointLeft, pointRight, this->_leftP, this->_rightP, uvpMat);
-        finprj::CvMatDebug::print_cv_mat<double, 5, 10>(uvpMat, "uvp mat");
 
         std::array<double, 4 * 4> leftEigenVectorMatrixBuffer_;
         cv::Mat_<double> leftEigenVectorMatrix(4, 4, (double *)leftEigenVectorMatrixBuffer_.data());
@@ -43,9 +56,6 @@ namespace finprj
         cv::Mat_<double> eigenValues(4, 1, (double *)eigenValuesBuffer_.data());
 
         cv::SVD::compute(uvpMat, eigenValues, leftEigenVectorMatrix, rightEigenVectorMatrixT);
-        finprj::CvMatDebug::print_cv_mat<double, 5, 10>(leftEigenVectorMatrix, "left eigenmat");
-        finprj::CvMatDebug::print_cv_mat<double, 5, 10>(rightEigenVectorMatrixT, "right eigenmat");
-        finprj::CvMatDebug::print_cv_mat<double, 5, 10>(eigenValues, "eigenvalues");
         const cv::Mat_<double> lastColumnOfRightEigenVectorMatrix = cv::Mat(rightEigenVectorMatrixT.t(), cv::Range::all(), cv::Range(3, 4));
         return cv::Point3d(
             lastColumnOfRightEigenVectorMatrix(0) / lastColumnOfRightEigenVectorMatrix(3), // world x coordinate
