@@ -45,6 +45,9 @@ int main(int, char**)
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.LeftRoi), bluePixelCoors_left);
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.RightRoi), bluePixelCoors_right);
         finprj::FeatureMatching::find_corresponding_feature_point(imagePair.Left, imagePair.Right, bluePixelCoors_left, bluePixelCoors_right);
+        const cv::Mat matchingResultImage = finprj::FeatureMatching::draw_matching_points(imagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
+        cv::imshow("Matching lines", matchingResultImage);
+        cv::waitKey(0);
     }
 
     return 0;
