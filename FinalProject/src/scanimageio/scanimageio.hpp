@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <filesystem>
 #include <string>
+#include <vector>
 #include <opencv2/opencv.hpp>
 
 namespace finprj
@@ -8,14 +9,16 @@ namespace finprj
     class ImagePair
     {
     public:
-        ImagePair(const cv::Mat &image, const std::filesystem::path &filePath); 
+        ImagePair(const cv::Mat &image, const std::filesystem::path &filePath) noexcept; 
         ImagePair() noexcept;
 
     public:
         const std::filesystem::path FilePath;
         cv::Mat Image;
-        cv::Mat Right;
+        const cv::Rect LeftRoi;
+        const cv::Rect RightRoi;
         cv::Mat Left;
+        cv::Mat Right;
     };
 
     class ScanImageIo
@@ -25,15 +28,17 @@ namespace finprj
 
         ImagePair GetNextPair();
         ImagePair GetPairByIndex(const int32_t imagePairIndex);
-        inline int32_t GetImageCount();
+        size_t GetImageCount();
         static void get_blue_pixel_mask(const cv::Mat &image, cv::Mat &outputMask, const float bluePixelValueMultiple = 1.55);
+        static void get_blue_pixel_coors(const cv::Mat &bluePixelMask, std::vector<cv::Point>& out_bluePixelCoors);
+        static void get_blue_pixel_coors(const cv::Mat &bluePixelMask, cv::Mat_<cv::Point>& out_bluePixelCoors);
 
     private:
         static std::string _get_image_pair_file_name(int32_t pairIndex, const std::string &imageExtension);
 
     private:
-        int32_t _imageCount;
-        int32_t _currentImagePair;
+        size_t _imageCount;
+        size_t _currentImagePair;
         const std::string _imageExtension;
         const std::filesystem::path _imagePathRoot;
         const bool _pathIsValid;

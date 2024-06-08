@@ -39,7 +39,12 @@ int main(int, char**)
     for (size_t i = 0; i < scanImageIo.GetImageCount(); i++)
     {
         finprj::ImagePair imagePair = scanImageIo.GetPairByIndex(i);
-        // TODO: implement testing code
+        cv::Mat bluePixelMask;
+        cv::Mat_<cv::Point> bluePixelCoors_left, bluePixelCoors_right;
+        finprj::ScanImageIo::get_blue_pixel_mask(imagePair.Image, bluePixelMask);
+        finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.LeftRoi), bluePixelCoors_left);
+        finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.RightRoi), bluePixelCoors_right);
+        finprj::FeatureMatching::find_corresponding_feature_point(imagePair.Left, imagePair.Right, bluePixelCoors_left, bluePixelCoors_right);
     }
 
     return 0;

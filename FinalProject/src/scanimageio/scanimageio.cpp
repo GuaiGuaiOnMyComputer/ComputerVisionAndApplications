@@ -8,14 +8,18 @@ namespace finprj
 {
     namespace fs = std::filesystem;
 
-    ImagePair::ImagePair() noexcept : FilePath{fs::path("NoImage")}, Image{cv::Mat()}, Right{cv::Mat()}, Left{cv::Mat()}
+    ImagePair::ImagePair() noexcept : 
+        FilePath{fs::path("NoImage")}, Image{cv::Mat()}, 
+        LeftRoi{cv::Rect()}, RightRoi{cv::Rect()},
+        Left{cv::Mat()}, Right{cv::Mat()}
     {
     }
 
-    ImagePair::ImagePair(const cv::Mat &image, const fs::path &filepath) : FilePath{filepath}, Image{image}
+    ImagePair::ImagePair(const cv::Mat &image, const fs::path &filepath) noexcept: 
+        FilePath{filepath}, Image{image},
+        LeftRoi{cv::Rect(0, 0, Image.cols / 2, Image.rows)}, RightRoi{cv::Rect(Image.cols / 2 - 1, 0, Image.cols / 2, Image.rows)},
+        Left{Image(LeftRoi)}, Right{Image(RightRoi)}
     {
-        Left = cv::Mat(Image, cv::Range::all(), cv::Range(0, Image.cols / 2));
-        Right = cv::Mat(Image, cv::Range::all(), cv::Range(Image.cols / 2 + 1, Image.cols));
     }
 
     ScanImageIo::ScanImageIo(const std::filesystem::path &imagePathRoot, const std::string &extension, std::error_code& filesystemErrorCode) noexcept 
@@ -45,7 +49,7 @@ namespace finprj
         return ImagePair(cv::imread(filePath.string()), fileName);
     }
 
-    int32_t ScanImageIo::GetImageCount() 
+    size_t ScanImageIo::GetImageCount() 
     {
         return this -> _imageCount;
     }
@@ -75,6 +79,16 @@ namespace finprj
 
         cv::bitwise_and(brightnessMask, blueGreaterThanGreenMask, brightnessMask);
         cv::bitwise_and(brightnessMask, blueGreaterThanRedMask, outputMask);
+    }
+
+    void ScanImageIo::get_blue_pixel_coors(const cv::Mat& bluePixelMask, std::vector<cv::Point2i> &out_bluePixels)
+    {
+        cv::findNonZero(bluePixelMask, out_bluePixels);
+    }
+
+    void ScanImageIo::get_blue_pixel_coors(const cv::Mat& bluePixelMask, cv::Mat_<cv::Point> &out_bluePixels)
+    {
+        cv::findNonZero(bluePixelMask, out_bluePixels);
     }
 
     std::string ScanImageIo::_get_image_pair_file_name(int32_t imagePairIndex, const std::string &imageExtension)

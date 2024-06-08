@@ -1,6 +1,7 @@
 #include <array>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 #include "featurematching.hpp"
 #include "assetconfig.hpp"
@@ -15,6 +16,35 @@ namespace finprj
         epipolarLineResult = fundementalMatrix * pointLeftHomo;
         return cv::Vec3d((double*)epipolarLineResult.data);
     }
+
+    void FeatureMatching::find_corresponding_feature_point(const cv::Mat &leftImage, const cv::Mat &rightImage, const cv::Mat_<cv::Point> &pointLeft, cv::Mat_<cv::Point> &out_matchedPointRight)
+    {
+        const int32_t leftPointCount = pointLeft.rows * pointLeft.cols;
+        out_matchedPointRight = cv::Mat_<cv::Point>(1, { leftPointCount });
+
+        std::transform(
+            pointLeft.begin(), pointLeft.end(),
+            out_matchedPointRight.begin(),
+            [&](const cv::Point& pointToMatch) -> cv::Point {
+                return FeatureMatching::find_corresponding_feature_point(leftImage, rightImage, pointToMatch);
+            }
+        );
+        // // a wrapper for cv::Point instances used in out_matchedPointRight.forEach
+        // typedef struct {
+        //     // an index used to specify element within the array pointLeft
+        //     // not to be confused with the x coordinate of the blue pixel in leftImage
+        //     int32_t x;
+        //     cv::Point BluePixelCoor_Right;
+        // } MatchedBluePixelCoordinateWrapper;
+
+        // out_matchedPointRight.forEach(
+        //     [&](MatchedBluePixelCoordinateWrapper &matchedBluePixel, const int *position)
+        //     {
+        //         std::cout << *position << '\n';
+        //         matchedBluePixel.BluePixelCoor_Right = FeatureMatching::find_corresponding_feature_point(leftImage, rightImage, *(const cv::Point*)pointLeft.ptr(*position));
+        //     });
+    }
+
 
     cv::Point FeatureMatching::find_corresponding_feature_point(const cv::Mat &leftImage, const cv::Mat &rightImage, const cv::Point &pointLeft)
     {
@@ -58,6 +88,7 @@ namespace finprj
         cv::circle(outputImage, pointLeft, 5, cv::Scalar(255, 255, 0));
         cv::circle(outputImage, pointRightInMergedImageCoordinate, 5, cv::Scalar(255, 255, 0));
         cv::line(outputImage, pointLeft, pointRightInMergedImageCoordinate, cv::Scalar(0, 255, 255), 3);
+        return outputImage;
     }
 
     void FeatureMatching::_get_template(const cv::Mat& leftImage, const cv::Point& templateCenter, const int32_t templateSize, cv::Mat &out_template)
