@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <array>
 
 namespace finprj
@@ -10,6 +11,8 @@ namespace finprj
         static inline constexpr char CameraParameterFilePath[] = "../CameraParameter.txt";
         static inline constexpr char SideBySideImageFileExtension[] = ".jpg";
         static inline constexpr int32_t SideBySideImageCount = 179;
+        static inline constexpr int32_t SideBySideImageWidth = 1440;
+        static inline constexpr int32_t SideBySideImageHeight = 1280;
         static inline constexpr std::array<double, 3 * 3> LeftCameraK{
             1000.0, 0.0, 360.0,
             0.0, 1000.0, 640.0,
@@ -31,6 +34,10 @@ namespace finprj
             -8.046341661808292E-6, 3.05632173594769E-8, 0.05124913199417346,
             0.0048160232373805345, -0.051062699158041805, 1.0706286680443888
         };
+        static inline constexpr std::array<int64_t, 4> ScanObjectLeftRoi{
+            154, 52, 360, 830
+        };
+
         static inline constexpr std::array<double, 3 * 4> TestParameter_LeftCameraP{
             2.0179, 1.5967, -0.5695, 113.8802,
             0.2820, -0.7636, -2.4258, 305.7125,

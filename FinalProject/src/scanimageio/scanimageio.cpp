@@ -23,7 +23,8 @@ namespace finprj
     }
 
     ScanImageIo::ScanImageIo(const std::filesystem::path &imagePathRoot, const std::string &extension, std::error_code& filesystemErrorCode) noexcept 
-        :_imageCount{0}, _currentImagePair{0}, _imageExtension{extension}, _imagePathRoot{fs::absolute(imagePathRoot)}, _pathIsValid{fs::is_directory(_imagePathRoot)}
+        : _imageCount{0}, _currentImagePair{0},
+         _imageExtension{extension}, _imagePathRoot{fs::absolute(imagePathRoot)}, _pathIsValid{fs::is_directory(_imagePathRoot)}
     {
         const fs::directory_iterator imagePathRootIterator(_imagePathRoot, filesystemErrorCode);
         for(const fs::directory_entry& itemInDir : imagePathRootIterator)
@@ -58,7 +59,7 @@ namespace finprj
     /// @param image the image to identify blue pixels in
     /// @param outputMask a binary image where blue pixels are true and everywhere else false
     /// @param bluePixelValueMultiple a predefined value to scale the blue channel before comparision
-    void ScanImageIo::get_blue_pixel_mask(const cv::Mat& image, cv::Mat &outputMask, const float bluePixelValueMultiple)
+    void ScanImageIo::get_blue_pixel_mask(const cv::Mat& image, cv::Mat &outputMask, const cv::Mat &predefinedRoiMask, const bool usePredefineRoiMask, const float bluePixelValueMultiple)
     {
         cv::Mat imageBlueChannel, imageGreenChannel, imageRedChannel;
 
@@ -79,6 +80,16 @@ namespace finprj
 
         cv::bitwise_and(brightnessMask, blueGreaterThanGreenMask, brightnessMask);
         cv::bitwise_and(brightnessMask, blueGreaterThanRedMask, outputMask);
+        if (usePredefineRoiMask)
+            cv::bitwise_and(outputMask, predefinedRoiMask, outputMask);
+    }
+
+    void ScanImageIo::init_roi_mask(const cv::Rect &scanObjectRoiLeft, const int64_t scanImageWidth, const int64_t scanImageHeight)
+    {
+        s_ModelRoi = scanObjectRoiLeft;
+        s_ModelRoiMask = cv::Mat(scanImageHeight, scanImageWidth, CV_8UC1, cv::Scalar(1));
+        s_ModelRoiMask(cv::Range::all(), cv::Range(0, scanImageWidth / 2)).setTo(cv::Scalar(0));
+        s_ModelRoiMask(s_ModelRoi).setTo(cv::Scalar(1));
     }
 
     void ScanImageIo::get_blue_pixel_coors(const cv::Mat& bluePixelMask, std::vector<cv::Point2i> &out_bluePixels)
@@ -102,4 +113,7 @@ namespace finprj
             prependingZeroCount = 2;
         return std::string(prependingZeroCount, '0') + std::to_string(imagePairIndex) + imageExtension;
     }
+
+    cv::Mat ScanImageIo::s_ModelRoiMask;
+    cv::Rect ScanImageIo::s_ModelRoi;
 }

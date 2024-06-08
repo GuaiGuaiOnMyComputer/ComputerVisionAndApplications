@@ -14,6 +14,11 @@ int main(int, char**)
         finprj::AssetConfig::SideBySideImageFileExtension,
         fileSystemErrorCode
     );
+    const cv::Rect scanObjectRoiLeft = cv::Rect(finprj::AssetConfig::ScanObjectLeftRoi[0], finprj::AssetConfig::ScanObjectLeftRoi[1], finprj::AssetConfig::ScanObjectLeftRoi[2], finprj::AssetConfig::ScanObjectLeftRoi[3]);
+    finprj::ScanImageIo::init_roi_mask(
+        scanObjectRoiLeft, 
+        finprj::AssetConfig::SideBySideImageWidth, 
+        finprj::AssetConfig::SideBySideImageHeight);
 
     //TODO: remove debug code
     size_t i = 0;
@@ -36,17 +41,17 @@ int main(int, char**)
         finprj::AssetConfig::RightCameraK
     );
 
-    for (size_t i = 0; i < scanImageIo.GetImageCount(); i++)
+    for (size_t i = 14; i < scanImageIo.GetImageCount(); i++)
     {
         finprj::ImagePair imagePair = scanImageIo.GetPairByIndex(i);
         cv::Mat bluePixelMask;
         cv::Mat_<cv::Point> bluePixelCoors_left, bluePixelCoors_right;
-        finprj::ScanImageIo::get_blue_pixel_mask(imagePair.Image, bluePixelMask);
+        finprj::ScanImageIo::get_blue_pixel_mask(imagePair.Image, bluePixelMask, finprj::ScanImageIo::s_ModelRoiMask, true);
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.LeftRoi), bluePixelCoors_left);
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.RightRoi), bluePixelCoors_right);
-        finprj::FeatureMatching::find_corresponding_feature_point(imagePair.Left, imagePair.Right, bluePixelCoors_left, bluePixelCoors_right);
-        const cv::Mat matchingResultImage = finprj::FeatureMatching::draw_matching_points(imagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
-        cv::imshow("Matching lines", matchingResultImage);
+        finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMask(imagePair.LeftRoi), bluePixelMask(imagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
+        const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(imagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
+        cv::imshow("Matched features", matchedFeaturePoints);
         cv::waitKey(0);
     }
 

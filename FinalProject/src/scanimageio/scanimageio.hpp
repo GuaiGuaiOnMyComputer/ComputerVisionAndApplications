@@ -29,12 +29,17 @@ namespace finprj
         ImagePair GetNextPair();
         ImagePair GetPairByIndex(const int32_t imagePairIndex);
         size_t GetImageCount();
-        static void get_blue_pixel_mask(const cv::Mat &image, cv::Mat &outputMask, const float bluePixelValueMultiple = 1.55);
+        static void init_roi_mask(const cv::Rect &scanObjectRoiLeft, const int64_t scanImageWidth, const int64_t scanImageHeight);
+        static void get_blue_pixel_mask(const cv::Mat &image, cv::Mat &outputMask, const cv::Mat& predefinedRoiMask, const bool usePredefinedRoiMask, const float bluePixelValueMultiple = 1.55);
         static void get_blue_pixel_coors(const cv::Mat &bluePixelMask, std::vector<cv::Point>& out_bluePixelCoors);
         static void get_blue_pixel_coors(const cv::Mat &bluePixelMask, cv::Mat_<cv::Point>& out_bluePixelCoors);
 
     private:
         static std::string _get_image_pair_file_name(int32_t pairIndex, const std::string &imageExtension);
+
+    public:
+        static cv::Rect s_ModelRoi;
+        static cv::Mat s_ModelRoiMask;
 
     private:
         size_t _imageCount;
