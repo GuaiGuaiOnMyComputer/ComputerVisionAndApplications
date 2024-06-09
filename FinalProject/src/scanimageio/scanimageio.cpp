@@ -59,7 +59,7 @@ namespace finprj
     /// @param image the image to identify blue pixels in
     /// @param outputMask a binary image where blue pixels are true and everywhere else false
     /// @param bluePixelValueMultiple a predefined value to scale the blue channel before comparision
-    void ScanImageIo::get_blue_pixel_mask(const cv::Mat& image, cv::Mat &outputMask, const cv::Mat &predefinedRoiMask, const bool usePredefineRoiMask, const float bluePixelValueMultiple)
+    void ScanImageIo::get_blue_pixel_mask_by_color(const cv::Mat& image, cv::Mat &outputMask, const cv::Mat &predefinedRoiMask, const bool usePredefineRoiMask, const float bluePixelValueMultiple)
     {
         cv::Mat imageBlueChannel, imageGreenChannel, imageRedChannel;
 
@@ -82,6 +82,26 @@ namespace finprj
         cv::bitwise_and(brightnessMask, blueGreaterThanRedMask, outputMask);
         if (usePredefineRoiMask)
             cv::bitwise_and(outputMask, predefinedRoiMask, outputMask);
+    }
+
+    void ScanImageIo::get_blue_pixel_mask(const ImagePair &currentImagePair, const ImagePair &nextImagePair, cv::Mat1b &out_mask, const cv::Mat &predefinedRoiMask, const bool usePredefinedRoiMask, const uint8_t differenceThreshold, const float bluePixelValueMultiple)
+    {
+        cv::Mat1b bluePixelMapByTimeDifference, bluePixelMapByColor;
+        ScanImageIo::get_blue_pixel_mask_by_color(currentImagePair.Image, bluePixelMapByColor, predefinedRoiMask, usePredefinedRoiMask, bluePixelValueMultiple);
+        ScanImageIo::get_blue_pixel_mask_by_time_difference(currentImagePair.Image, nextImagePair.Image, differenceThreshold, bluePixelMapByTimeDifference);
+        cv::bitwise_and(bluePixelMapByTimeDifference, bluePixelMapByColor, out_mask);
+    }
+
+
+    void ScanImageIo::get_blue_pixel_mask_by_time_difference(const cv::Mat &currentImage, const cv::Mat &nextImage, const int32_t differenceThreshold, cv::Mat &out_bluePixelMast)
+    {
+        cv::Mat previousImageBlueChannel, nextImageBlueChannel;
+        cv::extractChannel(currentImage, previousImageBlueChannel, 0);
+        cv::extractChannel(nextImage, nextImageBlueChannel, 0);
+
+        cv::subtract(nextImageBlueChannel, previousImageBlueChannel, out_bluePixelMast);
+        cv::threshold(out_bluePixelMast, out_bluePixelMast, differenceThreshold, 255, cv::THRESH_BINARY);
+        cv::erode(out_bluePixelMast, out_bluePixelMast, cv::getStructuringElement(cv::MorphShapes::MORPH_RECT, cv::Size(1, 3)), cv::Point(-1, -1), 1);
     }
 
     void ScanImageIo::init_roi_mask(const cv::Rect &scanObjectRoiLeft, const int64_t scanImageWidth, const int64_t scanImageHeight)

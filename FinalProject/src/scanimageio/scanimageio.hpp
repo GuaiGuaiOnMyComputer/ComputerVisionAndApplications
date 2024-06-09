@@ -30,7 +30,9 @@ namespace finprj
         ImagePair GetPairByIndex(const int32_t imagePairIndex);
         size_t GetImageCount();
         static void init_roi_mask(const cv::Rect &scanObjectRoiLeft, const int64_t scanImageWidth, const int64_t scanImageHeight);
-        static void get_blue_pixel_mask(const cv::Mat &image, cv::Mat &outputMask, const cv::Mat& predefinedRoiMask, const bool usePredefinedRoiMask, const float bluePixelValueMultiple = 1.55);
+        static void get_blue_pixel_mask_by_color(const cv::Mat &image, cv::Mat &outputMask, const cv::Mat& predefinedRoiMask, const bool usePredefinedRoiMask, const float bluePixelValueMultiple = 1.55);
+        static void get_blue_pixel_mask_by_time_difference(const cv::Mat &previousImage, const cv::Mat &nextImage, const int32_t differenceThreshold, cv::Mat &out_bluePixelMask);
+        static void get_blue_pixel_mask(const ImagePair &previousImagePair, const ImagePair &nextImagePair, cv::Mat1b &out_mask, const cv::Mat &predefinedRoiMask, const bool usePredefinedRoiMask, const uint8_t differenceThreshold, const float bluePixelValueMultiple = 1.55);
         static void get_blue_pixel_coors(const cv::Mat &bluePixelMask, std::vector<cv::Point>& out_bluePixelCoors);
         static void get_blue_pixel_coors(const cv::Mat &bluePixelMask, cv::Mat_<cv::Point>& out_bluePixelCoors);
 

@@ -41,18 +41,20 @@ int main(int, char**)
         finprj::AssetConfig::RightCameraK
     );
 
-    for (size_t i = 14; i < scanImageIo.GetImageCount(); i++)
+    for (size_t i = 0; i < scanImageIo.GetImageCount(); i++)
     {
-        finprj::ImagePair imagePair = scanImageIo.GetPairByIndex(i);
-        cv::Mat bluePixelMask;
+        finprj::ImagePair currentImagePair = scanImageIo.GetPairByIndex(i);
+        finprj::ImagePair nextImagePair = scanImageIo.GetPairByIndex(i + 1);
+        cv::Mat1b bluePixelMap;
         cv::Mat_<cv::Point> bluePixelCoors_left, bluePixelCoors_right;
-        finprj::ScanImageIo::get_blue_pixel_mask(imagePair.Image, bluePixelMask, finprj::ScanImageIo::s_ModelRoiMask, true);
-        finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.LeftRoi), bluePixelCoors_left);
-        finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMask(imagePair.RightRoi), bluePixelCoors_right);
-        finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMask(imagePair.LeftRoi), bluePixelMask(imagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
-        const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(imagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
-        cv::imshow("Matched features", matchedFeaturePoints);
+        finprj::ScanImageIo::get_blue_pixel_mask(currentImagePair, nextImagePair, bluePixelMap, finprj::ScanImageIo::s_ModelRoiMask, true, 3, 1.55);
+        finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMap(currentImagePair.LeftRoi), bluePixelCoors_left);
+        finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_right);
+        finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMap(currentImagePair.LeftRoi), bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
+        const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
+        cv::imshow("Matched points", matchedFeaturePoints);
         cv::waitKey(0);
+        i %= scanImageIo.GetImageCount() - 2;
     }
 
     return 0;
