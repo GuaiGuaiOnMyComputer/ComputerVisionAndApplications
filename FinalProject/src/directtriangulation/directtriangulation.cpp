@@ -1,5 +1,6 @@
 #include <array>
 #include <execution>
+#include <forward_list>
 #include <algorithm>
 #include <opencv2/opencv.hpp>
 #include "directtriangulation.hpp"
@@ -27,13 +28,51 @@ namespace finprj
     {
         std::vector<cv::Point3d> worldPoints(pointsLeft.size());
         std::transform(
-            std::execution::seq, 
+            std::execution::par, 
             pointsLeft.cbegin(),
             pointsLeft.cend(),
             pointsRight.cbegin(),
             worldPoints.begin(),
             [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3f
                 { return DirectTriangulation::LocalToWorld(pLeft, pRight); });
+        return worldPoints;
+    }
+
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight)
+    {
+        std::vector<cv::Point3d> worldPoints(pointsLeft.total());
+        std::transform(
+            std::execution::par, 
+            pointsLeft.begin(),
+            pointsLeft.end(),
+            pointsRight.begin(),
+            worldPoints.begin(),
+            [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3f
+                { return DirectTriangulation::LocalToWorld(pLeft, pRight); });
+        return worldPoints;
+    }
+
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::vector<cv::Point> &pointsLeft, const std::vector<cv::Point> &pointsRight, std::forward_list<const cv::Point*>& out_pointsLeft, std::forward_list<const cv::Point*>& out_pointsRight, size_t &out_pointCount)
+    {
+        out_pointCount = 0;
+        for (size_t i = 0; i < pointsRight.size(); i++)
+        {
+            if ((pointsRight[i].x > 0) | (pointsRight[i].y > 0))
+            {
+                out_pointsLeft.push_front(&pointsLeft[i]);
+                out_pointsRight.push_front(&pointsRight[i]);
+                out_pointCount++;
+            }
+        }
+        std::vector<cv::Point3d> worldPoints(out_pointCount);
+        std::transform(
+            std::execution::par, 
+            out_pointsLeft.cbegin(),
+            out_pointsLeft.cend(),
+            out_pointsRight.cbegin(),
+            worldPoints.begin(),
+            [&](const cv::Point* ptLeft_ptr, const cv::Point* ptRight_ptr) -> cv::Point3f
+                { return DirectTriangulation::LocalToWorld(cv::Point2d(ptLeft_ptr->x, ptRight_ptr->y), cv::Point2d(ptRight_ptr->x, ptRight_ptr->y)); });
         return worldPoints;
     }
 

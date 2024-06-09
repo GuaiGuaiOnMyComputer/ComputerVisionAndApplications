@@ -1,4 +1,5 @@
 #include <opencv2/opencv.hpp>
+#include <forward_list>
 #include "scanimageio.hpp"
 #include "assetconfig.hpp"
 #include "featurematching.hpp"
@@ -51,6 +52,9 @@ int main(int, char**)
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMap(currentImagePair.LeftRoi), bluePixelCoors_left);
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_right);
         finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMap(currentImagePair.LeftRoi), bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
+        std::forward_list<const cv::Point *> validBluePixelCoors_left, validBluePixelCoors_right;
+        size_t validPointsCount{0};
+        std::vector<cv::Point3d> projectedWorldPoints = pointProjection.LocalToWorld(bluePixelCoors_left, bluePixelCoors_right, validBluePixelCoors_left, validBluePixelCoors_right, validPointsCount);
         const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
         cv::imshow("Matched points", matchedFeaturePoints);
         cv::waitKey(0);

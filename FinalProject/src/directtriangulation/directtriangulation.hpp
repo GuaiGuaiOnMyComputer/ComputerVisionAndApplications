@@ -1,4 +1,5 @@
 #include <opencv2/opencv.hpp>
+#include <forward_list>
 #include <array>
 #include <vector>
 
@@ -17,6 +18,8 @@ namespace finprj
 
         cv::Point3d LocalToWorld(const cv::Point2d& pointLeft, const cv::Point2d& pointRight);
         std::vector<cv::Point3d> LocalToWorld(const std::vector<cv::Point2d> &pointsLeft, const std::vector<cv::Point2d> &pointsRight);
+        std::vector<cv::Point3d> LocalToWorld(const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight);
+        std::vector<cv::Point3d> LocalToWorld(const std::vector<cv::Point> &pointsLeft, const std::vector<cv::Point> &pointsRight, std::forward_list<const cv::Point *>& in_out_pointsLeft, std::forward_list<const cv::Point *>& in_out_pointsRight, size_t &out_pointCount);
 
     private:
         const cv::Mat _leftRt;

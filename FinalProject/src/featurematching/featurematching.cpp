@@ -63,6 +63,7 @@ namespace finprj
         cv::minMaxLoc(scoreMap, NULL, NULL, NULL, &matchedLocation);
         matchedLocation.y += searchRoi.y;
 
+        reject_mismatched_point(matchedLocation, epipolarLine, 2.0);
         return matchedLocation;
     }
 
@@ -116,9 +117,9 @@ namespace finprj
         cv::Mat outputImage;
         cv::hconcat(leftImage, rightImage, outputImage);
         const cv::Point pointRightInMergedImageCoordinate = cv::Point(pointRight.x + leftImage.cols, pointRight.y);
-        cv::circle(outputImage, pointLeft, 5, cv::Scalar(255, 255, 0));
-        cv::circle(outputImage, pointRightInMergedImageCoordinate, 5, cv::Scalar(255, 255, 0));
-        cv::line(outputImage, pointLeft, pointRightInMergedImageCoordinate, cv::Scalar(0, 255, 255), 3);
+        cv::circle(outputImage, pointLeft, 2, cv::Scalar(255, 255, 0));
+        cv::circle(outputImage, pointRightInMergedImageCoordinate, 2, cv::Scalar(255, 255, 0));
+        cv::line(outputImage, pointLeft, pointRightInMergedImageCoordinate, cv::Scalar(0, 255, 255), 2);
         return outputImage;
     }
 
@@ -133,6 +134,25 @@ namespace finprj
             cv::line(outputImage, pointsLeft(i), pointRightInMergedImageCoordinate, cv::Scalar(0, 255, 255), 3);
         }
         return outputImage;
+    }
+
+    void FeatureMatching::reject_mismatched_point(cv::Point &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)
+    {
+        const double error = cv::norm(cv::Vec3d(in_out_projectedPoint.x, in_out_projectedPoint.y, 1) * epipolarLineCoeff);
+        in_out_projectedPoint.x = (error < threshold) ? in_out_projectedPoint.x : -1;
+        in_out_projectedPoint.y = (error < threshold) ? in_out_projectedPoint.y : -1;
+    }
+
+    void FeatureMatching::reject_mismatched_point(std::vector<cv::Point> &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)
+    {
+        std::for_each(
+            std::execution::par,
+            in_out_projectedPoint.begin(),
+            in_out_projectedPoint.end(),
+            [&](cv::Point &projected){
+                reject_mismatched_point(projected, epipolarLineCoeff, threshold);
+            }
+        );
     }
 
 
