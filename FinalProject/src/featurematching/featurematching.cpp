@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <execution>
+#include <ranges>
 #include <opencv2/opencv.hpp>
 #include "featurematching.hpp"
 #include "assetconfig.hpp"
@@ -63,7 +64,7 @@ namespace finprj
         cv::minMaxLoc(scoreMap, NULL, NULL, NULL, &matchedLocation);
         matchedLocation.y += searchRoi.y;
 
-        reject_mismatched_point(matchedLocation, epipolarLine, 2.0);
+        reject_mismatched_point(matchedLocation, epipolarLine, 1.0);
         return matchedLocation;
     }
 
@@ -136,11 +137,30 @@ namespace finprj
         return outputImage;
     }
 
+    cv::Mat FeatureMatching::draw_matching_points(const cv::Mat &image, const std::forward_list<const cv::Point*>& pointsLeft_ptrs, const std::forward_list<const cv::Point*>& pointsRight_ptrs, const size_t pointCount)
+    {
+        cv::Mat outputImage = image.clone();
+        auto pointsLeftPtrs_itr = pointsLeft_ptrs.cbegin();
+        auto pointsRightPtrs_itr = pointsRight_ptrs.cbegin();
+        while (pointsLeftPtrs_itr != pointsLeft_ptrs.cend() && pointsRightPtrs_itr != pointsRight_ptrs.cend())
+        {
+            const cv::Point pointRightInMergedImageCoordinate = cv::Point((*pointsRightPtrs_itr)->x + image.cols / 2, (*pointsRightPtrs_itr)->y);
+            cv::circle(outputImage, *(*pointsLeftPtrs_itr), 5, cv::Scalar(255, 255, 0));
+            cv::circle(outputImage, pointRightInMergedImageCoordinate, 5, cv::Scalar(255, 255, 0));
+            cv::line(outputImage, *(*pointsLeftPtrs_itr), pointRightInMergedImageCoordinate, cv::Scalar(0, 255, 255), 3);
+            pointsLeftPtrs_itr++;
+            pointsRightPtrs_itr++;
+        }
+        return outputImage;
+
+    }
+
+
     void FeatureMatching::reject_mismatched_point(cv::Point &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)
     {
-        const double error = cv::norm(cv::Vec3d(in_out_projectedPoint.x, in_out_projectedPoint.y, 1) * epipolarLineCoeff);
-        in_out_projectedPoint.x = (error < threshold) ? in_out_projectedPoint.x : -1;
-        in_out_projectedPoint.y = (error < threshold) ? in_out_projectedPoint.y : -1;
+        const double error = abs(in_out_projectedPoint.x * epipolarLineCoeff[0] +  in_out_projectedPoint.y * epipolarLineCoeff[1] + 1 * epipolarLineCoeff[2]);
+        in_out_projectedPoint.x = (error > threshold) ?  -1 : in_out_projectedPoint.x;
+        in_out_projectedPoint.y = (error > threshold) ?  -1 : in_out_projectedPoint.y;
     }
 
     void FeatureMatching::reject_mismatched_point(std::vector<cv::Point> &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)

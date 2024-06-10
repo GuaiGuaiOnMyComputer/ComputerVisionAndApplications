@@ -3,8 +3,9 @@
 #include "scanimageio.hpp"
 #include "assetconfig.hpp"
 #include "featurematching.hpp"
-#include "featurematching.hpp"
 #include "directtriangulation.hpp"
+
+template class std::forward_list<const cv::Point *>;
 
 int main(int, char**)
 {
@@ -20,20 +21,6 @@ int main(int, char**)
         scanObjectRoiLeft, 
         finprj::AssetConfig::SideBySideImageWidth, 
         finprj::AssetConfig::SideBySideImageHeight);
-
-    //TODO: remove debug code
-    size_t i = 0;
-    while (i < 120)
-    {
-        finprj::ImagePair imagePair = scanImageIo.GetPairByIndex(i);
-        cv::Mat mask;
-        scanImageIo.get_blue_pixel_mask(imagePair.Image, mask);
-        cv::imshow("ImagePair", mask);
-        i++;
-        i %= 120;
-        if (cv::waitKey(0) == 69)
-            break;
-    }
 
     finprj::DirectTriangulation pointProjection = finprj::DirectTriangulation(
         finprj::AssetConfig::LeftCameraRt,
@@ -55,7 +42,7 @@ int main(int, char**)
         std::forward_list<const cv::Point *> validBluePixelCoors_left, validBluePixelCoors_right;
         size_t validPointsCount{0};
         std::vector<cv::Point3d> projectedWorldPoints = pointProjection.LocalToWorld(bluePixelCoors_left, bluePixelCoors_right, validBluePixelCoors_left, validBluePixelCoors_right, validPointsCount);
-        const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
+        const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, validBluePixelCoors_left, validBluePixelCoors_right, validPointsCount);
         cv::imshow("Matched points", matchedFeaturePoints);
         cv::waitKey(0);
         i %= scanImageIo.GetImageCount() - 2;

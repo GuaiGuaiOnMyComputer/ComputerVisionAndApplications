@@ -1,5 +1,6 @@
 #include <array>
 #include <vector>
+#include <forward_list>
 #include <opencv2/opencv.hpp>
 
 namespace finprj
@@ -14,6 +15,7 @@ namespace finprj
         static cv::Rect get_feature_matching_region(const cv::Size &rightImageSize, const cv::Vec3d &epipolarLineRightImage, const int64_t minRoiHeight);
         static cv::Mat draw_matching_points(const cv::Mat &leftImage, const cv::Mat &rightImage, const cv::Point& pointLeft, const cv::Point& pointRight);
         static cv::Mat draw_matching_points(const cv::Mat &image, const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight);
+        static cv::Mat draw_matching_points(const cv::Mat &image, const std::forward_list<const cv::Point*>& pointsLeft_ptrs, const std::forward_list<const cv::Point*>& pointsRight_ptrs, const size_t pointCount);
         static void reject_mismatched_point(cv::Point &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold);
         static void reject_mismatched_point(std::vector<cv::Point> &in_out_projectedPoints, const cv::Vec3d &epipolarLineCoeff, const double threshold);
 
