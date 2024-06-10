@@ -12,9 +12,13 @@ namespace finprj
         const std::array<double, 3 * 4> &leftRt, const std::array<double, 3 * 4> &rightRt, 
         const std::array<double, 3 * 3> &leftK, const std::array<double, 3 * 3>& rightK) noexcept : 
             _leftRt{cv::Mat(3, 4, CV_64FC1, (void*)leftRt.data())}, _rightRt{cv::Mat(3, 4, CV_64FC1, (void*)rightRt.data())},
-            _leftK{cv::Mat(3, 3, CV_64FC1, (void*)leftK.data())}, _rightK{cv::Mat(3, 3, CV_64FC1, (void*)rightK.data())},
-            _leftP{_leftK * _leftRt}, _rightP{_rightK * _rightRt}
+            _leftK{cv::Mat(3, 3, CV_64FC1, (void*)leftK.data())}, _rightK{cv::Mat(3, 3, CV_64FC1, (void*)rightK.data())}
     {
+        _leftP = _leftK * _leftRt;
+        _leftP /= _leftP.at<double>(2, 3);
+        _rightP = _rightK * _rightRt;
+        _rightP /= _rightP.at<double>(2, 3);
+
     }
 
     DirectTriangulation::DirectTriangulation(const std::array<double, 4 * 3> &leftP, const std::array<double, 4 * 3> &rightP) noexcept :
@@ -22,6 +26,24 @@ namespace finprj
         _leftK{cv::Mat()}, _rightK{cv::Mat()},
         _leftP{cv::Mat(3, 4, CV_64FC1, (void*)leftP.data())}, _rightP{cv::Mat(3, 4, CV_64FC1, (void*)rightP.data())}
     {
+        _leftP = _leftK * _leftRt;
+        _leftP /= _leftP.at<double>(2, 3);
+        _rightP = _rightK * _rightRt;
+        _rightP /= _rightP.at<double>(2, 3);
+    }
+
+    void DirectTriangulation::RemoveOutliners(std::vector<cv::Point3d>& worldPoints, std::forward_list<const cv::Point *> &in_out_pointsLeft, std::forward_list<const cv::Point *> &in_out_pointsRight)
+    {
+        // FIXME: this is disguesting
+        for (size_t i = 0; i < worldPoints.size(); i++)
+        {
+            if (abs(worldPoints[i].x) > 200)
+                worldPoints[i].x = 0;
+            if (abs(worldPoints[i].y) > 200)
+                worldPoints[i].y = 0;
+            if (abs(worldPoints[i].z) > 200)
+                worldPoints[i].z = 0;
+        }
     }
 
     std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::vector<cv::Point2d> &pointsLeft, const std::vector<cv::Point2d> &pointsRight)
@@ -52,19 +74,9 @@ namespace finprj
         return worldPoints;
     }
 
-    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight, std::forward_list<const cv::Point*>& out_pointsLeft, std::forward_list<const cv::Point*>& out_pointsRight, size_t &out_pointCount)
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::forward_list<const cv::Point*>& out_pointsLeft, const std::forward_list<const cv::Point*>& out_pointsRight, const size_t pointCount)
     {
-        out_pointCount = 0;
-        for (size_t i = 0; i < pointsRight.total(); i++)
-        {
-            if ((pointsRight(i).x > 0) | (pointsRight(i).y > 0))
-            {
-                out_pointsLeft.push_front(&pointsLeft(i));
-                out_pointsRight.push_front(&pointsRight(i));
-                out_pointCount++;
-            }
-        }
-        std::vector<cv::Point3d> worldPoints(out_pointCount);
+        std::vector<cv::Point3d> worldPoints(pointCount);
         std::transform(
             std::execution::par, 
             out_pointsLeft.cbegin(),

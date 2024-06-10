@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <forward_list>
+#include "xyzio.hpp"
 #include "scanimageio.hpp"
 #include "assetconfig.hpp"
 #include "featurematching.hpp"
@@ -29,24 +30,28 @@ int main(int, char**)
         finprj::AssetConfig::RightCameraK
     );
 
+    std::vector<std::vector<cv::Point3d>> allPredictedWorlPoints(scanImageIo.GetImageCount());
+
     for (size_t i = 0; i < scanImageIo.GetImageCount(); i++)
     {
         finprj::ImagePair currentImagePair = scanImageIo.GetPairByIndex(i);
-        finprj::ImagePair nextImagePair = scanImageIo.GetPairByIndex(i + 1);
+        finprj::ImagePair nextImagePair = scanImageIo.GetPairByIndex((i + 1) % scanImageIo.GetImageCount());
         cv::Mat1b bluePixelMap;
         cv::Mat_<cv::Point> bluePixelCoors_left, bluePixelCoors_right;
         finprj::ScanImageIo::get_blue_pixel_mask(currentImagePair, nextImagePair, bluePixelMap, finprj::ScanImageIo::s_ModelRoiMask, true, 3, 1.55);
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMap(currentImagePair.LeftRoi), bluePixelCoors_left);
         finprj::ScanImageIo::get_blue_pixel_coors(bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_right);
-        finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMap(currentImagePair.LeftRoi), bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
+
         std::forward_list<const cv::Point *> validBluePixelCoors_left, validBluePixelCoors_right;
-        size_t validPointsCount{0};
-        std::vector<cv::Point3d> projectedWorldPoints = pointProjection.LocalToWorld(bluePixelCoors_left, bluePixelCoors_right, validBluePixelCoors_left, validBluePixelCoors_right, validPointsCount);
-        const cv::Mat matchedFeaturePoints = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, validBluePixelCoors_left, validBluePixelCoors_right, validPointsCount);
-        cv::imshow("Matched points", matchedFeaturePoints);
-        cv::waitKey(0);
-        i %= scanImageIo.GetImageCount() - 2;
+        finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMap(currentImagePair.LeftRoi), bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
+        size_t validPointCount{0};
+        finprj::FeatureMatching::remove_mismatched_point(bluePixelCoors_left, bluePixelCoors_right, validBluePixelCoors_left, validBluePixelCoors_right, validPointCount);
+
+        allPredictedWorlPoints[i] = pointProjection.LocalToWorld(validBluePixelCoors_left, validBluePixelCoors_right, validPointCount);
+        pointProjection.RemoveOutliners(allPredictedWorlPoints[i], validBluePixelCoors_left, validBluePixelCoors_right);
     }
+
+    finprj::XyzIo::write_xyz(finprj::AssetConfig::PredictedXyzOutputPath, allPredictedWorlPoints);
 
     return 0;
 }

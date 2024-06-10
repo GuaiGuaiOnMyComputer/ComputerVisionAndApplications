@@ -60,3 +60,6 @@ Homework3/assets/Santa.xyz
 # exclude scan imamges
 FinalProject/assets/**SBS**
 FinalProject/assets/GroundTruth.stl
+
+# exclude output from final prject
+FinalProject/output/

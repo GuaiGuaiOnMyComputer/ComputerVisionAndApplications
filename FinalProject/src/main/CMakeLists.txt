@@ -12,12 +12,14 @@ target_include_directories(FinalProject
     PUBLIC ../directtriangulation
     PUBLIC ../cvmatdebug
     PUBLIC ../featurematching
+    PUBLIC ../xyzio
     )
 target_link_directories(FinalProject
     PUBLIC ${Opencv_LINK_DIRS}
 )
 target_link_libraries(FinalProject
     PUBLIC opencv_world
+    PUBLIC finproj_xyzio
     PUBLIC finalproj_scanimageio
     PUBLIC finalproj_assetconfig
     PUBLIC finalproj_directtriangulation

@@ -32,20 +32,6 @@ namespace finprj
                 return FeatureMatching::find_corresponding_feature_point(leftImage, rightImage, pointToMatch);
             }
         );
-        // // a wrapper for cv::Point instances used in out_matchedPointRight.forEach
-        // typedef struct {
-        //     // an index used to specify element within the array pointLeft
-        //     // not to be confused with the x coordinate of the blue pixel in leftImage
-        //     int32_t x;
-        //     cv::Point BluePixelCoor_Right;
-        // } MatchedBluePixelCoordinateWrapper;
-
-        // out_matchedPointRight.forEach(
-        //     [&](MatchedBluePixelCoordinateWrapper &matchedBluePixel, const int *position)
-        //     {
-        //         std::cout << *position << '\n';
-        //         matchedBluePixel.BluePixelCoor_Right = FeatureMatching::find_corresponding_feature_point(leftImage, rightImage, *(const cv::Point*)pointLeft.ptr(*position));
-        //     });
     }
 
 
@@ -137,7 +123,7 @@ namespace finprj
         return outputImage;
     }
 
-    cv::Mat FeatureMatching::draw_matching_points(const cv::Mat &image, const std::forward_list<const cv::Point*>& pointsLeft_ptrs, const std::forward_list<const cv::Point*>& pointsRight_ptrs, const size_t pointCount)
+    cv::Mat FeatureMatching::draw_matching_points(const cv::Mat &image, const std::forward_list<const cv::Point*>& pointsLeft_ptrs, const std::forward_list<const cv::Point*>& pointsRight_ptrs)
     {
         cv::Mat outputImage = image.clone();
         auto pointsLeftPtrs_itr = pointsLeft_ptrs.cbegin();
@@ -155,6 +141,19 @@ namespace finprj
 
     }
 
+    void FeatureMatching::remove_mismatched_point(const cv::Mat_<cv::Point>& pointLeft, const cv::Mat_<cv::Point>& pointRight, std::forward_list<const cv::Point *>& out_validPointLeft, std::forward_list<const cv::Point*>& out_validPointRight, size_t &out_validPointCount)
+    {
+        out_validPointCount = 0;
+        for (size_t i = 0; i < pointLeft.total(); i++)
+        {
+            if (pointRight(i).x > 0)
+            {
+                out_validPointLeft.push_front(&pointLeft(i));
+                out_validPointRight.push_front(&pointRight(i));
+                out_validPointCount++;
+            }
+        }
+    }
 
     void FeatureMatching::reject_mismatched_point(cv::Point &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)
     {
