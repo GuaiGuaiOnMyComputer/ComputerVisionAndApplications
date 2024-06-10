@@ -82,6 +82,29 @@ namespace finprj
 
     }
 
+    bool XyzIo::write_xyz_and_rgb(const fs::path& filePath, const std::vector<std::vector<cv::Point3d>>& coors, const std::vector<std::vector<XyzIo::Rgb_ui8>>& rgbs)
+    {
+        bool outputPathCreateSuccess = XyzIo::_create_output_directory_if_not_exist(filePath.parent_path());
+        if (!outputPathCreateSuccess)
+        {
+            std::cout << "Failed to create the output directory " << fs::absolute(filePath) << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        std::ofstream outputFile(filePath, std::ios_base::out);
+        outputFile.seekp(0, std::ios_base::beg);
+        for (size_t imageIdx = 0; imageIdx < coors.size(); imageIdx++)
+        {
+            for (size_t pointIdx = 0; pointIdx < coors[imageIdx].size(); pointIdx++)
+            {
+                outputFile << std::setprecision(4) << coors[imageIdx][pointIdx].x << ' ' << coors[imageIdx][pointIdx].y << ' ' << coors[imageIdx][pointIdx].z << ' ';
+                outputFile << std::setprecision(0) << std::to_string(rgbs[imageIdx][pointIdx].R) << ' ' << std::to_string(rgbs[imageIdx][pointIdx].G) << ' ' << std::to_string(rgbs[imageIdx][pointIdx].B) << '\n';
+            }
+        } 
+        outputFile.close();
+        return true;
+    }
+
     uint64_t XyzIo::_getLineCount(std::ifstream& fileHandle, const uint32_t emptyLineCount)
     {
         fileHandle.seekg(0, std::ios_base::beg);

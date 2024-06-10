@@ -22,6 +22,8 @@ namespace finprj
         std::vector<cv::Point3d> LocalToWorld(const std::forward_list<const cv::Point *>& pointsLeft, const std::forward_list<const cv::Point *>& pointsRight, const size_t pointCount);
         void RemoveOutliners(std::vector<cv::Point3d>& worldPoints, std::forward_list<const cv::Point *> &in_out_pointsLeft, std::forward_list<const cv::Point *> &in_out_pointsRight);
 
+        const cv::Mat& GetRightP() const;
+
     private:
         const cv::Mat _leftRt;
         const cv::Mat _rightRt;

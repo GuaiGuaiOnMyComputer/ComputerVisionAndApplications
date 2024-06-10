@@ -5,6 +5,7 @@
 #include "assetconfig.hpp"
 #include "featurematching.hpp"
 #include "directtriangulation.hpp"
+#include "acquirecolor.hpp"
 
 template class std::forward_list<const cv::Point *>;
 
@@ -51,7 +52,7 @@ int main(int, char**)
         pointProjection.RemoveOutliners(allPredictedWorlPoints[i], validBluePixelCoors_left, validBluePixelCoors_right);
     }
 
-    finprj::XyzIo::write_xyz(finprj::AssetConfig::PredictedXyzOutputPath, allPredictedWorlPoints);
-
+    const std::vector<std::vector<finprj::XyzIo::Rgb_ui8>> allPredictedWorldPointsColors = finprj::AcquireColor::get_rgb_from_right_image(pointProjection.GetRightP(), scanImageIo.GetPairByIndex(0).Right, allPredictedWorlPoints);
+    finprj::XyzIo::write_xyz_and_rgb(finprj::AssetConfig::PredictedXyzOutputPath, allPredictedWorlPoints, allPredictedWorldPointsColors);
     return 0;
 }

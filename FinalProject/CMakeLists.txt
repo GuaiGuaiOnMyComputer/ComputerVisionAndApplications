@@ -33,6 +33,7 @@ add_subdirectory(src/assetconfig)
 add_subdirectory(src/directtriangulation)
 add_subdirectory(src/cvmatdebug)
 add_subdirectory(src/featurematching)
+add_subdirectory(src/acquirecolor)
 set_target_properties(FinalProject PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ../../../bin
     ARCHIVE_OUTPUT_DIRECTORY ../../../bin/lib

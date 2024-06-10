@@ -46,6 +46,11 @@ namespace finprj
         }
     }
 
+    const cv::Mat& DirectTriangulation::GetRightP() const 
+    {
+        return this->_rightP;
+    }
+
     std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::vector<cv::Point2d> &pointsLeft, const std::vector<cv::Point2d> &pointsRight)
     {
         std::vector<cv::Point3d> worldPoints(pointsLeft.size());
