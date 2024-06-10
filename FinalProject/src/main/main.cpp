@@ -45,6 +45,9 @@ int main(int, char**)
 
         std::forward_list<const cv::Point *> validBluePixelCoors_left, validBluePixelCoors_right;
         finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMap(currentImagePair.LeftRoi), bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
+        const cv::Mat matchedResult = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
+        cv::imshow("Matched Result", matchedResult);
+        cv::waitKey(5);
         size_t validPointCount{0};
         finprj::FeatureMatching::remove_mismatched_point(bluePixelCoors_left, bluePixelCoors_right, validBluePixelCoors_left, validBluePixelCoors_right, validPointCount);
 

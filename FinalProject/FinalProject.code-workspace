@@ -105,7 +105,8 @@
 			"bitset": "cpp",
 			"regex": "cpp",
 			"execution": "cpp",
-			"text_encoding": "cpp"
+			"text_encoding": "cpp",
+			"shared_mutex": "cpp"
 		}
 	},
 	"tasks": {

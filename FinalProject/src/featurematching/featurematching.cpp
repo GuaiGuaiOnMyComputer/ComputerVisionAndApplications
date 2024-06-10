@@ -38,19 +38,45 @@ namespace finprj
     cv::Point FeatureMatching::find_corresponding_feature_point(const cv::Mat &leftImage, const cv::Mat &rightImage, const cv::Point &pointLeft)
     {
         constexpr int32_t templateSize = 5;
+        cv::Point matchedLocation(-1, -1);
         const cv::Vec3d epipolarLine = get_epipolar_line_right_image(pointLeft, FeatureMatching::s_FundementalMatrix);
-        const cv::Rect searchRoi = get_feature_matching_region(rightImage, epipolarLine, templateSize);
-        const cv::Mat featureMatchingRegion = rightImage(searchRoi).clone();
+        const cv::Rect searchRoiRight = get_feature_matching_region(rightImage, epipolarLine, templateSize);
 
-        cv::Mat matchingPattern;
-        cv::Mat scoreMap(searchRoi.height, searchRoi.width, CV_32FC1, cv::Scalar(0));
-        cv::Point matchedLocation;
-        FeatureMatching::_get_template(leftImage, pointLeft, templateSize, matchingPattern);
-        cv::matchTemplate(featureMatchingRegion, matchingPattern, scoreMap, cv::TM_SQDIFF);
-        cv::minMaxLoc(scoreMap, NULL, NULL, NULL, &matchedLocation);
-        matchedLocation.y += searchRoi.y;
+        cv::Mat_<cv::Point> nonZeroPixelCoorsWithinSearchRoi;
+        cv::findNonZero(rightImage(searchRoiRight), nonZeroPixelCoorsWithinSearchRoi);
+        std::forward_list<const cv::Point*> possibleMatchingPointsRight;
+        size_t possibleMatchingPointCount{0};
+        for (size_t i = 0; i < nonZeroPixelCoorsWithinSearchRoi.total(); i++)
+        {
+            nonZeroPixelCoorsWithinSearchRoi(i).y += searchRoiRight.y;
+            if (check_if_on_epipolar_line(nonZeroPixelCoorsWithinSearchRoi(i), epipolarLine, 0.5))
+            {
+                possibleMatchingPointsRight.push_front(&nonZeroPixelCoorsWithinSearchRoi(i));
+                possibleMatchingPointCount++;
+            }
+        }
 
-        reject_mismatched_point(matchedLocation, epipolarLine, 1.0);
+        if (possibleMatchingPointCount == 0)
+            return matchedLocation;
+
+        cv::Mat matchingPatternLeft;
+        cv::Mat toBeMatchedRight;
+        _get_template(leftImage, pointLeft, templateSize, matchingPatternLeft);
+        size_t matchingPointIndex{0};
+        int32_t highestScore{-1};
+        for (auto matchingPointRight_iter = possibleMatchingPointsRight.cbegin(); matchingPointRight_iter != possibleMatchingPointsRight.cend(); matchingPointRight_iter++)
+        {
+            const cv::Rect toBeMatchedRoi = _get_roi_from_center_coor(**matchingPointRight_iter, templateSize, rightImage.cols, rightImage.rows);
+            toBeMatchedRight = rightImage(toBeMatchedRoi);
+            const cv::Scalar score = cv::sum(matchingPatternLeft.mul(toBeMatchedRight));
+            if (score[0] > highestScore)
+            {
+                highestScore = score[0];
+                matchedLocation = cv::Point((*matchingPointRight_iter)->x, (*matchingPointRight_iter)->y);
+            }
+            matchingPointIndex++;
+        }
+
         return matchedLocation;
     }
 
@@ -155,11 +181,18 @@ namespace finprj
         }
     }
 
+    inline bool FeatureMatching::check_if_on_epipolar_line(const cv::Point &pointRight, const cv::Vec3d &epipolarLineCoeff, const double threshold)
+    {
+        return abs(pointRight.x * epipolarLineCoeff[0] +  pointRight.y * epipolarLineCoeff[1] + 1 * epipolarLineCoeff[2]) < threshold;
+    }
+
     void FeatureMatching::reject_mismatched_point(cv::Point &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)
     {
-        const double error = abs(in_out_projectedPoint.x * epipolarLineCoeff[0] +  in_out_projectedPoint.y * epipolarLineCoeff[1] + 1 * epipolarLineCoeff[2]);
-        in_out_projectedPoint.x = (error > threshold) ?  -1 : in_out_projectedPoint.x;
-        in_out_projectedPoint.y = (error > threshold) ?  -1 : in_out_projectedPoint.y;
+        if (!check_if_on_epipolar_line(in_out_projectedPoint, epipolarLineCoeff, threshold))
+        {
+            in_out_projectedPoint.x = -1;
+            in_out_projectedPoint.y = -1;
+        }
     }
 
     void FeatureMatching::reject_mismatched_point(std::vector<cv::Point> &in_out_projectedPoint, const cv::Vec3d &epipolarLineCoeff, const double threshold)
@@ -175,19 +208,32 @@ namespace finprj
     }
 
 
-    void FeatureMatching::_get_template(const cv::Mat& leftImage, const cv::Point& templateCenter, const int32_t templateSize, cv::Mat &out_template)
+    inline void FeatureMatching::_get_template(const cv::Mat& leftImage, const cv::Point& templateCenter, const int32_t templateSize, cv::Mat &out_template)
     {
-        const cv::Point templateTopLeftCorner(
-            std::max(templateCenter.x - (templateSize - 1) / 2, 0),
-            std::max(templateCenter.y - (templateSize - 1) / 2, 0)
+        out_template = leftImage(_get_roi_from_center_coor(templateCenter, templateSize, leftImage.cols, leftImage.rows));
+    }
+
+    inline cv::Rect FeatureMatching::_get_roi_from_center_coor(const cv::Point& roiCenter, const int32_t roiSize, const int32_t maxX, const int32_t maxY)
+    {
+        cv::Point roiTopLeftCorner(
+            std::max(roiCenter.x - (roiSize - 1) / 2, 0),
+            std::max(roiCenter.y - (roiSize - 1) / 2, 0)
         );
 
-        const cv::Point templateBottomRightCorner(
-            std::min(templateCenter.x + (templateSize - 1) / 2, leftImage.cols),
-            std::min(templateCenter.y + (templateSize - 1) / 2, leftImage.rows)
+        cv::Point roiBottomRightCorner(
+            std::min(roiCenter.x + (roiSize - 1) / 2, maxX),
+            std::min(roiCenter.y + (roiSize - 1) / 2, maxY)
         );
 
-        out_template = leftImage(cv::Rect(templateTopLeftCorner, templateBottomRightCorner));
+        const int32_t roiWidth = roiBottomRightCorner.x - roiTopLeftCorner.x;
+        const bool roiTooNarrowFlag = roiWidth < roiSize;
+        roiBottomRightCorner.x += roiTooNarrowFlag * (roiSize - roiWidth);
+
+        const int32_t roiHeight = roiBottomRightCorner.y - roiTopLeftCorner.y;
+        const bool roiTooShortFlag = roiHeight < roiSize;
+        roiBottomRightCorner.y += roiTooShortFlag * (roiSize - roiHeight);
+        
+        return cv::Rect(roiTopLeftCorner, roiBottomRightCorner);
     }
 
     const cv::Mat_<double> FeatureMatching::s_FundementalMatrix = cv::Mat_<double>(3, 3, (double*)AssetConfig::FundementalMatrix.data());

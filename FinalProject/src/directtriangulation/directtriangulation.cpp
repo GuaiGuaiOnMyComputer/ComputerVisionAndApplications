@@ -37,11 +37,11 @@ namespace finprj
         // FIXME: this is disguesting
         for (size_t i = 0; i < worldPoints.size(); i++)
         {
-            if (abs(worldPoints[i].x) > 200)
+            if (abs(worldPoints[i].x) > 40)
                 worldPoints[i].x = 0;
-            if (abs(worldPoints[i].y) > 200)
+            if (abs(worldPoints[i].y) > 40)
                 worldPoints[i].y = 0;
-            if (abs(worldPoints[i].z) > 200)
+            if (abs(worldPoints[i].z) > 230)
                 worldPoints[i].z = 0;
         }
     }
