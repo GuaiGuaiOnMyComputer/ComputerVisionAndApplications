@@ -55,7 +55,7 @@ namespace finprj
             pointsLeft.cend(),
             pointsRight.cbegin(),
             worldPoints.begin(),
-            [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3f
+            [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3d
                 { return DirectTriangulation::LocalToWorld(pLeft, pRight); });
         return worldPoints;
     }
@@ -69,21 +69,21 @@ namespace finprj
             pointsLeft.end(),
             pointsRight.begin(),
             worldPoints.begin(),
-            [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3f
+            [&](const cv::Point2d &pLeft, const cv::Point2d &pRight) -> cv::Point3d
                 { return DirectTriangulation::LocalToWorld(pLeft, pRight); });
         return worldPoints;
     }
 
-    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::forward_list<const cv::Point*>& out_pointsLeft, const std::forward_list<const cv::Point*>& out_pointsRight, const size_t pointCount)
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::forward_list<const cv::Point*>& pointsLeft, const std::forward_list<const cv::Point*>& pointsRight, const size_t pointCount)
     {
         std::vector<cv::Point3d> worldPoints(pointCount);
         std::transform(
             std::execution::par, 
-            out_pointsLeft.cbegin(),
-            out_pointsLeft.cend(),
-            out_pointsRight.cbegin(),
+            pointsLeft.cbegin(),
+            pointsLeft.cend(),
+            pointsRight.cbegin(),
             worldPoints.begin(),
-            [&](const cv::Point* ptLeft_ptr, const cv::Point* ptRight_ptr) -> cv::Point3f
+            [&](const cv::Point* ptLeft_ptr, const cv::Point* ptRight_ptr) -> cv::Point3d
                 { return DirectTriangulation::LocalToWorld(cv::Point2d(ptLeft_ptr->x, ptRight_ptr->y), cv::Point2d(ptRight_ptr->x, ptRight_ptr->y)); });
         return worldPoints;
     }
@@ -91,17 +91,17 @@ namespace finprj
     cv::Point3d DirectTriangulation::LocalToWorld(const cv::Point2d& pointLeft, const cv::Point2d& pointRight)
     {
         std::array<double, 4 * 4> uvpMatBuffer;
-        cv::Mat_<double> uvpMat(4, 4, (double *)uvpMatBuffer.data());
+        cv::Mat_<double> uvpMat(4, 4, uvpMatBuffer.data());
         DirectTriangulation::_get_uvp_mat(pointLeft, pointRight, this->_leftP, this->_rightP, uvpMat);
 
         std::array<double, 4 * 4> leftEigenVectorMatrixBuffer_;
-        cv::Mat_<double> leftEigenVectorMatrix(4, 4, (double *)leftEigenVectorMatrixBuffer_.data());
+        cv::Mat_<double> leftEigenVectorMatrix(4, 4, leftEigenVectorMatrixBuffer_.data());
 
         std::array<double, 4 * 4> rightEigenVectorMatrixBufferT_;
-        cv::Mat_<double> rightEigenVectorMatrixT(4, 4, (double *)rightEigenVectorMatrixBufferT_.data());
+        cv::Mat_<double> rightEigenVectorMatrixT(4, 4, rightEigenVectorMatrixBufferT_.data());
 
         std::array<double, 4> eigenValuesBuffer_;
-        cv::Mat_<double> eigenValues(4, 1, (double *)eigenValuesBuffer_.data());
+        cv::Mat_<double> eigenValues(4, 1, eigenValuesBuffer_.data());
 
         cv::SVD::compute(uvpMat, eigenValues, leftEigenVectorMatrix, rightEigenVectorMatrixT);
         const cv::Mat_<double> lastColumnOfRightEigenVectorMatrix = cv::Mat(rightEigenVectorMatrixT.t(), cv::Range::all(), cv::Range(3, 4));
@@ -115,7 +115,7 @@ namespace finprj
     inline void DirectTriangulation::_get_uvp_mat(const cv::Point2d &pointLeft, const cv::Point2d &pointRight, const cv::Mat &pLeft, const cv::Mat &pRight, cv::Mat& out_uvpMat)
     {
         // check page 32 of Lecture08 handout
-        constexpr double w = 1;
+        constexpr double w = 1.0;
         const double uLeft = pointLeft.x / w;
         const double vLeft = pointLeft.y / w;
         const double uRight = pointRight.x / w;
