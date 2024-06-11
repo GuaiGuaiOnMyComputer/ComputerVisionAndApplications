@@ -10,7 +10,7 @@ namespace finprj
     public:
         static inline constexpr char SideBySideImagePathRoot[] = "../assets/SBS images";
         static inline constexpr char CameraParameterFilePath[] = "../CameraParameter.txt";
-        static inline constexpr char PredictedXyzOutputPath[]  = "../output/PredictedXyz.txt";
+        static inline constexpr char PredictedXyzOutputPath[]  = "../output/吳宇昕_m11225013.txt";
         static inline constexpr char SideBySideImageFileExtension[] = ".jpg";
         static inline constexpr int32_t SideBySideImageCount = 179;
         static inline constexpr int32_t SideBySideImageWidth = 1440;
