@@ -20,8 +20,8 @@ namespace finprj
             0.0, 1000.0, 640.0,
             0.0, 0.0, 1.0};
         static inline constexpr std::array<double, 3 * 3> RightCameraK{
-            1000.0, 0.0, 360.0,
-            0.0, 1000.0, 640.0,
+            1100.0, 0.0, 360.0,
+            0.0, 1100.0, 640.0,
             0.0, 0.0, 1.0};
         static inline constexpr std::array<double, 3 * 4> LeftCameraRt{
             0.88649035, -0.46274707, -0.00, -14.42428,

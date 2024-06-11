@@ -48,12 +48,12 @@ int main(int, char**)
         finprj::FeatureMatching::find_corresponding_feature_point(bluePixelMap(currentImagePair.LeftRoi), bluePixelMap(currentImagePair.RightRoi), bluePixelCoors_left, bluePixelCoors_right);
         const cv::Mat matchedResult = finprj::FeatureMatching::draw_matching_points(currentImagePair.Image, bluePixelCoors_left, bluePixelCoors_right);
         cv::imshow("Matched Result", matchedResult);
-        cv::waitKey(0);
+        cv::waitKey(2);
         size_t validPointCount{0};
         finprj::FeatureMatching::filter_mismatched_point(bluePixelCoors_left, bluePixelCoors_right, validBluePixelCoors_left, validBluePixelCoors_right, validPointCount);
 
         allPredictedWorldPoints[i] = pointProjection.LocalToWorld(validBluePixelCoors_left, validBluePixelCoors_right, validPointCount);
-        pointProjection.FilterOutliners(allPredictedWorldPoints[i], pointProjection.GetRightP(), currentImagePair.RightRoi.size(), allValidPredictedWorldPoint_ptrs);
+        pointProjection.FilterOutliners(allPredictedWorldPoints[i], cv::Range(-200, 200), cv::Range(-200, 200), cv::Range(-300, 300), allValidPredictedWorldPoint_ptrs);
     }
 
     const std::vector<finprj::XyzIo::Rgb_ui8> allValidPredictedWorldPointsColors = finprj::AcquireColor::get_rgb_from_right_image(pointProjection.GetRightP(), scanImageIo.GetPairByIndex(0).Right, allValidPredictedWorldPoint_ptrs);

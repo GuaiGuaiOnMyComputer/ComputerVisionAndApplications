@@ -22,7 +22,7 @@ namespace finprj
         std::vector<cv::Point3d> LocalToWorld(const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight);
         std::vector<cv::Point3d> LocalToWorld(const std::forward_list<const cv::Point *>& pointsLeft, const std::forward_list<const cv::Point *>& pointsRight, const size_t pointCount);
 
-        void FilterOutliners(const std::vector<cv::Point3d>& projectedWorldPoints, const cv::Mat& rightCameraP, const cv::Size& rightImageSize, std::forward_list<const cv::Point3d *> &in_out_validWorldPoints);
+        void FilterOutliners(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Range &xRange, const cv::Range &yRange, const cv::Range &zRange, std::forward_list<const cv::Point3d *>& in_out_validWorldPoints);
 
         const cv::Mat& GetRightP() const;
         const cv::Mat& GetLeftP() const;

@@ -32,14 +32,17 @@ namespace finprj
         _rightP /= _rightP.at<double>(2, 3);
     }
 
-    void DirectTriangulation::FilterOutliners(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Mat& rightCameraP, const cv::Size& rightImageSize, std::forward_list<const cv::Point3d*>& in_out_validWorldPoints)
+    void DirectTriangulation::FilterOutliners(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Range& xRange, const cv::Range& yRange, const cv::Range& zRange, std::forward_list<const cv::Point3d *> &in_out_validWorldPoints)
     {
         for (const cv::Point3d& worldPt : projectedWorldPoints)
         {
-            const cv::Point2d localPoint = WorldToLocal(rightCameraP, worldPt);
-            if ((abs(localPoint.x) < rightImageSize.width) && (abs(localPoint.y) < rightImageSize.height))
+            const bool xWithinRangeFlag = (worldPt.x > xRange.start) && (worldPt.x < xRange.end);
+            const bool yWithinRangeFlag = (worldPt.y > yRange.start) && (worldPt.y < yRange.end);
+            const bool zWithinRangeFlag = (worldPt.z > zRange.start) && (worldPt.z < zRange.end); ;
+            if (xWithinRangeFlag && yWithinRangeFlag && zWithinRangeFlag)
                 in_out_validWorldPoints.push_front(&worldPt);
         }
+
     }
 
     cv::Point2d DirectTriangulation::WorldToLocal(const cv::Mat &cameraP, const cv::Point3d& worldPoint)
