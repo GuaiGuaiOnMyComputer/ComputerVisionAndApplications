@@ -32,18 +32,34 @@ namespace finprj
         _rightP /= _rightP.at<double>(2, 3);
     }
 
-    void DirectTriangulation::RemoveOutliners(std::vector<cv::Point3d>& worldPoints, std::forward_list<const cv::Point *> &in_out_pointsLeft, std::forward_list<const cv::Point *> &in_out_pointsRight)
+    void DirectTriangulation::FilterOutliners(const cv::Mat& rightCameraP, const cv::Size& rightImageSize, std::list<const cv::Point *> &in_out_validPointsLeft, std::list<const cv::Point *> &in_out_validPointsRight, std::list<const cv::Point3d*>& in_out_validWorldPoints)
     {
-        // FIXME: this is disguesting
-        for (size_t i = 0; i < worldPoints.size(); i++)
+        auto validPointsLeft_iter = in_out_validPointsLeft.begin();
+        auto validPointsRight_iter = in_out_validPointsRight.begin();
+        auto validPointsWorld_iter = in_out_validWorldPoints.begin();
+        while(validPointsRight_iter != in_out_validPointsRight.end())
         {
-            if (abs(worldPoints[i].x) > 40)
-                worldPoints[i].x = 0;
-            if (abs(worldPoints[i].y) > 40)
-                worldPoints[i].y = 0;
-            if (abs(worldPoints[i].z) > 230)
-                worldPoints[i].z = 0;
+            const cv::Point2d pointOnRightImage = WorldToLocal(rightCameraP, **validPointsWorld_iter);
+            if ((abs(pointOnRightImage.x) > rightImageSize.width) || (abs(pointOnRightImage.y) > rightImageSize.height))
+            {
+                continue;
+            }
+            validPointsLeft_iter++;
+            validPointsRight_iter++;
+            validPointsWorld_iter++;
         }
+    }
+
+    cv::Point2d DirectTriangulation::WorldToLocal(const cv::Mat &cameraP, const cv::Point3d& worldPoint)
+    {
+        const cv::Vec4d worldPointHomo(worldPoint.x, worldPoint.y, worldPoint.z, 1);
+        std::array<double, 4> localPointBuffer_;
+        cv::Mat1d localPoint(4, 1, localPointBuffer_.data());
+        localPoint = cameraP * worldPointHomo;
+        return cv::Point(
+            localPoint(0, 0) / localPoint(2, 0),
+            localPoint(1, 0) / localPoint(2, 0)
+        );
     }
 
     const cv::Mat& DirectTriangulation::GetRightP() const 
@@ -79,7 +95,7 @@ namespace finprj
         return worldPoints;
     }
 
-    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::forward_list<const cv::Point*>& pointsLeft, const std::forward_list<const cv::Point*>& pointsRight, const size_t pointCount)
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::list<const cv::Point*>& pointsLeft, const std::list<const cv::Point*>& pointsRight, const size_t pointCount)
     {
         std::vector<cv::Point3d> worldPoints(pointCount);
         std::transform(

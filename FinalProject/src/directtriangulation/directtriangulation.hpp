@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <forward_list>
+#include <list>
 #include <array>
 #include <vector>
 
@@ -16,11 +17,13 @@ namespace finprj
         DirectTriangulation() = delete;
         DirectTriangulation(DirectTriangulation &&) = delete;
 
+        cv::Point2d WorldToLocal(const cv::Mat &cameraP, const cv::Point3d &worldPoint);
         cv::Point3d LocalToWorld(const cv::Point2d& pointLeft, const cv::Point2d& pointRight);
         std::vector<cv::Point3d> LocalToWorld(const std::vector<cv::Point2d> &pointsLeft, const std::vector<cv::Point2d> &pointsRight);
         std::vector<cv::Point3d> LocalToWorld(const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight);
-        std::vector<cv::Point3d> LocalToWorld(const std::forward_list<const cv::Point *>& pointsLeft, const std::forward_list<const cv::Point *>& pointsRight, const size_t pointCount);
-        void RemoveOutliners(std::vector<cv::Point3d>& worldPoints, std::forward_list<const cv::Point *> &in_out_pointsLeft, std::forward_list<const cv::Point *> &in_out_pointsRight);
+        std::vector<cv::Point3d> LocalToWorld(const std::list<const cv::Point *>& pointsLeft, const std::list<const cv::Point *>& pointsRight, const size_t pointCount);
+
+        void FilterOutliners(const cv::Mat& rightCameraP, const cv::Size& rightImageSize, std::list<const cv::Point *> &in_out_pointsLeft, std::list<const cv::Point *> &in_out_pointsRight, std::list<const cv::Point3d *> &in_out_validWorldPoints);
 
         const cv::Mat& GetRightP() const;
 

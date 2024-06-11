@@ -4,6 +4,8 @@
 #include <functional>
 #include <execution>
 #include <ranges>
+#include <forward_list>
+#include <list>
 #include <opencv2/opencv.hpp>
 #include "featurematching.hpp"
 #include "assetconfig.hpp"
@@ -167,7 +169,7 @@ namespace finprj
 
     }
 
-    void FeatureMatching::remove_mismatched_point(const cv::Mat_<cv::Point>& pointLeft, const cv::Mat_<cv::Point>& pointRight, std::forward_list<const cv::Point *>& out_validPointLeft, std::forward_list<const cv::Point*>& out_validPointRight, size_t &out_validPointCount)
+    void FeatureMatching::filter_mismatched_point(const cv::Mat_<cv::Point>& pointLeft, const cv::Mat_<cv::Point>& pointRight, std::list<const cv::Point *>& out_validPointLeft, std::list<const cv::Point*>& out_validPointRight, size_t &out_validPointCount)
     {
         out_validPointCount = 0;
         for (size_t i = 0; i < pointLeft.total(); i++)
