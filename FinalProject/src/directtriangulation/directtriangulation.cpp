@@ -32,7 +32,7 @@ namespace finprj
         _rightP /= _rightP.at<double>(2, 3);
     }
 
-    void DirectTriangulation::FilterOutliners(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Range& xRange, const cv::Range& yRange, const cv::Range& zRange, std::forward_list<const cv::Point3d *> &in_out_validWorldPoints)
+    void DirectTriangulation::FilterOutOfBoundPoints(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Range& xRange, const cv::Range& yRange, const cv::Range& zRange, std::list<const cv::Point3d *> &in_out_validWorldPoints)
     {
         for (const cv::Point3d& worldPt : projectedWorldPoints)
         {
@@ -42,14 +42,33 @@ namespace finprj
             if (xWithinRangeFlag && yWithinRangeFlag && zWithinRangeFlag)
                 in_out_validWorldPoints.push_front(&worldPt);
         }
-
     }
+
+    void DirectTriangulation::FilterOutliners(const cv::Mat &rightCameraP, const cv::Size &rightImageSize, std::list<const cv::Point3d *> &in_out_validWorldPoint_ptrs)
+    {
+        auto in_out_validWorldPoint_ptrs_iter = in_out_validWorldPoint_ptrs.begin();
+        while (in_out_validWorldPoint_ptrs_iter != in_out_validWorldPoint_ptrs.end())
+        {
+            const cv::Vec4d worldPtHomo((*in_out_validWorldPoint_ptrs_iter)->x, (*in_out_validWorldPoint_ptrs_iter)->y, (*in_out_validWorldPoint_ptrs_iter)->z, 1);
+            std::array<double, 3> localPointBuffer_;
+            cv::Mat1d localPoint(3, 1, localPointBuffer_.data());
+            localPoint = rightCameraP * worldPtHomo;
+            localPoint /= localPoint(3, 0);
+
+            if (localPoint(0, 0) < 0 || localPoint(1, 0) < 0)
+                in_out_validWorldPoint_ptrs.erase(in_out_validWorldPoint_ptrs_iter++);
+            if (localPoint(0, 0) > rightImageSize.width || localPoint(1, 0) > rightImageSize.height)
+                in_out_validWorldPoint_ptrs.erase(in_out_validWorldPoint_ptrs_iter++);
+        }
+    }
+
+
 
     cv::Point2d DirectTriangulation::WorldToLocal(const cv::Mat &cameraP, const cv::Point3d& worldPoint)
     {
         const cv::Vec4d worldPointHomo(worldPoint.x, worldPoint.y, worldPoint.z, 1);
-        std::array<double, 4> localPointBuffer_;
-        cv::Mat1d localPoint(4, 1, localPointBuffer_.data());
+        std::array<double, 3> localPointBuffer_;
+        cv::Mat1d localPoint(3, 1, localPointBuffer_.data());
         localPoint = cameraP * worldPointHomo;
         return cv::Point(
             localPoint(0, 0) / localPoint(2, 0),
@@ -90,7 +109,7 @@ namespace finprj
         return worldPoints;
     }
 
-    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::forward_list<const cv::Point*>& pointsLeft, const std::forward_list<const cv::Point*>& pointsRight, const size_t pointCount)
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::list<const cv::Point*>& pointsLeft, const std::list<const cv::Point*>& pointsRight, const size_t pointCount)
     {
         std::vector<cv::Point3d> worldPoints(pointCount);
         std::transform(

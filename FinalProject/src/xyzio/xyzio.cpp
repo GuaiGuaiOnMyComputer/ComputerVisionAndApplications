@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iomanip>
 #include <vector>
+#include <list>
 #include <array>
 #include <algorithm>
 #include <filesystem>
@@ -81,7 +82,7 @@ namespace finprj
         return true;
     }
 
-    bool XyzIo::write_xyz_and_rgb(const fs::path &filePath, const std::forward_list<const cv::Point3d*> &coor_ptrs, const std::vector<XyzIo::Rgb<uint8_t>> &rgbs)
+    bool XyzIo::write_xyz_and_rgb(const fs::path &filePath, const std::list<const cv::Point3d*> &coor_ptrs, const std::vector<XyzIo::Rgb<uint8_t>> &rgbs)
     {
         bool outputPathCreateSuccess = XyzIo::_create_output_directory_if_not_exist(filePath.parent_path());
         if (!outputPathCreateSuccess)

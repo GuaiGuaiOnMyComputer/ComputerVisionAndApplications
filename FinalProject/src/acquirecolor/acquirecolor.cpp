@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <execution>
+#include <list>
 #include <opencv2/opencv.hpp>
 #include "acquirecolor.hpp"
 #include "xyzio.hpp"
@@ -24,7 +25,7 @@ namespace finprj
         return colorsOfEachWorldPoint;
     }
 
-    std::vector<finprj::XyzIo::Rgb_ui8> AcquireColor::get_rgb_from_right_image(const cv::Mat &projectionMatrixRight, const cv::Mat &rightImage, const std::forward_list<const cv::Point3d*>& worldPoint_ptrs)
+    std::vector<finprj::XyzIo::Rgb_ui8> AcquireColor::get_rgb_from_right_image(const cv::Mat &projectionMatrixRight, const cv::Mat &rightImage, const std::list<const cv::Point3d*>& worldPoint_ptrs)
     {
         // count the nomber of world points so the output vector can be pre-allocated
         size_t worldPointCount{0};
@@ -65,6 +66,9 @@ namespace finprj
         const cv::Vec4d worldPointHomo(worldPoint.x, worldPoint.y, worldPoint.z, 1);
         pointOnImage = projectionMatrixRight * worldPointHomo;
         pointOnImage /= pointOnImage(2, 0); // normalize the projected point with its homogeneous term
+
+        if(pointOnImage(0, 0) < 0 || pointOnImage(1, 0) < 0)
+            return XyzIo::Rgb_ui8(255, 0, 0);
 
         if ((abs(pointOnImage(0, 0)) > rightImage.cols) || (abs(pointOnImage(1, 0)) > rightImage.rows))
             return XyzIo::Rgb_ui8(255, 0, 0);

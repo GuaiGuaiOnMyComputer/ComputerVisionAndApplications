@@ -3,7 +3,7 @@
 #include <fstream>
 #include <stdint.h>
 #include <filesystem>
-#include <forward_list>
+#include <list>
 #include <opencv2/opencv.hpp>
 
 namespace finprj
@@ -154,7 +154,7 @@ namespace finprj
         /// @param coors 3D coordinates of each point.
         /// @param rgbs the rgb values of each point specified as 8-bit unsigned integer
         /// @return Whether the operation is successful.
-        static bool write_xyz_and_rgb(const fs::path &filePath, const std::forward_list<const cv::Point3d*> &coor_ptrs, const std::vector<XyzIo::Rgb<uint8_t>> &rgbs);
+        static bool write_xyz_and_rgb(const fs::path &filePath, const std::list<const cv::Point3d*> &coor_ptrs, const std::vector<XyzIo::Rgb<uint8_t>> &rgbs);
 
         using Coor3D_f = XyzIo::Coor3D<float>;
         using Coor3D_d = XyzIo::Coor3D<double>;

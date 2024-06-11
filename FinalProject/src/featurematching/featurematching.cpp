@@ -4,8 +4,8 @@
 #include <functional>
 #include <execution>
 #include <ranges>
-#include <forward_list>
 #include <list>
+#include <forward_list>
 #include <opencv2/opencv.hpp>
 #include "featurematching.hpp"
 #include "assetconfig.hpp"
@@ -151,7 +151,7 @@ namespace finprj
         return outputImage;
     }
 
-    cv::Mat FeatureMatching::draw_matching_points(const cv::Mat &image, const std::forward_list<const cv::Point*>& pointsLeft_ptrs, const std::forward_list<const cv::Point*>& pointsRight_ptrs)
+    cv::Mat FeatureMatching::draw_matching_points(const cv::Mat &image, const std::list<const cv::Point*>& pointsLeft_ptrs, const std::list<const cv::Point*>& pointsRight_ptrs)
     {
         cv::Mat outputImage = image.clone();
         auto pointsLeftPtrs_itr = pointsLeft_ptrs.cbegin();
@@ -169,12 +169,12 @@ namespace finprj
 
     }
 
-    void FeatureMatching::filter_mismatched_point(const cv::Mat_<cv::Point>& pointLeft, const cv::Mat_<cv::Point>& pointRight, std::forward_list<const cv::Point *>& out_validPointLeft, std::forward_list<const cv::Point*>& out_validPointRight, size_t &out_validPointCount)
+    void FeatureMatching::filter_nonmatching_points(const cv::Mat_<cv::Point>& pointLeft, const cv::Mat_<cv::Point>& pointRight, std::list<const cv::Point *>& out_validPointLeft, std::list<const cv::Point*>& out_validPointRight, size_t &out_validPointCount)
     {
         out_validPointCount = 0;
         for (size_t i = 0; i < pointLeft.total(); i++)
         {
-            if (pointRight(i).x > 0)
+            if (pointRight(i).x > 0 && pointRight(i).y > 0)
             {
                 out_validPointLeft.push_front(&pointLeft(i));
                 out_validPointRight.push_front(&pointRight(i));

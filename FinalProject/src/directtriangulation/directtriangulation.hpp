@@ -1,5 +1,5 @@
 #include <opencv2/opencv.hpp>
-#include <forward_list>
+#include <list>
 #include <array>
 #include <vector>
 
@@ -20,9 +20,10 @@ namespace finprj
         cv::Point3d LocalToWorld(const cv::Point2d& pointLeft, const cv::Point2d& pointRight);
         std::vector<cv::Point3d> LocalToWorld(const std::vector<cv::Point2d> &pointsLeft, const std::vector<cv::Point2d> &pointsRight);
         std::vector<cv::Point3d> LocalToWorld(const cv::Mat_<cv::Point> &pointsLeft, const cv::Mat_<cv::Point> &pointsRight);
-        std::vector<cv::Point3d> LocalToWorld(const std::forward_list<const cv::Point *>& pointsLeft, const std::forward_list<const cv::Point *>& pointsRight, const size_t pointCount);
+        std::vector<cv::Point3d> LocalToWorld(const std::list<const cv::Point *>& pointsLeft, const std::list<const cv::Point *>& pointsRight, const size_t pointCount);
 
-        void FilterOutliners(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Range &xRange, const cv::Range &yRange, const cv::Range &zRange, std::forward_list<const cv::Point3d *>& in_out_validWorldPoints);
+        void FilterOutliners(const cv::Mat &rightCameraP, const cv::Size &rightImageSize, std::list<const cv::Point3d *> &in_out_validWorldPoint_ptrs);
+        void FilterOutOfBoundPoints(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Range &xRange, const cv::Range &yRange, const cv::Range &zRange, std::list<const cv::Point3d *>& in_out_validWorldPoint_ptrs);
 
         const cv::Mat& GetRightP() const;
         const cv::Mat& GetLeftP() const;
