@@ -24,6 +24,25 @@ namespace finprj
         return colorsOfEachWorldPoint;
     }
 
+    std::vector<finprj::XyzIo::Rgb_ui8> AcquireColor::get_rgb_from_right_image(const cv::Mat &projectionMatrixRight, const cv::Mat &rightImage, const std::forward_list<const cv::Point3d*>& worldPoint_ptrs)
+    {
+        // count the nomber of world points so the output vector can be pre-allocated
+        size_t worldPointCount{0};
+        for (auto _ : worldPoint_ptrs)
+            worldPointCount++;
+
+        std::vector<finprj::XyzIo::Rgb_ui8> colorsOfEachWorldPoint(worldPointCount);
+        std::transform(
+            std::execution::par,
+            worldPoint_ptrs.cbegin(), worldPoint_ptrs.cend(),
+            colorsOfEachWorldPoint.begin(),
+            [&](const cv::Point3d* worldPt) -> finprj::XyzIo::Rgb_ui8 {
+                return AcquireColor::get_rgb_from_right_image(projectionMatrixRight, rightImage, *worldPt);
+            }
+        );
+        return colorsOfEachWorldPoint;
+    }
+
     std::vector<XyzIo::Rgb_ui8> AcquireColor::get_rgb_from_right_image(const cv::Mat &projectionMatrixRight, const cv::Mat &rightImage, const std::vector<cv::Point3d> &worldPoints)
     {
         size_t worldPointCount = worldPoints.size();

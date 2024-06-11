@@ -79,8 +79,30 @@ namespace finprj
         } 
         outputFile.close();
         return true;
-
     }
+
+    bool XyzIo::write_xyz_and_rgb(const fs::path &filePath, const std::forward_list<const cv::Point3d*> &coor_ptrs, const std::vector<XyzIo::Rgb<uint8_t>> &rgbs)
+    {
+        bool outputPathCreateSuccess = XyzIo::_create_output_directory_if_not_exist(filePath.parent_path());
+        if (!outputPathCreateSuccess)
+        {
+            std::cout << "Failed to create the output directory " << fs::absolute(filePath) << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        auto coors_ptrs_itr = coor_ptrs.cbegin();
+        std::ofstream outputFile(filePath, std::ios_base::out);
+        outputFile.seekp(0, std::ios_base::beg);
+        for (size_t pointIdx = 0; pointIdx < rgbs.size(); pointIdx++)
+        {
+            outputFile << std::setprecision(4) << (*coors_ptrs_itr)->x << ' ' << (*coors_ptrs_itr)->y << ' ' << (*coors_ptrs_itr)->z << ' ';
+            outputFile << std::setprecision(0) << std::to_string(rgbs[pointIdx].R) << ' ' << std::to_string(rgbs[pointIdx].G) << ' ' << std::to_string(rgbs[pointIdx].B) << '\n';
+            coors_ptrs_itr++;
+        }
+        outputFile.close();
+        return true;
+    }
+
 
     bool XyzIo::write_xyz_and_rgb(const fs::path& filePath, const std::vector<std::vector<cv::Point3d>>& coors, const std::vector<std::vector<XyzIo::Rgb_ui8>>& rgbs)
     {

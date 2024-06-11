@@ -32,21 +32,13 @@ namespace finprj
         _rightP /= _rightP.at<double>(2, 3);
     }
 
-    void DirectTriangulation::FilterOutliners(const cv::Mat& rightCameraP, const cv::Size& rightImageSize, std::list<const cv::Point *> &in_out_validPointsLeft, std::list<const cv::Point *> &in_out_validPointsRight, std::list<const cv::Point3d*>& in_out_validWorldPoints)
+    void DirectTriangulation::FilterOutliners(const std::vector<cv::Point3d> &projectedWorldPoints, const cv::Mat& rightCameraP, const cv::Size& rightImageSize, std::forward_list<const cv::Point3d*>& in_out_validWorldPoints)
     {
-        auto validPointsLeft_iter = in_out_validPointsLeft.begin();
-        auto validPointsRight_iter = in_out_validPointsRight.begin();
-        auto validPointsWorld_iter = in_out_validWorldPoints.begin();
-        while(validPointsRight_iter != in_out_validPointsRight.end())
+        for (const cv::Point3d& worldPt : projectedWorldPoints)
         {
-            const cv::Point2d pointOnRightImage = WorldToLocal(rightCameraP, **validPointsWorld_iter);
-            if ((abs(pointOnRightImage.x) > rightImageSize.width) || (abs(pointOnRightImage.y) > rightImageSize.height))
-            {
-                continue;
-            }
-            validPointsLeft_iter++;
-            validPointsRight_iter++;
-            validPointsWorld_iter++;
+            const cv::Point2d localPoint = WorldToLocal(rightCameraP, worldPt);
+            if ((abs(localPoint.x) < rightImageSize.width) && (abs(localPoint.y) < rightImageSize.height))
+                in_out_validWorldPoints.push_front(&worldPt);
         }
     }
 
@@ -95,7 +87,7 @@ namespace finprj
         return worldPoints;
     }
 
-    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::list<const cv::Point*>& pointsLeft, const std::list<const cv::Point*>& pointsRight, const size_t pointCount)
+    std::vector<cv::Point3d> DirectTriangulation::LocalToWorld(const std::forward_list<const cv::Point*>& pointsLeft, const std::forward_list<const cv::Point*>& pointsRight, const size_t pointCount)
     {
         std::vector<cv::Point3d> worldPoints(pointCount);
         std::transform(
